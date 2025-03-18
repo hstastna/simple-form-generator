@@ -24,6 +24,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 The JSON configuration object consists of three main keys:
 
 `title` - represents the main title of the form
+
 `items` - the actual form fields of various types, such as:
 
 - `number` - number field
@@ -32,7 +33,8 @@ The JSON configuration object consists of three main keys:
 - `checkbox` - checkbox field
 - `date` - date field
 - `radio` - radio button
-  `buttons` - form buttons of type: `button`, `submit`, `reset`
+
+`buttons` - form buttons of type: `button`, `submit`, `reset`
 
 The JSON configuration entered in the _Config_ tab is validated by using [Zod](https://zod.dev/). You can find the specific schemas defined in the _src/schemas_ directory. Most of the common html attributes for `input`, `textarea` and `button` HTML elements are accepted.
 
