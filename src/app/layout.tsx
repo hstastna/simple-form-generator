@@ -43,6 +43,7 @@ const RootLayout: FC<RootLayoutProps> = ({ children }) => {
               width={200}
               height={200}
               sizes="(max-width: 400px) 150px, 200px"
+              priority
             />
           </header>
 
