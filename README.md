@@ -71,9 +71,11 @@ This project is very fresh, hence lots of improvements can be done, for example:
 - make the data entered in the generated forms persistent while switching between the tabs, even before clicking on Submit button (can be useful when playing with the various data and setting the proper JSON attributes to make the inputs work as expected)
 - improve state management, consider getting rid of the Context eventually
 - improve the existing accessibility
+- simplify CSS, maybe add custom utility classes and use them
 - add more unit tests
-- fix misleading console errors when running unit tests that suggest to wrap the code that causes React state updates into `act(...)`, but `act` is deprecated
 - add detailed documentation and examples for advanced usage
+- fix misleading console errors when running unit tests that suggest to wrap the code that causes React state updates into `act(...)`, but `act` is deprecated
+- fix warnings in browser console
 
 Maybe a bit later:
 
