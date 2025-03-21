@@ -68,8 +68,6 @@ export const ResultTab: FC = () => {
     );
   }
 
-  console.log('========= errors', errors);
-
   return (
     <div id="panel-result" role="tabpanel" aria-labelledby="tab-result">
       <a
