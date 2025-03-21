@@ -62,7 +62,7 @@ To run the unit tests, run:
 npm test
 ```
 
-## Further suggestions/coming soon:
+## Further improvements/coming soon:
 
 This project is very fresh, hence lots of improvements can be done, for example:
 
