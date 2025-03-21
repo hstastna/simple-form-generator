@@ -29,7 +29,7 @@ type FormProviderProps = {
   children: ReactNode;
 };
 
-const FormContext = createContext<FormContextType | undefined>(undefined);
+const FormContext = createContext<FormContextType | null>(null);
 
 export const FormProvider: FC<FormProviderProps> = ({ children }) => {
   const [jsonConfig, setJsonConfig] = useState<string>(DEFAULT_FORM_CONFIG); // string representation of the form config
@@ -68,7 +68,7 @@ export const FormProvider: FC<FormProviderProps> = ({ children }) => {
 export const useFormContext = () => {
   const context = useContext(FormContext);
 
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useFormContext must be used within a FormProvider');
   }
 
