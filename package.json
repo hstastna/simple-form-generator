@@ -25,7 +25,7 @@
   "dependencies": {
     "@codemirror/lang-json": "^6.0.1",
     "@uiw/react-codemirror": "^4.23.10",
-    "next": "15.2.1",
+    "next": "^15.2.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",
