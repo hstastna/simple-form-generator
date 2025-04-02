@@ -3,7 +3,7 @@ import { ButtonHTMLAttributes } from 'react';
 
 type FormButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   isSubmitting: boolean;
-  resetForm: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  resetForm: (e: MouseEvent<HTMLButtonElement>) => void;
   text?: string;
 };
 

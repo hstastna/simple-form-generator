@@ -1,6 +1,6 @@
 'use client';
 
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import { useFormContext } from '@/context/FormContext';
 import { ErrorDisplay } from './components/ErrorDisplay';
 import CodeMirror from '@uiw/react-codemirror';
@@ -31,7 +31,7 @@ export const ConfigTab: FC = () => {
     }
   }, []);
 
-  const handleChange = React.useCallback(
+  const handleChange = useCallback(
     (value: string) => {
       setJsonConfig(value);
     },

@@ -26,8 +26,8 @@ export const ResultTab: FC = () => {
     setFormData(data);
   };
 
-  const resetFormWithConfirmation = (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const resetFormWithConfirmation = (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
 
     if (
       window.confirm(
