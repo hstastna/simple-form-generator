@@ -1,14 +1,20 @@
 'use client';
 
-import React, { FC, MouseEvent } from 'react';
 import { useFormContext } from '@/context/FormContext';
-import { useState } from 'react';
+import { FC, MouseEvent, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { v4 } from 'uuid';
-import { FormField } from './components/FormField';
 import { FormButton } from './components/FormButton';
 import { FormData } from './components/FormData';
+import { FormField } from './components/FormField';
+
+const createId = () => {
+  if (typeof globalThis.crypto?.randomUUID === 'function') {
+    return globalThis.crypto.randomUUID();
+  }
+
+  return `id-${Math.random().toString(36).slice(2, 10)}`;
+};
 
 export type ResultFormData = Record<string, string | number | boolean>;
 
@@ -89,7 +95,7 @@ export const ResultTab: FC = () => {
         aria-labelledby="form-title"
       >
         {formConfig.items.map((field) => {
-          const fieldId = field.id || v4();
+          const fieldId = field.id || createId();
 
           return (
             <FormField
@@ -107,7 +113,7 @@ export const ResultTab: FC = () => {
           className="flex justify-end space-x-3 pt-4"
         >
           {formConfig.buttons.map((button) => {
-            const buttonId = button.id || v4();
+            const buttonId = button.id || createId();
 
             return (
               <FormButton
