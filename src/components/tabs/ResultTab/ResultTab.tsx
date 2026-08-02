@@ -8,6 +8,7 @@ import { FormButton } from './components/FormButton';
 import { FormData } from './components/FormData';
 import { FormField } from './components/FormField';
 
+// TODO: improve
 const createId = () => {
   if (typeof globalThis.crypto?.randomUUID === 'function') {
     return globalThis.crypto.randomUUID();

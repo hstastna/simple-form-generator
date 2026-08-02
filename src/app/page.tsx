@@ -11,6 +11,7 @@ type Tabs = (typeof tabs)[number];
 const Home: FC = () => {
   const [activeTab, setActiveTab] = useState<Tabs>('config');
 
+  // TODO: improve
   const handleKeyDown = (
     event: KeyboardEvent<HTMLButtonElement>,
     tabName: string
@@ -34,7 +35,6 @@ const Home: FC = () => {
 
   return (
     <main>
-      <h1 className="text-3xl font-bold mb-6">Simple Form Generator</h1>
       <FormProvider>
         <div className="mb-6 border-b border-gray-200">
           <nav
