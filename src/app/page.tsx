@@ -1,10 +1,10 @@
 'use client';
 
-import { FC, KeyboardEvent, useState } from 'react';
-import { FormProvider } from '@/context/FormContext';
 import { ConfigTab } from '@/components/tabs/ConfigTab/ConfigTab';
 import { ResultTab } from '@/components/tabs/ResultTab/ResultTab';
 import { tabs } from '@/constants';
+import { FormProvider } from '@/context/FormContext';
+import { FC, KeyboardEvent, useState } from 'react';
 
 type Tabs = (typeof tabs)[number];
 
@@ -34,6 +34,7 @@ const Home: FC = () => {
 
   return (
     <main>
+      <h1 className="text-3xl font-bold mb-6">Simple Form Generator</h1>
       <FormProvider>
         <div className="mb-6 border-b border-gray-200">
           <nav
