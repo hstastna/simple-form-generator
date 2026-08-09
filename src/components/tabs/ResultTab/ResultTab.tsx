@@ -1,21 +1,12 @@
 'use client';
 
 import { useFormContext } from '@/context/FormContext';
-import { FC, MouseEvent, useState } from 'react';
+import { FC, MouseEvent, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { FormButton } from './components/FormButton';
 import { FormData } from './components/FormData';
 import { FormField } from './components/FormField';
-
-// TODO: improve
-const createId = () => {
-  if (typeof globalThis.crypto?.randomUUID === 'function') {
-    return globalThis.crypto.randomUUID();
-  }
-
-  return `id-${Math.random().toString(36).slice(2, 10)}`;
-};
 
 export type ResultFormData = Record<string, string | number | boolean>;
 
@@ -28,6 +19,24 @@ export const ResultTab: FC = () => {
     formState: { errors, isSubmitting, isSubmitSuccessful },
     reset,
   } = useForm<ResultFormData>();
+
+  const fields = useMemo(
+    () =>
+      formConfig?.items.map((field, index) => ({
+        ...field,
+        id: field.id || `field-${index}`,
+      })) ?? [],
+    [formConfig]
+  );
+
+  const buttons = useMemo(
+    () =>
+      formConfig?.buttons.map((button, index) => ({
+        ...button,
+        id: button.id || `button-${index}`,
+      })) ?? [],
+    [formConfig]
+  );
 
   const onSubmit = (data: ResultFormData) => {
     setFormData(data);
@@ -95,38 +104,30 @@ export const ResultTab: FC = () => {
         aria-busy={isSubmitting}
         aria-labelledby="form-title"
       >
-        {formConfig.items.map((field) => {
-          const fieldId = field.id || createId();
-
-          return (
-            <FormField
-              key={fieldId}
-              field={field}
-              register={register}
-              error={errors[fieldId]}
-            />
-          );
-        })}
+        {fields.map((field) => (
+          <FormField
+            key={field.id}
+            field={field}
+            register={register}
+            error={errors[field.id]}
+          />
+        ))}
 
         <div
           id="form-buttons"
           tabIndex={0}
           className="flex justify-end space-x-3 pt-4"
         >
-          {formConfig.buttons.map((button) => {
-            const buttonId = button.id || createId();
-
-            return (
-              <FormButton
-                key={buttonId}
-                isSubmitting={isSubmitting}
-                resetForm={resetFormWithConfirmation}
-                {...button}
-              >
-                {button?.text}
-              </FormButton>
-            );
-          })}
+          {buttons.map((button) => (
+            <FormButton
+              key={button.id}
+              isSubmitting={isSubmitting}
+              resetForm={resetFormWithConfirmation}
+              {...button}
+            >
+              {button.text}
+            </FormButton>
+          ))}
         </div>
       </form>
 

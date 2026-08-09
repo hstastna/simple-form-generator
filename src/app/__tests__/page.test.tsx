@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor, screen } from '@testing-library/react';
+import { fireEvent, render, waitFor, screen } from '@testing-library/react';
 import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
 import Home from '../page';
 
@@ -17,9 +17,11 @@ describe('Home', () => {
     document.body.removeChild(container);
   });
 
-  it('renders the header', async () => {
+  it('renders the tab navigation', async () => {
     await waitFor(() => {
-      expect(screen.getByText('Simple Form Generator')).toBeTruthy();
+      expect(
+        screen.getByRole('tablist', { name: 'Form Generator Tabs' })
+      ).toBeTruthy();
     });
   });
 
@@ -35,14 +37,14 @@ describe('Home', () => {
     const configTab = screen.getByText('config');
     const resultTab = screen.getByText('result');
 
-    resultTab.click();
+    fireEvent.click(resultTab);
 
     await waitFor(() => {
       expect(resultTab.getAttribute('aria-selected')).toBe('true');
       expect(configTab.getAttribute('aria-selected')).toBe('false');
     });
 
-    configTab.click();
+    fireEvent.click(configTab);
 
     await waitFor(() => {
       expect(configTab.getAttribute('aria-selected')).toBe('true');
@@ -54,13 +56,13 @@ describe('Home', () => {
     const configTab = screen.getByText('config');
     const resultTab = screen.getByText('result');
 
-    resultTab.click();
+    fireEvent.click(resultTab);
 
     await waitFor(() => {
       expect(document.getElementById('panel-result')).toBeTruthy();
     });
 
-    configTab.click();
+    fireEvent.click(configTab);
 
     await waitFor(() => {
       expect(document.getElementById('panel-config')).toBeTruthy();
