@@ -1,35 +1,27 @@
 'use client';
 
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { FC, useCallback, useSyncExternalStore } from 'react';
 import { useFormContext } from '@/context/FormContext';
 import { ErrorDisplay } from './components/ErrorDisplay';
 import CodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 
 const editorId = 'form-config-editor';
+const darkModeQuery = '(prefers-color-scheme: dark)';
+
+const subscribeToDarkMode = (onChange: () => void) => {
+  const mediaQuery = window.matchMedia(darkModeQuery);
+  mediaQuery.addEventListener('change', onChange);
+  return () => mediaQuery.removeEventListener('change', onChange);
+};
 
 export const ConfigTab: FC = () => {
   const { jsonConfig, setJsonConfig, parseError } = useFormContext();
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  useEffect(() => {
-    if (window) {
-      const darkModeMediaQuery = window.matchMedia(
-        '(prefers-color-scheme: dark)'
-      );
-      setIsDarkMode(Boolean(darkModeMediaQuery.matches));
-
-      const handleChange = (event: MediaQueryListEvent) => {
-        setIsDarkMode(Boolean(event.matches));
-      };
-
-      darkModeMediaQuery.addEventListener('change', handleChange);
-
-      return () => {
-        darkModeMediaQuery.removeEventListener('change', handleChange);
-      };
-    }
-  }, []);
+  const isDarkMode = useSyncExternalStore(
+    subscribeToDarkMode,
+    () => window.matchMedia(darkModeQuery).matches,
+    () => false
+  );
 
   const handleChange = useCallback(
     (value: string) => {
@@ -46,10 +38,13 @@ export const ConfigTab: FC = () => {
         tabIndex={0}
         aria-labelledby="tab-config"
       >
-        <h2 className="text-xl font-semibold mb-4">Form Configuration</h2>
+        <h2 className="text-xl font-semibold">Form Configuration</h2>
 
-        <div className="mb-4">
-          <label htmlFor={editorId} className="text-sm mb-2 text-gray-600">
+        <div className="-mt-1 mb-6">
+          <label
+            htmlFor={editorId}
+            className="text-xs mb-2 text-gray-600 dark:text-gray-400"
+          >
             Enter your form configuration in JSON format below:
           </label>
         </div>
@@ -80,16 +75,16 @@ export const ConfigTab: FC = () => {
             }}
           />
 
-          <div className="mt-2 text-sm text-gray-500">
-            <kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded">
+          <div className="mt-2 text-xs text-gray-600 dark:text-gray-400">
+            <kbd className="px-1.5 py-0.5 text-[10px] bg-gray-200 border border-gray-300 text-gray-700 rounded dark:bg-neutral-800 dark:border-neutral-600 dark:text-neutral-300">
               Tab
             </kbd>{' '}
             to indent,
-            <kbd className="ml-1 px-2 py-1 bg-gray-100 border border-gray-300 rounded">
+            <kbd className="ml-1 px-1.5 py-0.5 text-[10px] bg-gray-200 border border-gray-300 text-gray-700 rounded dark:bg-neutral-800 dark:border-neutral-600 dark:text-neutral-300">
               Shift+Tab
             </kbd>{' '}
             to unindent,
-            <kbd className="ml-1 px-2 py-1 bg-gray-100 border border-gray-300 rounded">
+            <kbd className="ml-1 px-1.5 py-0.5 text-[10px] bg-gray-200 border border-gray-300 text-gray-700 rounded dark:bg-neutral-800 dark:border-neutral-600 dark:text-neutral-300">
               Esc
             </kbd>{' '}
             to exit the editor

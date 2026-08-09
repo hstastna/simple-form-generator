@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:24-alpine
 WORKDIR /simple-form-generator
 COPY package*.json ./
 RUN npm install

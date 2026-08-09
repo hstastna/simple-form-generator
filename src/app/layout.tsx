@@ -2,6 +2,7 @@ import { FC, ReactNode } from 'react';
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import Image from 'next/image';
+import { FaGithub, FaLinkedin } from 'react-icons/fa6';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -25,13 +26,13 @@ const RootLayout: FC<RootLayoutProps> = ({ children }) => {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="container mx-auto p-4 max-w-3xl" tabIndex={-1}>
+        <div className="container mx-auto p-4 pb-16 max-w-3xl" tabIndex={-1}>
           <header className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-green-400 to-lime-500 bg-clip-text text-transparent">
                 Simple Form Generator
               </h1>
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-gray-400">
                 Build forms from JSON configuration for your React project!
               </p>
             </div>
@@ -48,6 +49,27 @@ const RootLayout: FC<RootLayoutProps> = ({ children }) => {
           </header>
 
           {children}
+
+          <footer className="mt-12 flex items-center gap-6 border-t border-gray-200 pt-6 text-gray-700 dark:border-gray-700 dark:text-gray-300">
+            <a
+              href="https://github.com/hstastna/simple-form-generator"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub repository"
+              className="hover:text-gray-900 dark:hover:text-white"
+            >
+              <FaGithub aria-hidden="true" className="h-10 w-10" />
+            </a>
+            <a
+              href="https://www.linkedin.com/in/hstastna/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn profile"
+              className="hover:text-gray-900 dark:hover:text-white"
+            >
+              <FaLinkedin aria-hidden="true" className="h-10 w-10" />
+            </a>
+          </footer>
         </div>
       </body>
     </html>

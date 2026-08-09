@@ -52,7 +52,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Inter](https://fonts.google.com/specimen/Inter), a Google font.
 
 ## Unit tests
 
@@ -70,12 +70,11 @@ This project is very fresh, hence lots of improvements can be done, for example:
 - allow other input types to be accepted, like type of button, submit, reset, email, password etc.
 - make the data entered in the generated forms persistent while switching between the tabs, even before clicking on Submit button (can be useful when playing with the various data and setting the proper JSON attributes to make the inputs work as expected)
 - improve state management, consider getting rid of the Context eventually
+- enable the [React Compiler](https://react.dev/learn/react-compiler) (`reactCompiler: true` in `next.config.ts` + `babel-plugin-react-compiler`) for automatic memoization, then drop the manual `useMemo` usage in `ResultTab`
 - improve the existing accessibility
 - simplify CSS, maybe add custom utility classes and use them
 - add more unit tests
 - add detailed documentation and examples for advanced usage
-- fix misleading console errors when running unit tests that suggest to wrap the code that causes React state updates into `act(...)`, but `act` is deprecated
-- fix warnings in browser console
 
 Maybe a bit later:
 
