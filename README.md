@@ -8,7 +8,7 @@ The application consists of two tabs:
 _Config_ – to add the form configuration in JSON format
 _Result_ – to display the form
 
-When a text is inserted in the _Config_ tab text area (uses `CodeMirror` from _react-codemirror_ package), it is validated automatically: the correctness of the JSON format itself as well as the specific configuration with proper values. If the problems occur, you'll be informed briefly by formatted error messages right below the text area.
+When a text is inserted in the _Config_ tab text area (uses `CodeMirror` from the [@uiw/react-codemirror](https://uiwjs.github.io/react-codemirror/) package), it is validated automatically: the correctness of the JSON format itself as well as the specific configuration with proper values. If the problems occur, you'll be informed briefly by formatted error messages right below the text area.
 
 If no error occurs after inserting the configuration, you can click on _Result_ tab to see the result.
 You can test your forms by entering the values into appropriate fields.
@@ -70,7 +70,7 @@ This project is very fresh, hence lots of improvements can be done, for example:
 - allow other input types to be accepted, like type of button, submit, reset, email, password etc.
 - make the data entered in the generated forms persistent while switching between the tabs, even before clicking on Submit button (can be useful when playing with the various data and setting the proper JSON attributes to make the inputs work as expected)
 - improve state management, consider getting rid of the Context eventually
-- enable the [React Compiler](https://react.dev/learn/react-compiler) (`reactCompiler: true` in `next.config.ts` + `babel-plugin-react-compiler`) for automatic memoization, then drop the manual `useMemo` usage in `ResultTab`
+- enable the [React Compiler](https://react.dev/learn/react-compiler) (`reactCompiler: true` in `next.config.ts` + `babel-plugin-react-compiler`) for automatic memoization
 - improve the existing accessibility
 - simplify CSS, maybe add custom utility classes and use them
 - add more unit tests

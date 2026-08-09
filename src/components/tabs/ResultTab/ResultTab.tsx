@@ -1,7 +1,7 @@
 'use client';
 
 import { useFormContext } from '@/context/FormContext';
-import { FC, MouseEvent, useMemo, useState } from 'react';
+import { FC, MouseEvent, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { FormButton } from './components/FormButton';
@@ -19,24 +19,6 @@ export const ResultTab: FC = () => {
     formState: { errors, isSubmitting, isSubmitSuccessful },
     reset,
   } = useForm<ResultFormData>();
-
-  const fields = useMemo(
-    () =>
-      formConfig?.items.map((field, index) => ({
-        ...field,
-        id: field.id || `field-${index}`,
-      })) ?? [],
-    [formConfig]
-  );
-
-  const buttons = useMemo(
-    () =>
-      formConfig?.buttons.map((button, index) => ({
-        ...button,
-        id: button.id || `button-${index}`,
-      })) ?? [],
-    [formConfig]
-  );
 
   const onSubmit = (data: ResultFormData) => {
     setFormData(data);
@@ -104,23 +86,27 @@ export const ResultTab: FC = () => {
         aria-busy={isSubmitting}
         aria-labelledby="form-title"
       >
-        {fields.map((field) => (
-          <FormField
-            key={field.id}
-            field={field}
-            register={register}
-            error={errors[field.id]}
-          />
-        ))}
+        {formConfig.items.map((field, index) => {
+          const fieldId = field.id || `field-${index}`;
+
+          return (
+            <FormField
+              key={fieldId}
+              field={{ ...field, id: fieldId }}
+              register={register}
+              error={errors[fieldId]}
+            />
+          );
+        })}
 
         <div
           id="form-buttons"
           tabIndex={0}
           className="flex justify-end space-x-3 pt-4"
         >
-          {buttons.map((button) => (
+          {formConfig.buttons.map((button, index) => (
             <FormButton
-              key={button.id}
+              key={button.id || `button-${index}`}
               isSubmitting={isSubmitting}
               resetForm={resetFormWithConfirmation}
               {...button}
