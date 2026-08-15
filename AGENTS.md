@@ -1,29 +1,38 @@
-<!-- BEGIN:nextjs-agent-rules -->
-
-# This is NOT the Next.js you know
-
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
-
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
-
-<!-- END:nextjs-agent-rules -->
-
 # Project notes
 
-## Version ceilings — do not bump past these
+## Commands
+
+- `npm run dev` starts the dev server.
+- Verify changes with `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`.
+- `next lint` was removed in Next 16 — the lint scripts use the ESLint CLI with the flat config in `eslint.config.mjs`.
+
+## Structure
+
+- `src/app` holds the App Router files (`layout.tsx`, `page.tsx`, `globals.css`). Each tab lives in `src/components/tabs/<TabName>/`, with its own `components/` folder for parts used only by that tab.
+- `src/schemas` holds the zod schemas that define the JSON config the app accepts; `src/context` holds shared form state, with the rest in `src/constants.ts` and `src/utils.ts`.
+- `@/` maps to `src/` (`tsconfig.json` and jest's `moduleNameMapper`) — import as `@/components/...` instead of long relative paths.
+- A new field type needs two edits: add it to `formFieldTypes` in `src/schemas/formFieldSchema.ts`, and add a `case` for it in `ResultTab/components/FormField.tsx`. Without the second one the form renders "Unknown field type".
+
+## Dependencies
 
 - `typescript` stays on 6.x: typescript-eslint (bundled by eslint-config-next) caps at `<6.1.0`; TS 7 breaks the lint toolchain.
 - `eslint` stays on 9.x: eslint-plugin-react does not support ESLint 10 yet.
 - `@types/node` matches the Node runtime major (24, see Dockerfile).
 - Before bumping any of these, re-check `npm view <pkg> peerDependencies` — the goal is zero warnings from `npm install`.
+- `.npmrc` sets `min-release-age=7` (needs npm 11.6+): installs only resolve versions published at least 7 days ago, so a brand-new release not being found is expected. `npm ci` is unaffected — it installs the lockfile as-is.
+- Commit `package-lock.json` with every `package.json` change; the Docker build runs `npm ci` and fails if the two disagree.
 
-## Commands
+## Testing
 
-- Verify changes with `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`.
-- `next lint` was removed in Next 16 — the lint scripts use the ESLint CLI with the flat config in `eslint.config.mjs`.
+- Jest with React Testing Library and jsdom. Put tests in a `__tests__/` folder next to the code, or name the file `*.test.tsx`.
+- `npm test` always writes a coverage report to `coverage/`.
+- jsdom is missing browser APIs the CodeMirror editor needs; `jest.mocks.ts` patches `matchMedia` and `Range.getClientRects`. Add further global patches there, not in single test files.
 
 ## Conventions and gotchas
 
+- Next 16 changed APIs and conventions — check the guides in `node_modules/next/dist/docs/` before writing Next-specific code.
+- Formatting comes from `.prettierrc` (single quotes, semicolons, 80 columns, 2 spaces) — run `npm run prettier` before committing.
+- Commit messages follow Conventional Commits: `feat:`, `fix:`, `chore:`, `refactor:`.
 - Tailwind CSS v4 dropped `cursor: pointer` on buttons; the base-layer rule in `src/app/globals.css` restores it — keep it.
 - Dark mode follows `prefers-color-scheme` via `dark:` variants. Use `neutral-*` instead of `gray-*` for filled dark surfaces (Tailwind's `gray` is blue-tinted).
 - In `ResultTab`, fields/buttons without an `id` in the JSON config get deterministic fallback ids (`field-<index>`); the React key, the react-hook-form registration, and the `errors[...]` lookup must always use the same id.
