@@ -1,9 +1,10 @@
 'use client';
 
 import { useFormContext } from '@/context/FormContext';
-import { FC, MouseEvent, useState } from 'react';
+import { FC, SyntheticEvent, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { FormActions, withResolvedHandlers } from '@/formActions';
 import { FormButton } from './components/FormButton';
 import { FormData } from './components/FormData';
 import { FormField } from './components/FormField';
@@ -24,7 +25,12 @@ export const ResultTab: FC = () => {
     setFormData(data);
   };
 
-  const resetFormWithConfirmation = (event: MouseEvent<HTMLButtonElement>) => {
+  const clearForm = () => {
+    setFormData({});
+    reset();
+  };
+
+  const resetFormWithConfirmation = (event: SyntheticEvent) => {
     event.preventDefault();
 
     if (
@@ -32,9 +38,13 @@ export const ResultTab: FC = () => {
         'Are you sure you want to reset the form? All data will be lost.'
       )
     ) {
-      setFormData({});
-      reset();
+      clearForm();
     }
+  };
+
+  const formActions: FormActions = {
+    reset: resetFormWithConfirmation,
+    clear: clearForm,
   };
 
   if (parseError) {
@@ -92,7 +102,10 @@ export const ResultTab: FC = () => {
           return (
             <FormField
               key={fieldId}
-              field={{ ...field, id: fieldId }}
+              field={{
+                ...withResolvedHandlers(field, formActions),
+                id: fieldId,
+              }}
               register={register}
               error={errors[fieldId]}
             />
@@ -109,7 +122,7 @@ export const ResultTab: FC = () => {
               key={button.id || `button-${index}`}
               isSubmitting={isSubmitting}
               resetForm={resetFormWithConfirmation}
-              {...button}
+              {...withResolvedHandlers(button, formActions)}
             />
           ))}
         </div>

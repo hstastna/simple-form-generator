@@ -38,6 +38,21 @@ The JSON configuration object consists of three main keys:
 
 The JSON configuration entered in the _Config_ tab is validated by using [Zod](https://zod.dev/). You can find the specific schemas defined in the _src/schemas_ directory. Most of the common html attributes for `input`, `textarea` and `button` HTML elements are accepted.
 
+## Event handlers
+
+Fields and buttons accept the `onClick`, `onChange`, `onFocus`, `onBlur`, `onMouseDown`, `onMouseUp`, `onKeyDown` and `onKeyUp` keys. Since JSON cannot hold a function, the value is the _name_ of a handler:
+
+```json
+{ "text": "Clear", "onClick": "clear" }
+```
+
+Two names are built in and really run in the _Result_ tab:
+
+- `reset` - asks for a confirmation first, then empties the form
+- `clear` - empties the form right away
+
+Any other name is valid as well, it just does nothing while you are testing the form - it is meant for your own handler in the code that the planned _Code_ tab will generate. Two exceptions: `onChange` and `onBlur` on fields are validated, but they never run in the _Result_ tab, because React Hook Form takes those two events over.
+
 ## Getting Started
 
 ```bash

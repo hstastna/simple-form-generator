@@ -9,9 +9,11 @@
 ## Structure
 
 - `src/app` holds the App Router files (`layout.tsx`, `page.tsx`, `globals.css`). Each tab lives in `src/components/tabs/<TabName>/`, with its own `components/` folder for parts used only by that tab.
-- `src/schemas` holds the zod schemas that define the JSON config the app accepts; `src/context` holds shared form state, with the rest in `src/constants.ts` and `src/utils.ts`.
+- `src/schemas` holds the zod schemas that define the JSON config the app accepts; `src/context` holds shared form state, with the rest in `src/constants.ts`, `src/utils.ts` and `src/formActions.ts`.
 - `@/` maps to `src/` (`tsconfig.json` and jest's `moduleNameMapper`) — import as `@/components/...` instead of long relative paths.
 - A new field type needs two edits: add it to `formFieldTypes` in `src/schemas/formFieldSchema.ts`, and add a `case` for it in `ResultTab/components/FormField.tsx`. Without the second one the form renders "Unknown field type".
+- The `on*` keys in the JSON hold a handler _name_, never code. `withResolvedHandlers` (`src/formActions.ts`) turns a name listed in `formActionNames` into the real function and drops any other name, so a string never reaches the DOM; unlisted names are reserved for the code the app will generate.
+- Field `onChange` and `onBlur` are validated but never run: the field components spread `register()` last, so react-hook-form owns those two events.
 
 ## Dependencies
 

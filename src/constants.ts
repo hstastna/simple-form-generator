@@ -16,6 +16,7 @@ export const DEFAULT_FORM_CONFIG = JSON.stringify(
       {
         text: 'Cancel',
         type: 'reset',
+        onClick: 'reset',
       },
       {
         text: 'Save',

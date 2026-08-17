@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { commonHtmlAttributes } from './shared/commonHtmlAttributes';
+import { eventHandlerAttributes } from './shared/eventHandlerAttributes';
 import { formOwnerAttributes } from './shared/formOwnerAttributes';
 
 export const formFieldTypes = [
@@ -13,6 +14,7 @@ export const formFieldTypes = [
 ] as const;
 
 const inputAndTextAreaAttributes = {
+  ...eventHandlerAttributes,
   autoComplete: z.string().optional(),
   dirname: z.string().optional(),
   label: z.string().optional(), // custom attribute

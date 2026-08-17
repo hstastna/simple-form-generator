@@ -1,8 +1,9 @@
-import { ButtonHTMLAttributes, FC, MouseEvent } from 'react';
+import { ButtonHTMLAttributes, FC } from 'react';
+import { FormAction } from '@/formActions';
 
 type FormButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   isSubmitting: boolean;
-  resetForm: (e: MouseEvent<HTMLButtonElement>) => void;
+  resetForm: FormAction;
   text?: string;
 };
 

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { commonHtmlAttributes } from './shared/commonHtmlAttributes';
+import { eventHandlerAttributes } from './shared/eventHandlerAttributes';
 import { formOwnerAttributes } from './shared/formOwnerAttributes';
 
 const buttonAttributes = {
@@ -12,6 +13,7 @@ export const formButtonSchema = z
   .object({
     text: z.string().optional(),
     ...commonHtmlAttributes,
+    ...eventHandlerAttributes,
     ...buttonAttributes,
   })
   .strict();
