@@ -1,7 +1,6 @@
 'use client';
 
-import React, { FC } from 'react';
-import { createContext, ReactNode, useContext, useState } from 'react';
+import { createContext, FC, ReactNode, useContext, useState } from 'react';
 import { z } from 'zod';
 import { formConfigSchema } from '@/schemas/formConfigSchema';
 import { DEFAULT_FORM_CONFIG } from '@/constants';

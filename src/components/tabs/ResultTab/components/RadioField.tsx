@@ -1,4 +1,4 @@
-import React, { FC, InputHTMLAttributes } from 'react';
+import { FC, InputHTMLAttributes } from 'react';
 import { FormLabel } from './FormLabel';
 import { UseFormRegister } from 'react-hook-form';
 import { ResultFormData } from '../ResultTab';

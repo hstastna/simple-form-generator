@@ -1,5 +1,4 @@
-import React, { FC, MouseEvent } from 'react';
-import { ButtonHTMLAttributes } from 'react';
+import { ButtonHTMLAttributes, FC, MouseEvent } from 'react';
 
 type FormButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   isSubmitting: boolean;

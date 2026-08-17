@@ -1,4 +1,4 @@
-import React, { FC, TextareaHTMLAttributes } from 'react';
+import { FC, TextareaHTMLAttributes } from 'react';
 import { FormLabel } from './FormLabel';
 import { UseFormRegister } from 'react-hook-form';
 import { ResultFormData } from '../ResultTab';
