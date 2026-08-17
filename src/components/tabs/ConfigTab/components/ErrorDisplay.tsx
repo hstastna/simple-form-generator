@@ -2,11 +2,19 @@ import React, { FC } from 'react';
 
 type ValidationError = {
   code: string;
-  path: string[];
+  path: (string | number)[];
   message: string;
   keys?: string[];
   expected?: string;
-  received?: string;
+};
+
+const parseIssues = (error: string): ValidationError[] | null => {
+  try {
+    const parsed = JSON.parse(error);
+    return Array.isArray(parsed) ? (parsed as ValidationError[]) : null;
+  } catch {
+    return null;
+  }
 };
 
 type ErrorDisplayProps = {
@@ -16,28 +24,25 @@ type ErrorDisplayProps = {
 export const ErrorDisplay: FC<ErrorDisplayProps> = ({ error }) => {
   if (!error) return null;
 
-  const isJsonArray = error.trim().startsWith('[');
-  const parsedError = isJsonArray // only parse if it looks like JSON array
-    ? (JSON.parse(error) as ValidationError[])
-    : error;
+  const issues = parseIssues(error);
 
-  const errorContent = Array.isArray(parsedError) ? (
+  const errorContent = issues ? (
     <>
       <h3 className="text-lg font-semibold" id="validation-error-heading">
-        Found {parsedError.length} validation{' '}
-        {parsedError.length === 1 ? 'error' : 'errors'}:
+        Found {issues.length} validation{' '}
+        {issues.length === 1 ? 'error' : 'errors'}:
       </h3>
 
       <ul
         className="mt-2 space-y-2 list-disc pl-5"
         aria-labelledby="validation-error-heading"
       >
-        {parsedError.map((err, index) => (
+        {issues.map((err, index) => (
           <li key={`${err.code}-${err.path.join('.')}-${index}`} tabIndex={0}>
             <span className="font-medium">{err.path.join('.')}: </span>
             <span>{err.message}</span>
 
-            {err.expected && err.received && (
+            {err.expected && (
               <div className="text-sm mt-1" aria-live="polite">
                 Expected:{' '}
                 <code
@@ -45,13 +50,6 @@ export const ErrorDisplay: FC<ErrorDisplayProps> = ({ error }) => {
                   aria-label={`Expected value: ${err.expected}`}
                 >
                   {err.expected}
-                </code>
-                , Received:{' '}
-                <code
-                  className="bg-red-200 px-1 rounded"
-                  aria-label={`Received value: ${err.received}`}
-                >
-                  {err.received}
                 </code>
               </div>
             )}

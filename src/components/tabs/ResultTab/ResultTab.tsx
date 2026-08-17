@@ -110,9 +110,7 @@ export const ResultTab: FC = () => {
               isSubmitting={isSubmitting}
               resetForm={resetFormWithConfirmation}
               {...button}
-            >
-              {button.text}
-            </FormButton>
+            />
           ))}
         </div>
       </form>
@@ -129,7 +127,9 @@ export const ResultTab: FC = () => {
         </div>
       )}
 
-      {Object.keys(formData).length > 0 && <FormData formData={formData} />}
+      {isSubmitSuccessful && Object.keys(formData).length > 0 && (
+        <FormData formData={formData} />
+      )}
     </div>
   );
 };
