@@ -28,13 +28,4 @@ export const commonHtmlAttributes = {
   'aria-labelledby': z.string().optional(),
   'data-testid': z.string().optional(),
   role: z.string().optional(),
-
-  // Common event handlers
-  onClick: z.any().optional(),
-  onFocus: z.any().optional(),
-  onBlur: z.any().optional(),
-  onMouseDown: z.any().optional(),
-  onMouseUp: z.any().optional(),
-  onKeyDown: z.any().optional(),
-  onKeyUp: z.any().optional(),
 };

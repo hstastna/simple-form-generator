@@ -1,6 +1,6 @@
 'use client';
 
-import React, { FC, useCallback, useSyncExternalStore } from 'react';
+import React, { FC, useSyncExternalStore } from 'react';
 import { useFormContext } from '@/context/FormContext';
 import { ErrorDisplay } from './components/ErrorDisplay';
 import CodeMirror from '@uiw/react-codemirror';
@@ -21,13 +21,6 @@ export const ConfigTab: FC = () => {
     subscribeToDarkMode,
     () => window.matchMedia(darkModeQuery).matches,
     () => false
-  );
-
-  const handleChange = useCallback(
-    (value: string) => {
-      setJsonConfig(value);
-    },
-    [setJsonConfig]
   );
 
   return (
@@ -57,7 +50,7 @@ export const ConfigTab: FC = () => {
             className="h-[32rem] border border-gray-400 rounded-md overflow-auto"
             theme={isDarkMode ? 'dark' : 'light'}
             aria-label="JSON Form Configuration Editor"
-            onChange={handleChange}
+            onChange={setJsonConfig}
             onKeyDown={(event) => {
               if (event.key === 'Escape') {
                 (event.target as HTMLTextAreaElement).blur();

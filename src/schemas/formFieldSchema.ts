@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { commonHtmlAttributes } from './shared/commonHtmlAttributes';
+import { formOwnerAttributes } from './shared/formOwnerAttributes';
 
 export const formFieldTypes = [
   'number',
@@ -20,7 +21,6 @@ const inputAndTextAreaAttributes = {
   placeholder: z.string().optional(),
   readOnly: z.boolean().optional(),
   required: z.boolean().optional(),
-  onChange: z.any().optional(),
 };
 
 const inputAttributes = {
@@ -28,19 +28,9 @@ const inputAttributes = {
   ...inputAndTextAreaAttributes,
   accept: z.string().optional(),
   alt: z.string().optional(),
-  capture: z.string().optional(),
+  capture: z.union([z.boolean(), z.enum(['user', 'environment'])]).optional(),
   checked: z.boolean().optional(),
-  formAction: z.string().optional(),
-  formEncType: z
-    .enum([
-      'application/x-www-form-urlencoded',
-      'multipart/form-data',
-      'text/plain',
-    ])
-    .optional(),
-  formMethod: z.enum(['get', 'post', 'dialog']).optional(),
-  formNoValidate: z.boolean().optional(),
-  formTarget: z.string().optional(),
+  ...formOwnerAttributes,
   height: z.union([z.string(), z.number()]).optional(),
   list: z.string().optional(),
   max: z.union([z.string(), z.number()]).optional(),
@@ -50,7 +40,7 @@ const inputAttributes = {
   size: z.number().optional(),
   src: z.string().optional(),
   step: z.union([z.string(), z.number()]).optional(),
-  value: z.union([z.string(), z.number(), z.boolean()]).optional(),
+  value: z.union([z.string(), z.number()]).optional(),
   width: z.union([z.string(), z.number()]).optional(),
 };
 
@@ -85,11 +75,7 @@ export const formFieldSchema = z.discriminatedUnion('type', [
   // All other input types schema
   z
     .object({
-      type: z.enum(
-        formFieldTypes.filter(
-          (type) => !['radio', 'textarea'].includes(type)
-        ) as unknown as [string, ...string[]]
-      ),
+      type: z.enum(formFieldTypes).exclude(['radio', 'textarea']),
       ...inputAttributes,
     })
     .strict(),

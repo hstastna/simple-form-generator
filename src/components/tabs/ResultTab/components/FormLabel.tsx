@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import { RequiredMark } from './RequiredMark';
 
 type FormLabelProps = {
   id: string;
@@ -19,13 +20,6 @@ export const FormLabel: FC<FormLabelProps> = ({
     className={`${marginRight ? 'mr-1.5' : 'ml-1.5'} block text-sm font-medium`}
   >
     {label}
-    {required && (
-      <>
-        <span className="text-red-500 ml-1" aria-hidden="true">
-          *
-        </span>
-        <span className="sr-only"> (required)</span>
-      </>
-    )}
+    {required && <RequiredMark />}
   </label>
 );

@@ -13,6 +13,7 @@ import { TextNumDateField } from './TextNumDateField';
 import { TextAreaField } from './TextAreaField';
 import { CheckboxField } from './CheckboxField';
 import { RadioField } from './RadioField';
+import { RequiredMark } from './RequiredMark';
 
 export type FormFieldType = (typeof formFieldTypes)[number];
 
@@ -32,7 +33,7 @@ export type FormField = InputAndTextAreaProps & {
   id: string;
   label?: string;
 } & (
-    | { type: 'radio'; options: string[]; labels?: string[] }
+    | { type: 'radio'; options?: string[]; labels?: string[] }
     | { type: Exclude<FormFieldType, 'radio'>; options?: never; labels?: never }
   );
 
@@ -68,6 +69,11 @@ export const FormField: FC<FormFieldProps> = ({ field, register, error }) => {
 
   const errorId = error ? `${id}-error` : undefined;
 
+  const errorAria = {
+    'aria-invalid': error ? 'true' : 'false',
+    'aria-describedby': errorId,
+  } as const;
+
   const renderField = () => {
     switch (type) {
       case 'text':
@@ -80,8 +86,7 @@ export const FormField: FC<FormFieldProps> = ({ field, register, error }) => {
             register={register}
             validationRules={validationRules}
             label={label}
-            aria-invalid={error ? 'true' : 'false'}
-            aria-describedby={errorId}
+            {...errorAria}
             {...props}
           />
         );
@@ -93,8 +98,7 @@ export const FormField: FC<FormFieldProps> = ({ field, register, error }) => {
             register={register}
             validationRules={validationRules}
             label={label}
-            aria-invalid={error ? 'true' : 'false'}
-            aria-describedby={errorId}
+            {...errorAria}
             {...props}
           />
         );
@@ -106,8 +110,7 @@ export const FormField: FC<FormFieldProps> = ({ field, register, error }) => {
             register={register}
             validationRules={validationRules}
             label={label}
-            aria-invalid={error ? 'true' : 'false'}
-            aria-describedby={errorId}
+            {...errorAria}
             {...props}
           />
         );
@@ -118,20 +121,11 @@ export const FormField: FC<FormFieldProps> = ({ field, register, error }) => {
             <fieldset
               role="radiogroup"
               aria-required={required ? 'true' : 'false'}
-              aria-invalid={error ? 'true' : 'false'}
-              aria-describedby={errorId}
+              {...errorAria}
             >
               <legend className="block text-sm font-medium text-gray-700 mb-2">
                 {label || 'Options to choose from'}
-                {/* Provide fallback text for screen readers */}
-                {required && (
-                  <>
-                    <span className="text-red-500 ml-1" aria-hidden="true">
-                      *
-                    </span>
-                    <span className="sr-only"> (required)</span>
-                  </>
-                )}
+                {required && <RequiredMark />}
               </legend>
 
               {options.map((option, index) => (
@@ -142,8 +136,7 @@ export const FormField: FC<FormFieldProps> = ({ field, register, error }) => {
                   validationRules={validationRules}
                   label={labels?.[index] || option}
                   option={option}
-                  aria-invalid={error ? 'true' : 'false'}
-                  aria-describedby={errorId}
+                  {...errorAria}
                   {...props}
                 />
               ))}
@@ -157,8 +150,7 @@ export const FormField: FC<FormFieldProps> = ({ field, register, error }) => {
             register={register}
             validationRules={validationRules}
             label={label}
-            aria-invalid={error ? 'true' : 'false'}
-            aria-describedby={errorId}
+            {...errorAria}
             {...props}
           />
         );
