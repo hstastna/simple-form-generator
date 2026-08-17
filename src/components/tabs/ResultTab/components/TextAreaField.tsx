@@ -1,10 +1,10 @@
-import React, { FC } from 'react';
+import React, { FC, TextareaHTMLAttributes } from 'react';
 import { FormLabel } from './FormLabel';
 import { UseFormRegister } from 'react-hook-form';
 import { ResultFormData } from '../ResultTab';
 import { ValidationRules } from '@/utils';
 
-type TextAreaFieldProps = {
+type TextAreaFieldProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
   id: string;
   register: UseFormRegister<ResultFormData>;
   validationRules: ValidationRules;

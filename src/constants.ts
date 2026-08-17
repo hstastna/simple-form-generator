@@ -1,4 +1,4 @@
-export const tabs = ['config', 'result'];
+export const tabs = ['config', 'result'] as const;
 
 export const DEFAULT_FORM_CONFIG = JSON.stringify(
   {

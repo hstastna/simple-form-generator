@@ -1,11 +1,11 @@
-import React, { FC } from 'react';
+import React, { FC, InputHTMLAttributes } from 'react';
 import { FormLabel } from './FormLabel';
 import { UseFormRegister } from 'react-hook-form';
 import { ResultFormData } from '../ResultTab';
 import { FormFieldType } from './FormField';
 import { ValidationRules } from '@/utils';
 
-type TextNumDateFieldProps = {
+type TextNumDateFieldProps = InputHTMLAttributes<HTMLInputElement> & {
   id: string;
   type: FormFieldType;
   register: UseFormRegister<ResultFormData>;

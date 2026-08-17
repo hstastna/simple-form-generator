@@ -1,22 +1,12 @@
 'use client';
 
 import React, { FC } from 'react';
-import {
-  ButtonHTMLAttributes,
-  createContext,
-  ReactNode,
-  useContext,
-  useState,
-} from 'react';
-import { FormField } from '@/components/tabs/ResultTab/components/FormField';
+import { createContext, ReactNode, useContext, useState } from 'react';
+import { z } from 'zod';
 import { formConfigSchema } from '@/schemas/formConfigSchema';
 import { DEFAULT_FORM_CONFIG } from '@/constants';
 
-type FormConfig = {
-  title: string;
-  items: FormField[];
-  buttons: (ButtonHTMLAttributes<HTMLButtonElement> & { text: string })[];
-};
+type FormConfig = z.infer<typeof formConfigSchema>;
 
 type FormContextType = {
   jsonConfig: string;
@@ -33,8 +23,8 @@ const FormContext = createContext<FormContextType | null>(null);
 
 export const FormProvider: FC<FormProviderProps> = ({ children }) => {
   const [jsonConfig, setJsonConfig] = useState<string>(DEFAULT_FORM_CONFIG); // string representation of the form config
-  const [formConfig, setFormConfig] = useState<FormConfig | null>( // parsed form config object
-    JSON.parse(DEFAULT_FORM_CONFIG)
+  const [formConfig, setFormConfig] = useState<FormConfig | null>(() =>
+    formConfigSchema.parse(JSON.parse(DEFAULT_FORM_CONFIG))
   );
   const [parseError, setParseError] = useState<string | null>(null);
 
@@ -42,8 +32,7 @@ export const FormProvider: FC<FormProviderProps> = ({ children }) => {
     setJsonConfig(newConfig);
 
     try {
-      const parsedConfig = JSON.parse(newConfig);
-      formConfigSchema.parse(parsedConfig); // Validate the JSON using Zod
+      const parsedConfig = formConfigSchema.parse(JSON.parse(newConfig));
       setFormConfig(parsedConfig);
       setParseError(null);
     } catch (error) {

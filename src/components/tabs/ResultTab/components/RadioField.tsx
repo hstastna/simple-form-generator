@@ -1,10 +1,10 @@
-import React, { FC } from 'react';
+import React, { FC, InputHTMLAttributes } from 'react';
 import { FormLabel } from './FormLabel';
 import { UseFormRegister } from 'react-hook-form';
 import { ResultFormData } from '../ResultTab';
 import { ValidationRules } from '@/utils';
 
-type RadioFieldProps = {
+type RadioFieldProps = InputHTMLAttributes<HTMLInputElement> & {
   id: string;
   register: UseFormRegister<ResultFormData>;
   validationRules: ValidationRules;
@@ -30,6 +30,9 @@ export const RadioField: FC<RadioFieldProps> = ({
         value={option}
         className="h-4 w-4 border border-gray-400 focus:ring-blue-500"
         aria-labelledby={label ? `label-${inputId}` : undefined}
+        aria-required={
+          !option && validationRules.required.value ? 'true' : undefined
+        }
         {...props}
         {...register(id, { ...validationRules })}
       />
@@ -37,7 +40,7 @@ export const RadioField: FC<RadioFieldProps> = ({
         <FormLabel
           id={inputId}
           label={label}
-          required={!option && validationRules?.required.value}
+          required={!option && validationRules.required.value}
         />
       )}
     </div>
