@@ -54,6 +54,7 @@ const Home: FC = () => {
               <button
                 key={tab}
                 id={`tab-${tab}`}
+                type="button"
                 role="tab"
                 aria-controls={`panel-${tab}`}
                 aria-selected={activeTab === tab}
