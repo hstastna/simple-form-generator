@@ -27,9 +27,9 @@ const RootLayout: FC<RootLayoutProps> = ({ children }) => {
     <html lang="en">
       <body className={inter.className}>
         <div className="container mx-auto p-4 pb-16 max-w-3xl" tabIndex={-1}>
-          <header className="flex justify-between items-center">
+          <header className="flex flex-wrap justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-green-400 to-lime-500 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-linear-to-r from-green-400 to-lime-500 bg-clip-text text-transparent">
                 Simple Form Generator
               </h1>
               <p className="text-gray-600 dark:text-gray-400">
@@ -40,17 +40,17 @@ const RootLayout: FC<RootLayoutProps> = ({ children }) => {
             <Image
               src="/fox-image.png"
               alt="Fox mascot for the form generator"
-              className="rounded-full ml-2"
-              width={200}
-              height={200}
-              sizes="(max-width: 400px) 150px, 200px"
+              className="rounded-full basis-full w-full h-auto sm:basis-auto sm:ml-2 sm:w-50"
+              width={640}
+              height={640}
+              sizes="(max-width: 399px) 100vw, 200px"
               priority
             />
           </header>
 
           {children}
 
-          <footer className="mt-12 flex items-center gap-6 border-t border-gray-200 pt-6 text-gray-700 dark:border-gray-700 dark:text-gray-300">
+          <footer className="mt-6 flex items-center gap-6 border-t border-gray-200 pt-6 text-gray-700 dark:border-gray-700 dark:text-gray-300">
             <a
               href="https://github.com/hstastna/simple-form-generator"
               target="_blank"
