@@ -1,5 +1,9 @@
 @import 'tailwindcss';
 
+@theme {
+  --breakpoint-sm: 400px;
+}
+
 @layer base {
   button:not(:disabled),
   [role='button']:not(:disabled) {
