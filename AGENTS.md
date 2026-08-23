@@ -36,6 +36,8 @@
 - Formatting comes from `.prettierrc` (single quotes, semicolons, 80 columns, 2 spaces) — run `npm run prettier` before committing.
 - Commit messages follow Conventional Commits: `feat:`, `fix:`, `chore:`, `refactor:`.
 - Tailwind CSS v4 dropped `cursor: pointer` on buttons; the base-layer rule in `src/app/globals.css` restores it — keep it.
+- The `sm` breakpoint is overridden to 400px in `src/app/globals.css` (Tailwind's default is 640px). Tailwind is mobile-first, so `sm:` compiles to `min-width: 400px`. If you change it, update the `sizes` attribute of the `Image` in `src/app/layout.tsx` to match.
+- Never use deprecated Tailwind class names. v4 keeps old ones as working aliases, and neither ESLint nor the build flags them — `bg-gradient-to-*` is now `bg-linear-to-*`. The Tailwind VS Code extension is the only thing that reports them.
 - Dark mode follows `prefers-color-scheme` via `dark:` variants. Use `neutral-*` instead of `gray-*` for filled dark surfaces (Tailwind's `gray` is blue-tinted).
 - In `ResultTab`, fields/buttons without an `id` in the JSON config get deterministic fallback ids (`field-<index>`); the React key, the react-hook-form registration, and the `errors[...]` lookup must always use the same id.
 - Tabs render conditionally, so `ResultTab` fully remounts on tab switch. A future "persist form data across tabs" feature must revisit the index-based fallback ids first.
