@@ -55,7 +55,7 @@ const RootLayout: FC<RootLayoutProps> = ({ children }) => {
               href="https://github.com/hstastna/simple-form-generator"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="GitHub repository"
+              aria-label="GitHub repository (opens in a new tab)"
               className="hover:text-gray-900 dark:hover:text-white"
             >
               <FaGithub aria-hidden="true" className="h-10 w-10" />
@@ -64,7 +64,7 @@ const RootLayout: FC<RootLayoutProps> = ({ children }) => {
               href="https://www.linkedin.com/in/hstastna/"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="LinkedIn profile"
+              aria-label="LinkedIn profile (opens in a new tab)"
               className="hover:text-gray-900 dark:hover:text-white"
             >
               <FaLinkedin aria-hidden="true" className="h-10 w-10" />
