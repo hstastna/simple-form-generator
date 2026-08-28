@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect } from '@jest/globals';
 import { FC } from 'react';
 import { FormProvider, useFormContext } from '@/context/FormContext';
-import { ResultTab } from '../ResultTab';
+import { ResultTab } from './ResultTab';
 
 const config = JSON.stringify({
   title: 'Handler form',

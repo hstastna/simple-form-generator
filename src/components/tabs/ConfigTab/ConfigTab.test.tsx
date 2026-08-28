@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, afterEach } from '@jest/globals';
 import { FormProvider } from '@/context/FormContext';
-import { ConfigTab } from '../ConfigTab';
+import { ConfigTab } from './ConfigTab';
 
 const renderConfigTab = () => {
   render(
