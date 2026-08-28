@@ -2,7 +2,7 @@
 
 import { FC, useSyncExternalStore } from 'react';
 import { useFormContext } from '@/context/FormContext';
-import { ErrorDisplay } from './components/ErrorDisplay';
+import { ErrorDisplay, validationErrorsId } from './components/ErrorDisplay';
 import CodeMirror, { EditorView } from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 
@@ -45,7 +45,7 @@ export const ConfigTab: FC = () => {
             json(),
             EditorView.contentAttributes.of({
               'aria-label': 'JSON Form Configuration Editor',
-              'aria-describedby': `${editorInstructionsId} ${editorHintId}`,
+              'aria-describedby': `${editorInstructionsId} ${editorHintId} ${validationErrorsId}`,
               'aria-invalid': parseError ? 'true' : 'false',
             }),
           ]}
