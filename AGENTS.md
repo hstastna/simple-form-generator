@@ -26,7 +26,7 @@
 
 ## Testing
 
-- Jest with React Testing Library and jsdom. Put tests in a `__tests__/` folder next to the code, or name the file `*.test.tsx`.
+- Jest with React Testing Library and jsdom. Tests sit next to the code they cover, named `<file>.test.ts(x)`.
 - `npm test` always writes a coverage report to `coverage/`.
 - jsdom is missing browser APIs the CodeMirror editor needs; `jest.mocks.ts` patches `matchMedia` and `Range.getClientRects`. Add further global patches there, not in single test files.
 

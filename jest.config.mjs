@@ -7,7 +7,7 @@ const createJestConfig = nextJest({
 const customJestConfig = {
   testEnvironment: 'jsdom',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
-  testMatch: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[tj]s?(x)'],
+  testMatch: ['**/*.test.[jt]s?(x)'],
   clearMocks: true,
   collectCoverage: true,
   coverageDirectory: 'coverage',
