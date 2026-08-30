@@ -49,15 +49,11 @@ export const ResultTab: FC = () => {
 
   if (parseError) {
     return (
-      <div
-        className="p-6 bg-red-200 rounded-md"
-        aria-live="assertive"
-        role="alert"
-      >
-        <h2 className="text-xl font-semibold text-red-700 mb-2">
+      <div className="p-6 bg-red-200 rounded-md" role="alert">
+        <h2 className="text-xl font-semibold text-red-800 mb-2">
           Cannot render form
         </h2>
-        <p className="text-red-600">
+        <p className="text-red-800">
           Please fix the JSON errors in the Config tab.
         </p>
       </div>
@@ -66,12 +62,8 @@ export const ResultTab: FC = () => {
 
   if (!formConfig) {
     return (
-      <div
-        className="p-6 bg-yellow-200 rounded-md"
-        aria-live="polite"
-        role="alert"
-      >
-        <p className="text-yellow-700">No valid form configuration found</p>
+      <div className="p-6 bg-yellow-200 rounded-md" role="status">
+        <p className="text-yellow-800">No valid form configuration found</p>
       </div>
     );
   }
@@ -80,7 +72,7 @@ export const ResultTab: FC = () => {
     <div id="panel-result" role="tabpanel" aria-labelledby="tab-result">
       <a
         href="#form-buttons"
-        className="sr-only focus:not-sr-only focus:block focus:p-6 focus:mb-4 focus:bg-blue-100 focus:text-blue-700 focus:font-medium focus:rounded-md focus:shadow-sm focus:outline-none"
+        className="sr-only focus:not-sr-only focus:block focus:p-6 focus:mb-4 focus:bg-blue-100 focus:text-blue-700 focus:font-medium focus:rounded-md focus:shadow-sm"
       >
         Skip to form controls
       </a>
@@ -92,7 +84,6 @@ export const ResultTab: FC = () => {
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="space-y-5"
-        title={formConfig.title}
         aria-busy={isSubmitting}
         aria-labelledby="form-title"
       >
@@ -114,7 +105,9 @@ export const ResultTab: FC = () => {
 
         <div
           id="form-buttons"
-          tabIndex={0}
+          tabIndex={-1}
+          role="group"
+          aria-label="Form actions"
           className="flex justify-end space-x-3 pt-4"
         >
           {formConfig.buttons.map((button, index) => (
@@ -128,17 +121,15 @@ export const ResultTab: FC = () => {
         </div>
       </form>
 
-      {isSubmitSuccessful && (
-        <div
-          className="mt-8 p-6 bg-lime-200 rounded-md"
-          role="status"
-          aria-live="polite"
-        >
-          <h3 className="text-lg font-bold text-green-700">
-            Form submitted successfully!
-          </h3>
-        </div>
-      )}
+      <div role="status">
+        {isSubmitSuccessful && (
+          <div className="mt-8 p-6 bg-lime-200 rounded-md">
+            <h3 className="text-lg font-bold text-green-800">
+              Form submitted successfully!
+            </h3>
+          </div>
+        )}
+      </div>
 
       {isSubmitSuccessful && Object.keys(formData).length > 0 && (
         <FormData formData={formData} />
