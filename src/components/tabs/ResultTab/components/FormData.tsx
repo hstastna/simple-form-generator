@@ -5,7 +5,7 @@ type FormDataProps = {
 };
 
 export const FormData: FC<FormDataProps> = ({ formData }) => (
-  <div
+  <section
     className="mt-8 pt-6 border-t border-gray-200"
     aria-labelledby="form-data-heading"
   >
@@ -14,11 +14,12 @@ export const FormData: FC<FormDataProps> = ({ formData }) => (
     </h3>
 
     <pre
-      className="border border-gray-400 p-4 rounded overflow-x-auto"
+      className="border border-gray-500 p-4 rounded overflow-x-auto dark:border-gray-400"
+      role="region"
       aria-label="Submitted form data in JSON format"
       tabIndex={0}
     >
       {JSON.stringify(formData, null, 2)}
     </pre>
-  </div>
+  </section>
 );
