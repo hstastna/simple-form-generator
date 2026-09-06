@@ -34,10 +34,9 @@ export const TextAreaField: FC<TextAreaFieldProps> = ({
       <div className="w-full">
         <textarea
           id={id}
-          className="p-3 block w-full border border-gray-400 rounded focus:ring-blue-500"
-          aria-labelledby={label ? `label-${id}` : undefined}
-          aria-required={isRequired ? 'true' : undefined}
+          className="p-3 block w-full border border-gray-500 rounded dark:border-gray-400 placeholder:text-gray-600 dark:placeholder:text-gray-400"
           {...props}
+          aria-required={isRequired ? 'true' : undefined}
           {...register(id, {
             ...validationRules,
           })}
