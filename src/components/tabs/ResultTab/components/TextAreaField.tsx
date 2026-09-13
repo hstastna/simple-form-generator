@@ -21,11 +21,8 @@ export const TextAreaField: FC<TextAreaFieldProps> = ({
   const isRequired = validationRules.required.value;
 
   return (
-    <div
-      className="grid grid-cols-[20%_80%] items-baseline w-full"
-      role="group"
-    >
-      <div className="text-left break-words">
+    <div className="grid grid-cols-[20%_80%] items-baseline w-full">
+      <div className="wrap-break-word">
         {label && (
           <FormLabel id={id} label={label} required={isRequired} marginRight />
         )}
@@ -37,9 +34,7 @@ export const TextAreaField: FC<TextAreaFieldProps> = ({
           className="p-3 block w-full border border-gray-500 rounded dark:border-gray-400 placeholder:text-gray-600 dark:placeholder:text-gray-400"
           {...props}
           aria-required={isRequired ? 'true' : undefined}
-          {...register(id, {
-            ...validationRules,
-          })}
+          {...register(id, validationRules)}
         />
       </div>
     </div>
