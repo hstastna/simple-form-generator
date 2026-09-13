@@ -16,7 +16,6 @@ export const CheckboxField: FC<CheckboxFieldProps> = ({
   register,
   validationRules,
   label,
-  checked,
   ...props
 }) => {
   const isRequired = validationRules.required.value;
@@ -28,7 +27,6 @@ export const CheckboxField: FC<CheckboxFieldProps> = ({
         type="checkbox"
         className="h-4 w-4"
         {...props}
-        defaultChecked={checked}
         aria-required={isRequired ? 'true' : undefined}
         {...register(id, validationRules)}
       />

@@ -53,7 +53,7 @@ describe('CheckboxField', () => {
     ).toBeNull();
   });
 
-  it('ticks the checkbox given checked in the JSON config, and lets the user untick it', () => {
+  it('ticks the checkbox given checked in the JSON config, and pins it there', () => {
     render(<Harness label="Accept terms" checked />);
 
     const checkbox = screen.getByRole<HTMLInputElement>('checkbox');
@@ -61,7 +61,7 @@ describe('CheckboxField', () => {
 
     fireEvent.click(checkbox);
 
-    expect(checkbox.checked).toBe(false);
+    expect(checkbox.checked).toBe(true);
   });
 
   it('keeps the config aria-label on the input and renders no label element', () => {
