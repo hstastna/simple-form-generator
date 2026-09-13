@@ -16,4 +16,13 @@ export const formButtonSchema = z
     ...eventHandlerAttributes,
     ...buttonAttributes,
   })
-  .strict();
+  .strict()
+  .refine(
+    (button) =>
+      Boolean(button.text || button['aria-label'] || button['aria-labelledby']),
+    {
+      error:
+        'Add text, aria-label or aria-labelledby so the button has an accessible name',
+      path: ['text'],
+    }
+  );

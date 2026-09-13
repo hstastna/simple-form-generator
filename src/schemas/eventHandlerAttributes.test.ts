@@ -15,6 +15,7 @@ describe('event handler attributes', () => {
   it('accepts a handler name on a field', () => {
     const result = formFieldSchema.safeParse({
       type: 'text',
+      label: 'Draft',
       onFocus: 'saveDraft',
     });
 

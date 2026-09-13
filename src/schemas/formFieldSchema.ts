@@ -56,7 +56,7 @@ const textareaAttributes = {
   defaultValue: z.string().optional(),
 };
 
-export const formFieldSchema = z.discriminatedUnion('type', [
+const formFieldVariants = z.discriminatedUnion('type', [
   // Textarea schema
   z
     .object({
@@ -82,3 +82,13 @@ export const formFieldSchema = z.discriminatedUnion('type', [
     })
     .strict(),
 ]);
+
+export const formFieldSchema = formFieldVariants.refine(
+  (field) =>
+    Boolean(field.label || field['aria-label'] || field['aria-labelledby']),
+  {
+    error:
+      'Add a label, aria-label or aria-labelledby so the field has an accessible name',
+    path: ['label'],
+  }
+);

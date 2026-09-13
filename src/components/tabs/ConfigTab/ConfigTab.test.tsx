@@ -64,6 +64,23 @@ describe('ConfigTab invalid configuration', () => {
       'title: Invalid input: expected string'
     );
   });
+
+  it('reports a field with no accessible name', async () => {
+    const editor = renderConfigTab();
+
+    fireEvent.input(editor, {
+      target: {
+        textContent:
+          '{ "title": "T", "items": [{ "type": "checkbox" }], "buttons": [{ "text": "Send" }] }',
+      },
+    });
+
+    await waitFor(() =>
+      expect(screen.getByRole('status').textContent).toContain(
+        'items.0.label: Add a label, aria-label or aria-labelledby'
+      )
+    );
+  });
 });
 
 describe('ConfigTab colour scheme', () => {
