@@ -16,6 +16,7 @@ export const CheckboxField: FC<CheckboxFieldProps> = ({
   register,
   validationRules,
   label,
+  checked,
   ...props
 }) => {
   const isRequired = validationRules.required.value;
@@ -25,11 +26,11 @@ export const CheckboxField: FC<CheckboxFieldProps> = ({
       <input
         id={id}
         type="checkbox"
-        className="h-4 w-4 border border-gray-400 focus:ring-blue-500"
-        aria-labelledby={label ? `label-${id}` : undefined}
-        aria-required={isRequired ? 'true' : undefined}
+        className="h-4 w-4"
         {...props}
-        {...register(id, { ...validationRules })}
+        defaultChecked={checked}
+        aria-required={isRequired ? 'true' : undefined}
+        {...register(id, validationRules)}
       />
       {label && <FormLabel id={id} label={label} required={isRequired} />}
     </div>
