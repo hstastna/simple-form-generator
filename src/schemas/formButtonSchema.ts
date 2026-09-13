@@ -11,7 +11,7 @@ const buttonAttributes = {
 
 export const formButtonSchema = z
   .object({
-    text: z.string().optional(),
+    text: z.string().optional(), // custom: the button child text
     ...commonHtmlAttributes,
     ...eventHandlerAttributes,
     ...buttonAttributes,

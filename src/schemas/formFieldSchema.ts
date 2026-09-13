@@ -17,7 +17,7 @@ const inputAndTextAreaAttributes = {
   ...eventHandlerAttributes,
   autoComplete: z.string().optional(),
   dirname: z.string().optional(),
-  label: z.string().optional(), // custom attribute
+  label: z.string().optional(), // custom: FormLabel renders it
   maxLength: z.number().optional(),
   minLength: z.number().optional(),
   placeholder: z.string().optional(),
@@ -52,8 +52,8 @@ const textareaAttributes = {
   cols: z.number().optional(),
   rows: z.number().optional(),
   wrap: z.enum(['hard', 'soft']).optional(),
-  value: z.string().optional(),
-  defaultValue: z.string().optional(),
+  value: z.string().optional(), // custom: predefines the content
+  defaultValue: z.string().optional(), // custom: predefines the content
 };
 
 const formFieldVariants = z.discriminatedUnion('type', [
@@ -68,8 +68,8 @@ const formFieldVariants = z.discriminatedUnion('type', [
   z
     .object({
       type: z.literal('radio'),
-      options: z.array(z.string()).optional(), // custom attributes
-      labels: z.array(z.string()).optional(),
+      options: z.array(z.string()).optional(), // custom: one radio per entry
+      labels: z.array(z.string()).optional(), // custom: visible text per option
       ...inputAttributes,
     })
     .strict(),
