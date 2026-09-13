@@ -78,7 +78,7 @@ export const ResultTab: FC = () => {
       </a>
 
       <h2 id="form-title" className="text-xl font-bold mb-5">
-        {formConfig.title}
+        {formConfig.title || 'Generated form'}
       </h2>
 
       <form

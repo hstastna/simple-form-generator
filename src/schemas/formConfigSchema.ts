@@ -4,8 +4,8 @@ import { formButtonSchema } from './formButtonSchema';
 
 export const formConfigSchema = z
   .object({
-    title: z.string(),
-    items: z.array(formFieldSchema),
-    buttons: z.array(formButtonSchema),
+    title: z.string().optional(), // custom: the form heading
+    items: z.array(formFieldSchema), // custom: the fields to render
+    buttons: z.array(formButtonSchema), // custom: the buttons to render
   })
   .strict();
