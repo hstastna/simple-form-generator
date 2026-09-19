@@ -9,6 +9,7 @@ type TextAreaFieldProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
   register: UseFormRegister<ResultFormData>;
   validationRules: ValidationRules;
   label?: string;
+  text?: string;
 };
 
 export const TextAreaField: FC<TextAreaFieldProps> = ({
@@ -16,6 +17,7 @@ export const TextAreaField: FC<TextAreaFieldProps> = ({
   register,
   validationRules,
   label,
+  text,
   ...props
 }) => {
   const isRequired = validationRules.required.value;
@@ -33,6 +35,7 @@ export const TextAreaField: FC<TextAreaFieldProps> = ({
           id={id}
           className="p-3 block w-full border border-gray-500 rounded dark:border-gray-400 placeholder:text-gray-600 dark:placeholder:text-gray-400"
           {...props}
+          defaultValue={text}
           aria-required={isRequired ? 'true' : undefined}
           {...register(id, validationRules)}
         />
