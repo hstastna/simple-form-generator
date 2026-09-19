@@ -52,8 +52,7 @@ const textareaAttributes = {
   cols: z.number().optional(),
   rows: z.number().optional(),
   wrap: z.enum(['hard', 'soft']).optional(),
-  value: z.string().optional(), // custom: predefines the content
-  defaultValue: z.string().optional(), // custom: predefines the content
+  text: z.string().optional(), // custom: the textarea child text
 };
 
 const formFieldVariants = z.discriminatedUnion('type', [

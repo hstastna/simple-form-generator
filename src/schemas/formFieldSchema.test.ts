@@ -34,3 +34,41 @@ describe('radio', () => {
     );
   });
 });
+
+describe('textarea', () => {
+  const bio = { type: 'textarea', label: 'Bio' };
+
+  it('accepts text, the custom key for the child text', () => {
+    expect(
+      formFieldSchema.safeParse({ ...bio, text: 'preset bio' }).success
+    ).toBe(true);
+  });
+
+  it('rejects value, which a textarea has no attribute for', () => {
+    expect(
+      formFieldSchema.safeParse({ ...bio, value: 'preset bio' }).success
+    ).toBe(false);
+  });
+});
+
+describe('React-only prop names', () => {
+  it('rejects defaultValue, which is not an HTML content attribute', () => {
+    expect(
+      formFieldSchema.safeParse({
+        type: 'text',
+        label: 'Nick',
+        defaultValue: 'x',
+      }).success
+    ).toBe(false);
+  });
+
+  it('rejects defaultChecked, which is not an HTML content attribute', () => {
+    expect(
+      formFieldSchema.safeParse({
+        type: 'checkbox',
+        label: 'Agree',
+        defaultChecked: true,
+      }).success
+    ).toBe(false);
+  });
+});
