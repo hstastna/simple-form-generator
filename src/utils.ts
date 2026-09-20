@@ -111,3 +111,6 @@ export const getValidationRules = ({
       return requiredRule;
   }
 };
+
+export const getFieldId = (id: string | undefined, index: number) =>
+  id || `field-${index}`;
