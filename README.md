@@ -46,12 +46,14 @@ Fields and buttons accept the `onClick`, `onChange`, `onFocus`, `onBlur`, `onMou
 { "text": "Clear", "onClick": "clear" }
 ```
 
-Two names are built in and really run in the _Result_ tab:
+The _Result_ tab implements two handlers:
 
-- `reset` - asks for a confirmation first, then empties the form
-- `clear` - empties the form right away
+- `reset` - asks for a confirmation, then restores the form to the defaults from your config. Every button with `"type": "reset"` gets it, no `onClick` key needed.
+- `clear` - restores the form right away, with no confirmation. It runs only where a handler key names it.
 
-Any other name is valid as well, it just does nothing while you are testing the form - it is meant for your own handler in the code that the planned _Code_ tab will generate. Two exceptions: `onChange` and `onBlur` on fields are validated, but they never run in the _Result_ tab, because React Hook Form takes those two events over.
+Both also clear the submitted _Form Data_ output.
+
+Any other handler passes validation but has no implementation in the _Result_ tab, so it does nothing while you are testing the form. It is reserved for the code that the planned _Code_ tab will generate. Two exceptions: `onChange` and `onBlur` on fields are validated, but they never run in the _Result_ tab, because React Hook Form takes those two events over.
 
 ## Getting Started
 
