@@ -7,18 +7,38 @@ type ValidationProps = {
   maxLength?: number;
   min?: MinMaxValue;
   max?: MinMaxValue;
+  pattern?: string;
 };
 
+type ValidationRule<T> = { value: T; message: string };
+
 export type ValidationRules = {
-  required: { value: boolean; message: string };
-  minLength?: { value: number; message: string };
-  maxLength?: { value: number; message: string };
-  min?: { value: MinMaxValue; message: string };
-  max?: { value: MinMaxValue; message: string };
+  required: ValidationRule<boolean>;
+  minLength?: ValidationRule<number>;
+  maxLength?: ValidationRule<number>;
+  min?: ValidationRule<MinMaxValue>;
+  max?: ValidationRule<MinMaxValue>;
+  pattern?: ValidationRule<RegExp>;
 };
 
 const hasValue = <T extends MinMaxValue>(value?: T): value is T =>
   value !== undefined && value !== '';
+
+// HTML drops a pattern that is invalid on its own, then matches it against the whole value
+const getPatternRule = (pattern: string) => {
+  try {
+    new RegExp(pattern, 'v');
+  } catch {
+    return undefined;
+  }
+
+  return {
+    pattern: {
+      value: new RegExp(`^(?:${pattern})$`, 'v'),
+      message: 'Please match the requested format',
+    },
+  };
+};
 
 export const getValidationRules = ({
   type,
@@ -27,6 +47,7 @@ export const getValidationRules = ({
   maxLength,
   min,
   max,
+  pattern,
 }: ValidationProps): ValidationRules => {
   const requiredRule = {
     required: {
@@ -36,6 +57,7 @@ export const getValidationRules = ({
   };
 
   const textRules = {
+    ...(pattern && getPatternRule(pattern)),
     ...(hasValue(minLength) && {
       minLength: {
         value: minLength,

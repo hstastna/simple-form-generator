@@ -42,6 +42,48 @@ describe('getValidationRules', () => {
     expect(getValidationRules({ type: 'date', min: '' })).toEqual(noRequired);
   });
 
+  it('anchors a text pattern the way HTML does', () => {
+    const { pattern } = getValidationRules({ type: 'text', pattern: '[a-z]+' });
+
+    expect(pattern?.message).toBe('Please match the requested format');
+    expect(pattern?.value.test('abc')).toBe(true);
+    expect(pattern?.value.test('123abc')).toBe(false);
+  });
+
+  it('keeps an alternation inside the anchors', () => {
+    const { pattern } = getValidationRules({ type: 'text', pattern: 'a|b' });
+
+    expect(pattern?.value.test('ab')).toBe(false);
+  });
+
+  it('reads a pattern with the v RegExp flag, as browsers do', () => {
+    const { pattern } = getValidationRules({
+      type: 'text',
+      pattern: '[\\p{L}--[a-z]]',
+    });
+
+    expect(pattern?.value.test('A')).toBe(true);
+    expect(pattern?.value.test('a')).toBe(false);
+  });
+
+  it('drops a pattern that is invalid on its own, as browsers do', () => {
+    expect(
+      getValidationRules({ type: 'text', pattern: '[' }).pattern
+    ).toBeUndefined();
+    expect(
+      getValidationRules({ type: 'text', pattern: 'a)|(b' }).pattern
+    ).toBeUndefined();
+  });
+
+  it('leaves a pattern off number and date fields, as HTML does', () => {
+    expect(
+      getValidationRules({ type: 'number', pattern: '[0-9]+' }).pattern
+    ).toBeUndefined();
+    expect(
+      getValidationRules({ type: 'date', pattern: '[0-9]+' }).pattern
+    ).toBeUndefined();
+  });
+
   it('applies length rules to text and textarea', () => {
     const lengthRules = {
       ...noRequired,
