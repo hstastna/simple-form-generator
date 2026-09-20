@@ -27,7 +27,7 @@ const RootLayout: FC<RootLayoutProps> = ({ children }) => {
     <html lang="en">
       <body className={inter.className}>
         <div className="container mx-auto p-4 pb-16 max-w-3xl" tabIndex={-1}>
-          <header className="flex flex-wrap justify-between items-center">
+          <header className="flex flex-wrap justify-between items-center gap-y-4">
             <div>
               <h1 className="text-3xl font-bold bg-linear-to-r from-green-400 to-lime-500 bg-clip-text text-transparent">
                 Simple Form Generator
