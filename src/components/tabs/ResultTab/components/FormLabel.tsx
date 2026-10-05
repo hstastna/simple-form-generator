@@ -15,7 +15,6 @@ export const FormLabel: FC<FormLabelProps> = ({
   marginRight,
 }) => (
   <label
-    id={`label-${id}`}
     htmlFor={id}
     className={`${marginRight ? 'mr-1.5' : 'ml-1.5'} block text-sm font-medium`}
   >

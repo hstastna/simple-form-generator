@@ -48,6 +48,19 @@ const inputAttributes = {
   width: z.union([z.string(), z.number()]).optional(),
 };
 
+export const radioOptionSchema = z
+  .object({
+    ...commonHtmlAttributes,
+    label: z.string().optional(), // custom: FormLabel renders it
+    value: z.union([z.string(), z.number()]).optional(),
+    checked: z.boolean().optional(),
+    defaultChecked: z.boolean().optional(), // custom: React's editable preset; "checked" pins the radio
+    required: z.boolean().optional(),
+  })
+  .strict();
+
+export type RadioOption = z.infer<typeof radioOptionSchema>;
+
 const textareaAttributes = {
   ...commonHtmlAttributes,
   ...inputAndTextAreaAttributes,
@@ -69,8 +82,7 @@ const formFieldVariants = z.discriminatedUnion('type', [
   z
     .object({
       type: z.literal('radio'),
-      options: z.array(z.string()).optional(), // custom: one radio per entry
-      labels: z.array(z.string()).optional(), // custom: visible text per option
+      options: z.array(radioOptionSchema).optional(), // custom: one radio per entry, with its own attributes
       ...inputAttributes,
     })
     .strict(),

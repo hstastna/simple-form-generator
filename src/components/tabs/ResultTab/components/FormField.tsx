@@ -4,7 +4,7 @@ import {
   InputHTMLAttributes,
   TextareaHTMLAttributes,
 } from 'react';
-import { formFieldTypes } from '@/schemas/formFieldSchema';
+import { formFieldTypes, RadioOption } from '@/schemas/formFieldSchema';
 import { UseFormRegister } from 'react-hook-form';
 import { FieldError } from 'react-hook-form';
 import { ResultFormData } from '../ResultTab';
@@ -33,8 +33,8 @@ export type FormField = InputAndTextAreaProps & {
   id: string;
   label?: string;
 } & (
-    | { type: 'radio'; options?: string[]; labels?: string[] }
-    | { type: Exclude<FormFieldType, 'radio'>; options?: never; labels?: never }
+    | { type: 'radio'; options?: RadioOption[] }
+    | { type: Exclude<FormFieldType, 'radio'>; options?: never }
   );
 
 type FormFieldProps = {
@@ -44,34 +44,18 @@ type FormFieldProps = {
 };
 
 export const FormField: FC<FormFieldProps> = ({ field, register, error }) => {
-  const {
-    id,
-    type,
-    label,
-    options,
-    labels,
-    minLength,
-    maxLength,
-    min,
-    max,
-    required,
-    ...props
-  } = field;
+  const { id, type, label, options, ...props } = field;
 
-  const validationRules = getValidationRules({
-    type,
-    required,
-    minLength,
-    maxLength,
-    min,
-    max,
-  });
+  const required = field.required || options?.some((option) => option.required);
+  const validationRules = getValidationRules({ ...field, required });
 
   const errorId = error ? `${id}-error` : undefined;
 
   const errorAria = {
-    'aria-invalid': error ? 'true' : 'false',
-    'aria-describedby': errorId,
+    'aria-invalid': error ? 'true' : undefined,
+    'aria-describedby':
+      [field['aria-describedby'], errorId].filter(Boolean).join(' ') ||
+      undefined,
   } as const;
 
   const renderField = () => {
@@ -86,8 +70,8 @@ export const FormField: FC<FormFieldProps> = ({ field, register, error }) => {
             register={register}
             validationRules={validationRules}
             label={label}
-            {...errorAria}
             {...props}
+            {...errorAria}
           />
         );
 
@@ -98,8 +82,8 @@ export const FormField: FC<FormFieldProps> = ({ field, register, error }) => {
             register={register}
             validationRules={validationRules}
             label={label}
-            {...errorAria}
             {...props}
+            {...errorAria}
           />
         );
 
@@ -110,36 +94,60 @@ export const FormField: FC<FormFieldProps> = ({ field, register, error }) => {
             register={register}
             validationRules={validationRules}
             label={label}
-            {...errorAria}
             {...props}
+            {...errorAria}
           />
         );
 
       case 'radio':
         if (options) {
+          const {
+            'aria-label': ariaLabel,
+            'aria-labelledby': ariaLabelledBy,
+            autoFocus,
+            ...optionProps
+          } = props;
+
           return (
             <fieldset
               role="radiogroup"
-              aria-required={required ? 'true' : 'false'}
+              aria-label={ariaLabel}
+              aria-labelledby={ariaLabelledBy}
               {...errorAria}
             >
-              <legend className="block text-sm font-medium text-gray-700 mb-2">
-                {label || 'Options to choose from'}
-                {required && <RequiredMark />}
-              </legend>
+              {label && (
+                <legend className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {label}
+                  {required && <RequiredMark />}
+                </legend>
+              )}
 
-              {options.map((option, index) => (
-                <RadioField
-                  key={option}
-                  id={id}
-                  register={register}
-                  validationRules={validationRules}
-                  label={labels?.[index] || option}
-                  option={option}
-                  {...errorAria}
-                  {...props}
-                />
-              ))}
+              {options.map((option, index) => {
+                const { id: ownId, ...optionAttributes } = option;
+                const optionId = ownId || `${id}-${index}`;
+
+                return (
+                  <RadioField
+                    key={optionId}
+                    id={id}
+                    inputId={optionId}
+                    register={register}
+                    validationRules={validationRules}
+                    autoFocus={autoFocus && index === 0}
+                    {...optionProps}
+                    {...optionAttributes}
+                    aria-invalid={errorAria['aria-invalid']}
+                    aria-describedby={
+                      [
+                        option['aria-describedby'] ?? field['aria-describedby'],
+                        errorId,
+                      ]
+                        .filter(Boolean)
+                        .join(' ') || undefined
+                    }
+                  />
+                );
+              })}
             </fieldset>
           );
         }
@@ -150,8 +158,8 @@ export const FormField: FC<FormFieldProps> = ({ field, register, error }) => {
             register={register}
             validationRules={validationRules}
             label={label}
-            {...errorAria}
             {...props}
+            {...errorAria}
           />
         );
 
@@ -167,9 +175,8 @@ export const FormField: FC<FormFieldProps> = ({ field, register, error }) => {
       {error && (
         <p
           id={errorId}
-          className={`mt-1 text-sm text-red-600 ${['checkbox', 'radio'].includes(type) ? '' : 'ml-[calc(20%)]'}`}
+          className={`mt-1 text-sm text-red-600 dark:text-red-400 ${['checkbox', 'radio'].includes(type) ? '' : 'ml-[calc(20%)]'}`}
           role="alert"
-          aria-live="assertive"
         >
           {typeof error.message === 'string' ? error.message : 'Invalid input'}
         </p>

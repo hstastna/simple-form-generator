@@ -38,6 +38,25 @@ The JSON configuration object consists of three main keys:
 
 The JSON configuration entered in the _Config_ tab is validated by using [Zod](https://zod.dev/). You can find the specific schemas defined in the _src/schemas_ directory. Most of the common html attributes for `input`, `textarea` and `button` HTML elements are accepted. Keys are passed to React as they are: `value` and `checked` pin the control, while `defaultValue` and `defaultChecked` preset it and leave it editable.
 
+## Radio groups
+
+A `radio` item renders one `<fieldset>`, and its `label` becomes the `legend`. Each entry of `options` is one `<input type="radio">` and takes the same attributes as in HTML, plus a `label` for its visible text:
+
+```json
+{
+  "id": "plan",
+  "type": "radio",
+  "label": "Plan",
+  "options": [
+    { "value": "basic", "label": "Basic" },
+    { "value": "pro", "label": "Pro", "defaultChecked": true },
+    { "value": "team", "label": "Team", "disabled": true }
+  ]
+}
+```
+
+Keys set on the `radio` item apply to every option, and an option's own key wins. An option without `id` gets `<id>-<index>`. As in HTML, `required` on any option makes the whole group required.
+
 ## Event handlers
 
 Fields and buttons accept the `onClick`, `onChange`, `onFocus`, `onBlur`, `onMouseDown`, `onMouseUp`, `onKeyDown` and `onKeyUp` keys. Since JSON cannot hold a function, the value is the _name_ of a handler:

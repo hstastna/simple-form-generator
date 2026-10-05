@@ -83,6 +83,7 @@ export const ResultTab: FC = () => {
 
       <form
         onSubmit={handleSubmit(onSubmit)}
+        noValidate
         className="space-y-5"
         aria-busy={isSubmitting}
         aria-labelledby="form-title"

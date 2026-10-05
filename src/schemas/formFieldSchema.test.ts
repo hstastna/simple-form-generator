@@ -22,10 +22,34 @@ describe('accessible name', () => {
 });
 
 describe('radio', () => {
-  const group = { type: 'radio', label: 'Plan', options: ['basic', 'pro'] };
+  const group = {
+    type: 'radio',
+    label: 'Plan',
+    options: [{ value: 'basic' }, { value: 'pro' }],
+  };
 
   it('accepts a plain group', () => {
     expect(formFieldSchema.safeParse(group).success).toBe(true);
+  });
+
+  it('accepts radio attributes on each option', () => {
+    const option = {
+      id: 'pro',
+      value: 'pro',
+      label: 'Pro',
+      disabled: true,
+      defaultChecked: true,
+    };
+
+    expect(
+      formFieldSchema.safeParse({ ...group, options: [option] }).success
+    ).toBe(true);
+  });
+
+  it('rejects a plain string as an option', () => {
+    expect(
+      formFieldSchema.safeParse({ ...group, options: ['basic'] }).success
+    ).toBe(false);
   });
 
   it('accepts checked, a valid attribute on a radio input', () => {

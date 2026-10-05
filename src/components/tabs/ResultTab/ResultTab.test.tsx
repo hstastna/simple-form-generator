@@ -25,6 +25,74 @@ const attributeConfig = JSON.stringify({
   buttons: [{ text: 'Send', type: 'submit' }],
 });
 
+const presetConfig = JSON.stringify({
+  title: 'Preset form',
+  items: [
+    {
+      id: 'plan',
+      type: 'radio',
+      label: 'Plan',
+      options: [
+        { value: 'basic', label: 'basic' },
+        { value: 'pro', label: 'pro' },
+      ],
+    },
+  ],
+  buttons: [{ text: 'Send', type: 'submit' }],
+});
+
+const patternConfig = JSON.stringify({
+  title: 'Pattern form',
+  items: [{ id: 'code', type: 'text', label: 'Code', pattern: '[a-z]+' }],
+  buttons: [{ text: 'Send', type: 'submit' }],
+});
+
+const semanticsConfig = JSON.stringify({
+  title: 'Semantics form',
+  items: [
+    {
+      id: 'plan',
+      type: 'radio',
+      label: 'Plan',
+      options: [
+        { value: 'basic', label: 'basic' },
+        { value: 'pro', label: 'pro' },
+      ],
+      required: true,
+    },
+  ],
+  buttons: [{ text: 'Send', type: 'submit' }],
+});
+
+const optionsConfig = JSON.stringify({
+  title: 'Options form',
+  items: [
+    {
+      id: 'plan',
+      type: 'radio',
+      label: 'Plan',
+      options: [
+        { value: 'basic', label: 'Basic', disabled: true },
+        { value: 'pro', label: 'Pro', defaultChecked: true, required: true },
+      ],
+    },
+  ],
+  buttons: [{ text: 'Send', type: 'submit' }],
+});
+
+const ariaLabelConfig = JSON.stringify({
+  title: 'Aria label form',
+  items: [
+    {
+      id: 'plan',
+      type: 'radio',
+      'aria-label': 'Plan',
+      options: [{ value: 'basic', label: 'basic' }],
+    },
+  ],
+  buttons: [{ text: 'Send', type: 'submit' }],
+});
+
 const ConfigLoader: FC<{ json?: string }> = ({ json = config }) => {
   const { setJsonConfig } = useFormContext();
 
@@ -86,5 +154,116 @@ describe('ResultTab config attributes', () => {
     await waitFor(() =>
       expect(note.getAttribute('aria-describedby')).toBe('note-hint note-error')
     );
+  });
+});
+
+describe('ResultTab radio options', () => {
+  it("applies each option's own attributes and requires the group", async () => {
+    render(
+      <FormProvider>
+        <ConfigLoader json={optionsConfig} />
+        <ResultTab />
+      </FormProvider>
+    );
+
+    fireEvent.click(screen.getByText('load config'));
+
+    const basic = await screen.findByLabelText<HTMLInputElement>('Basic');
+    const pro = screen.getByLabelText<HTMLInputElement>('Pro');
+    expect(basic.disabled).toBe(true);
+    expect(basic.checked).toBe(false);
+    expect(pro.checked).toBe(true);
+    expect(pro.required).toBe(true);
+    expect(document.querySelector('legend')?.textContent).toContain(
+      '(required)'
+    );
+  });
+});
+
+describe('ResultTab preset values', () => {
+  it('submits the radio option the user picked', async () => {
+    render(
+      <FormProvider>
+        <ConfigLoader json={presetConfig} />
+        <ResultTab />
+      </FormProvider>
+    );
+
+    fireEvent.click(screen.getByText('load config'));
+
+    await screen.findByLabelText('basic');
+
+    fireEvent.click(screen.getByLabelText('pro'));
+    fireEvent.click(screen.getByText('Send'));
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole('region', { name: /JSON/ }).textContent
+      ).toContain('"plan": "pro"')
+    );
+  });
+});
+
+describe('ResultTab native validation', () => {
+  it('reports a pattern mismatch with the form error, not the browser', async () => {
+    render(
+      <FormProvider>
+        <ConfigLoader json={patternConfig} />
+        <ResultTab />
+      </FormProvider>
+    );
+
+    fireEvent.click(screen.getByText('load config'));
+
+    const code = await screen.findByLabelText<HTMLInputElement>('Code');
+    fireEvent.change(code, { target: { value: 'ABC123' } });
+    fireEvent.click(screen.getByText('Send'));
+
+    expect((await screen.findByRole('alert')).textContent).toBe(
+      'Please match the requested format'
+    );
+  });
+});
+
+describe('ResultTab field semantics', () => {
+  it('links every radio option to the group error message', async () => {
+    render(
+      <FormProvider>
+        <ConfigLoader json={semanticsConfig} />
+        <ResultTab />
+      </FormProvider>
+    );
+
+    fireEvent.click(screen.getByText('load config'));
+    await screen.findByLabelText('basic');
+
+    fireEvent.click(screen.getByText('Send'));
+    await screen.findByRole('alert');
+
+    expect(
+      screen.getByLabelText('basic').getAttribute('aria-describedby')
+    ).toBe('plan-error');
+    expect(screen.getByLabelText('pro').getAttribute('aria-describedby')).toBe(
+      'plan-error'
+    );
+  });
+
+  it('names a radio group from aria-label and renders no legend', async () => {
+    render(
+      <FormProvider>
+        <ConfigLoader json={ariaLabelConfig} />
+        <ResultTab />
+      </FormProvider>
+    );
+
+    fireEvent.click(screen.getByText('load config'));
+
+    expect(
+      await screen.findByRole('radiogroup', { name: 'Plan' })
+    ).not.toBeNull();
+    expect(document.querySelector('legend')).toBeNull();
+    expect(
+      screen.getByLabelText('basic').getAttribute('aria-label')
+    ).toBeNull();
   });
 });
