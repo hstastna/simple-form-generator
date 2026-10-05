@@ -36,7 +36,7 @@ The JSON configuration object consists of three main keys:
 
 `buttons` - form buttons of type: `button`, `submit`, `reset`
 
-The JSON configuration entered in the _Config_ tab is validated by using [Zod](https://zod.dev/). You can find the specific schemas defined in the _src/schemas_ directory. Most of the common html attributes for `input`, `textarea` and `button` HTML elements are accepted.
+The JSON configuration entered in the _Config_ tab is validated by using [Zod](https://zod.dev/). You can find the specific schemas defined in the _src/schemas_ directory. Most of the common html attributes for `input`, `textarea` and `button` HTML elements are accepted. Keys are passed to React as they are: `value` and `checked` pin the control, while `defaultValue` and `defaultChecked` preset it and leave it editable.
 
 ## Event handlers
 

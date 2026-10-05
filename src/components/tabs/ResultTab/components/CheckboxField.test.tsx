@@ -10,6 +10,7 @@ type HarnessProps = {
   label?: string;
   required?: boolean;
   checked?: boolean;
+  defaultChecked?: boolean;
   'aria-label'?: string;
 };
 
@@ -53,15 +54,24 @@ describe('CheckboxField', () => {
     ).toBeNull();
   });
 
-  it('ticks the checkbox given checked in the JSON config, and pins it there', () => {
+  it('pins the checkbox given checked in the JSON config', () => {
     render(<Harness label="Accept terms" checked />);
+
+    const checkbox = screen.getByRole<HTMLInputElement>('checkbox');
+    fireEvent.click(checkbox);
+
+    expect(checkbox.checked).toBe(true);
+  });
+
+  it('ticks the checkbox given defaultChecked, and lets the user untick it', () => {
+    render(<Harness label="Accept terms" defaultChecked />);
 
     const checkbox = screen.getByRole<HTMLInputElement>('checkbox');
     expect(checkbox.checked).toBe(true);
 
     fireEvent.click(checkbox);
 
-    expect(checkbox.checked).toBe(true);
+    expect(checkbox.checked).toBe(false);
   });
 
   it('keeps the config aria-label on the input and renders no label element', () => {

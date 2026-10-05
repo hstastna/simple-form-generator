@@ -52,23 +52,23 @@ describe('textarea', () => {
 });
 
 describe('React-only prop names', () => {
-  it('rejects defaultValue, which is not an HTML content attribute', () => {
+  it('accepts defaultValue, the editable preset of an input', () => {
     expect(
       formFieldSchema.safeParse({
         type: 'text',
         label: 'Nick',
         defaultValue: 'x',
       }).success
-    ).toBe(false);
+    ).toBe(true);
   });
 
-  it('rejects defaultChecked, which is not an HTML content attribute', () => {
+  it('accepts defaultChecked, the editable preset of a checkbox', () => {
     expect(
       formFieldSchema.safeParse({
         type: 'checkbox',
         label: 'Agree',
         defaultChecked: true,
       }).success
-    ).toBe(false);
+    ).toBe(true);
   });
 });

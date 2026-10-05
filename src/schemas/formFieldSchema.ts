@@ -32,6 +32,8 @@ const inputAttributes = {
   alt: z.string().optional(),
   capture: z.union([z.boolean(), z.enum(['user', 'environment'])]).optional(),
   checked: z.boolean().optional(),
+  defaultChecked: z.boolean().optional(), // custom: React's editable preset; "checked" pins the box
+  defaultValue: z.union([z.string(), z.number()]).optional(), // custom: React's editable preset; "value" pins the input
   ...formOwnerAttributes,
   height: z.union([z.string(), z.number()]).optional(),
   list: z.string().optional(),

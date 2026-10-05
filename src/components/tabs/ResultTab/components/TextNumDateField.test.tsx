@@ -12,6 +12,7 @@ type HarnessProps = {
   label?: string;
   required?: boolean;
   value?: string;
+  defaultValue?: string;
   'aria-label'?: string;
 };
 
@@ -56,8 +57,17 @@ describe('TextNumDateField', () => {
     );
   });
 
-  it('lets the user retype the predefined value', () => {
+  it('pins the input given value in the JSON config', () => {
     render(<Harness label="Nick" value="preset" />);
+
+    const nick = screen.getByLabelText<HTMLInputElement>('Nick');
+    fireEvent.change(nick, { target: { value: 'typed by user' } });
+
+    expect(nick.value).toBe('preset');
+  });
+
+  it('lets the user retype a defaultValue from the JSON config', () => {
+    render(<Harness label="Nick" defaultValue="preset" />);
 
     const nick = screen.getByLabelText<HTMLInputElement>('Nick');
     fireEvent.change(nick, { target: { value: 'typed by user' } });
