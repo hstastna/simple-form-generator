@@ -22,6 +22,7 @@ const Harness: FC<HarnessProps> = ({ required, ...props }) => {
       id="agree"
       register={register}
       validationRules={getValidationRules({ type: 'checkbox', required })}
+      required={required}
       {...props}
     />
   );
@@ -36,22 +37,20 @@ describe('CheckboxField', () => {
     );
   });
 
-  it('marks a required checkbox with aria-required', () => {
+  it('marks a required checkbox with the required attribute', () => {
     render(<Harness label="Accept terms" required />);
 
-    const checkbox = screen.getByRole('checkbox');
-    expect(checkbox.getAttribute('aria-required')).toBe('true');
+    const checkbox = screen.getByRole<HTMLInputElement>('checkbox');
+    expect(checkbox.required).toBe(true);
     expect(document.querySelector('label')?.textContent).toContain(
       '(required)'
     );
   });
 
-  it('omits aria-required when the checkbox is optional', () => {
+  it('omits required when the checkbox is optional', () => {
     render(<Harness label="Accept terms" />);
 
-    expect(
-      screen.getByRole('checkbox').getAttribute('aria-required')
-    ).toBeNull();
+    expect(screen.getByRole<HTMLInputElement>('checkbox').required).toBe(false);
   });
 
   it('pins the checkbox given checked in the JSON config', () => {

@@ -25,6 +25,7 @@ const Harness: FC<HarnessProps> = ({ type = 'text', required, ...props }) => {
       type={type}
       register={register}
       validationRules={getValidationRules({ type, required })}
+      required={required}
       {...props}
     />
   );
@@ -89,22 +90,18 @@ describe('TextNumDateField', () => {
     expect(screen.queryByRole('group')).toBeNull();
   });
 
-  it('marks a required input with aria-required', () => {
+  it('marks a required input with the required attribute', () => {
     render(<Harness label="Nick" required />);
 
-    expect(screen.getByRole('textbox').getAttribute('aria-required')).toBe(
-      'true'
-    );
+    expect(screen.getByRole<HTMLInputElement>('textbox').required).toBe(true);
     expect(document.querySelector('label')?.textContent).toContain(
       '(required)'
     );
   });
 
-  it('omits aria-required when the input is optional', () => {
+  it('omits required when the input is optional', () => {
     render(<Harness label="Nick" />);
 
-    expect(
-      screen.getByRole('textbox').getAttribute('aria-required')
-    ).toBeNull();
+    expect(screen.getByRole<HTMLInputElement>('textbox').required).toBe(false);
   });
 });

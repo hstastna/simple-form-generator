@@ -20,6 +20,7 @@ const Harness: FC<HarnessProps> = ({ required, ...props }) => {
       id="bio"
       register={register}
       validationRules={getValidationRules({ type: 'textarea', required })}
+      required={required}
       {...props}
     />
   );
@@ -49,11 +50,11 @@ describe('TextAreaField', () => {
     expect(bio.value).toBe('edited by user');
   });
 
-  it('marks a required textarea with aria-required', () => {
+  it('marks a required textarea with the required attribute', () => {
     render(<Harness label="Bio" required />);
 
-    expect(screen.getByRole('textbox').getAttribute('aria-required')).toBe(
-      'true'
+    expect(screen.getByRole<HTMLTextAreaElement>('textbox').required).toBe(
+      true
     );
   });
 });
