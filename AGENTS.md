@@ -24,7 +24,8 @@
 - Field `onChange` and `onBlur` are validated but never run: the field components spread `register()` last, so react-hook-form owns those events.
 - The form sets `noValidate`, so `getValidationRules` (`src/utils.ts`) re-checks native validation attributes (`required`, `min`, `pattern`, …). An attribute without a rule there, such as `step`, is never checked.
 - A radio group's `options` are radio attribute objects (`radioOptionSchema`). Item keys reach every option and an option's own key wins. `aria-label` and `aria-labelledby` name the `fieldset`; `autoFocus` goes to the first option only. The group is required when the item or any option is `required`.
-- A field without an `id` gets `field-<index>`, a radio option `<id>-<index>`. The React key, the react-hook-form registration and the `errors[...]` lookup must all use the same id. A button is keyed by its `id`, falling back to `button-<index>`.
+- A field without an `id` gets `field-<index>`, a radio option `<id>-<index>`. The React key, the react-hook-form registration, the `errors[...]` lookup and the schema's duplicate check must all use the same id. A button is keyed by its `id`, falling back to `button-<index>`.
+- `formConfigSchema` rejects whitespace in an `id` and duplicates among field, radio option and `<id>-error` ids. Button ids and the app's own ids (`form-title`, `panel-result`, …) are not checked, by decision.
 - Tabs render conditionally, so `ResultTab` remounts on every tab switch. Persisting form data across tabs would first need stable fallback ids.
 
 ## Dependencies

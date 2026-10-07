@@ -1,7 +1,10 @@
 import { z } from 'zod';
 
 export const commonHtmlAttributes = {
-  id: z.string().optional(),
+  id: z
+    .string()
+    .regex(/^\S*$/, { error: 'An id must not contain whitespace' })
+    .optional(),
   className: z.string().optional(),
   style: z.record(z.string(), z.string()).optional(),
   title: z.string().optional(),
