@@ -8,6 +8,8 @@ type ValidationProps = {
   min?: MinMaxValue;
   max?: MinMaxValue;
   pattern?: string;
+  readOnly?: boolean;
+  disabled?: boolean;
 };
 
 type ValidationRule<T> = { value: T; message: string };
@@ -19,6 +21,7 @@ export type ValidationRules = {
   min?: ValidationRule<MinMaxValue>;
   max?: ValidationRule<MinMaxValue>;
   pattern?: ValidationRule<RegExp>;
+  disabled?: boolean;
 };
 
 const hasValue = <T extends MinMaxValue>(value?: T): value is T =>
@@ -48,13 +51,23 @@ export const getValidationRules = ({
   min,
   max,
   pattern,
+  readOnly,
+  disabled,
 }: ValidationProps): ValidationRules => {
+  const isReadOnlyText = readOnly && !['checkbox', 'radio'].includes(type);
+  const shouldSkipValidation = disabled || isReadOnlyText;
+
   const requiredRule = {
     required: {
-      value: Boolean(required),
-      message: required ? 'This field is required' : '',
+      value: Boolean(required) && !shouldSkipValidation,
+      message:
+        required && !shouldSkipValidation ? 'This field is required' : '',
     },
   };
+
+  if (shouldSkipValidation) {
+    return disabled ? { ...requiredRule, disabled } : requiredRule;
+  }
 
   const textRules = {
     ...(pattern && getPatternRule(pattern)),

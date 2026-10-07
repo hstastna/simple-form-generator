@@ -80,6 +80,36 @@ const optionsConfig = JSON.stringify({
   buttons: [{ text: 'Send', type: 'submit' }],
 });
 
+const disabledGroupConfig = JSON.stringify({
+  title: 'Disabled group form',
+  items: [
+    {
+      id: 'plan',
+      type: 'radio',
+      label: 'Plan',
+      required: true,
+      disabled: true,
+      options: [{ value: 'basic', label: 'Basic' }],
+    },
+  ],
+  buttons: [{ text: 'Send', type: 'submit' }],
+});
+
+const disabledFieldConfig = JSON.stringify({
+  title: 'Disabled field form',
+  items: [
+    {
+      id: 'nick',
+      type: 'text',
+      label: 'Nick',
+      defaultValue: 'abc',
+      disabled: true,
+    },
+    { id: 'name', type: 'text', label: 'Name' },
+  ],
+  buttons: [{ text: 'Send', type: 'submit' }],
+});
+
 const noIdConfig = JSON.stringify({
   title: 'No id form',
   items: [{ type: 'text', label: 'Name' }],
@@ -184,6 +214,21 @@ describe('ResultTab radio options', () => {
       '(required)'
     );
   });
+
+  it('drops the required mark from a disabled group, as HTML skips it', async () => {
+    render(
+      <FormProvider>
+        <ConfigLoader json={disabledGroupConfig} />
+        <ResultTab />
+      </FormProvider>
+    );
+
+    fireEvent.click(screen.getByText('load config'));
+
+    const basic = await screen.findByLabelText<HTMLInputElement>('Basic');
+    expect(basic.disabled).toBe(true);
+    expect(document.querySelector('legend')?.textContent).toBe('Plan');
+  });
 });
 
 describe('ResultTab fallback id', () => {
@@ -260,6 +305,26 @@ describe('ResultTab parse error', () => {
     const alert = await screen.findByRole('alert');
     expect(alert.textContent).toContain('Cannot render form');
     expect(screen.getByRole('tabpanel').id).toBe('panel-result');
+  });
+});
+
+describe('ResultTab disabled field', () => {
+  it('leaves the value of a disabled field out of the Form Data', async () => {
+    render(
+      <FormProvider>
+        <ConfigLoader json={disabledFieldConfig} />
+        <ResultTab />
+      </FormProvider>
+    );
+
+    fireEvent.click(screen.getByText('load config'));
+    await screen.findByLabelText('Name');
+    fireEvent.click(screen.getByText('Send'));
+
+    const heading = await screen.findByText('Form Data:');
+    const formData = heading.closest('section')?.textContent;
+    expect(formData).toContain('"name"');
+    expect(formData).not.toContain('"nick"');
   });
 });
 

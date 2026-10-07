@@ -10,6 +10,36 @@ describe('getValidationRules', () => {
     });
   });
 
+  it('skips every rule on a read-only text control, as HTML does', () => {
+    expect(
+      getValidationRules({
+        type: 'text',
+        required: true,
+        minLength: 2,
+        readOnly: true,
+      })
+    ).toEqual(noRequired);
+  });
+
+  it('keeps the required rule on a read-only checkbox, as HTML does', () => {
+    expect(
+      getValidationRules({ type: 'checkbox', required: true, readOnly: true })
+    ).toEqual({
+      required: { value: true, message: 'This field is required' },
+    });
+  });
+
+  it('skips every rule on a disabled control and passes disabled on', () => {
+    expect(
+      getValidationRules({
+        type: 'text',
+        required: true,
+        minLength: 2,
+        disabled: true,
+      })
+    ).toEqual({ ...noRequired, disabled: true });
+  });
+
   it('uses value messages and numeric bounds for number fields', () => {
     expect(getValidationRules({ type: 'number', min: 5, max: 10 })).toEqual({
       ...noRequired,
