@@ -80,6 +80,12 @@ const optionsConfig = JSON.stringify({
   buttons: [{ text: 'Send', type: 'submit' }],
 });
 
+const noIdConfig = JSON.stringify({
+  title: 'No id form',
+  items: [{ type: 'text', label: 'Name' }],
+  buttons: [{ text: 'Send', type: 'submit' }],
+});
+
 const ariaLabelConfig = JSON.stringify({
   title: 'Aria label form',
   items: [
@@ -177,6 +183,21 @@ describe('ResultTab radio options', () => {
     expect(document.querySelector('legend')?.textContent).toContain(
       '(required)'
     );
+  });
+});
+
+describe('ResultTab fallback id', () => {
+  it('gives a field without an id the fallback field-<index>', async () => {
+    render(
+      <FormProvider>
+        <ConfigLoader json={noIdConfig} />
+        <ResultTab />
+      </FormProvider>
+    );
+
+    fireEvent.click(screen.getByText('load config'));
+
+    expect((await screen.findByLabelText('Name')).id).toBe('field-0');
   });
 });
 

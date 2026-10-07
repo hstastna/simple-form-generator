@@ -1,5 +1,5 @@
 import { describe, it, expect } from '@jest/globals';
-import { getFieldId, getValidationRules } from '@/utils';
+import { getValidationRules } from '@/utils';
 
 const noRequired = { required: { value: false, message: '' } };
 
@@ -103,16 +103,5 @@ describe('getValidationRules', () => {
     expect(getValidationRules({ type: 'checkbox', min: 5 })).toEqual(
       noRequired
     );
-  });
-});
-
-describe('getFieldId', () => {
-  it('keeps an explicit id', () => {
-    expect(getFieldId('nick', 2)).toBe('nick');
-  });
-
-  it('falls back to the index for a missing or empty id', () => {
-    expect(getFieldId(undefined, 2)).toBe('field-2');
-    expect(getFieldId('', 2)).toBe('field-2');
   });
 });
