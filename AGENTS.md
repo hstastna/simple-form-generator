@@ -4,43 +4,49 @@
 
 - `npm run dev` starts the dev server.
 - Verify changes with `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`.
-- `next lint` was removed in Next 16 — the lint scripts use the ESLint CLI with the flat config in `eslint.config.mjs`.
+- Next 16 removed `next lint`; `npm run lint` runs the ESLint CLI with `eslint.config.mjs`.
 
 ## Structure
 
-- `src/app` holds the App Router files (`layout.tsx`, `page.tsx`, `globals.css`). Each tab lives in `src/components/tabs/<TabName>/`, with its own `components/` folder for parts used only by that tab.
-- `src/schemas` holds the zod schemas that define the JSON config the app accepts; `src/context` holds shared form state, with the rest in `src/constants.ts`, `src/utils.ts` and `src/formActions.ts`.
-- The JSON config copies HTML on purpose: an item is a form element and its keys are that element's attributes, spelled as React spells them (`className`, `maxLength`). Developers who know HTML then need no new config language. The zod schemas accept what HTML accepts; the few non-HTML keys (`label`, `options`, `text`, …) carry a `// custom:` comment in the schema. The renderer passes every key to React as written and never rewrites one: `checked` and `value` pin the control the React way, and an author who wants an editable preset writes `defaultChecked` or `defaultValue` themselves.
-- `@/` maps to `src/` (`tsconfig.json` and jest's `moduleNameMapper`) — import as `@/components/...` instead of long relative paths.
-- A new field type needs two edits: add it to `formFieldTypes` in `src/schemas/formFieldSchema.ts`, and add a `case` for it in `ResultTab/components/FormField.tsx`. Without the second one the form renders "Unknown field type".
-- The `on*` keys in the JSON hold a handler _name_, never code. `withResolvedHandlers` (`src/formActions.ts`) turns a name listed in `formActionNames` into the real function and drops any other name, so a string never reaches the DOM; unlisted names are reserved for the code the app will generate.
-- Field `onChange` and `onBlur` are validated but never run: the field components spread `register()` last, so react-hook-form owns those two events.
-- Native validation attributes (`required`, `min`, `pattern`, …) pass through to the DOM, but the form sets `noValidate`, so `getValidationRules` (`src/utils.ts`) re-checks them and the app renders the message. An attribute without a rule there, such as `step`, is never checked.
-- A radio group's `options` are radio attribute objects (`radioOptionSchema`). Item keys reach every option and an option's own key wins; `aria-label` and `aria-labelledby` name the `fieldset`, `autoFocus` goes to the first option only. The group is required when the item or any option is `required`, as in HTML.
+- `src/app` holds the App Router files. Each tab lives in `src/components/tabs/<TabName>/`, with a `components/` folder for its own parts.
+- `src/schemas` holds the zod schemas of the JSON config, `src/context` the shared form state. The rest sits in `src/constants.ts`, `src/utils.ts` and `src/formActions.ts`.
+- `@/` maps to `src/` — import as `@/components/...`, not with long relative paths.
+
+## Form renderer
+
+- The "user" in these notes is the person who writes a JSON config in the app.
+- The JSON config copies HTML on purpose, so developers who know HTML learn nothing new. An item is a form element; its keys are that element's attributes, spelled as React spells them (`className`, `maxLength`).
+- The schemas accept what HTML accepts. The few non-HTML keys (`label`, `options`, `text`, …) carry a `// custom:` comment.
+- The renderer passes every key to React unchanged. `checked` and `value` pin the control; a user who wants an editable preset writes `defaultChecked` or `defaultValue`.
+- Accessibility is the tool's job, not the user's: the renderer adds labels, error linkage and fallback ids. A user-set `id` or `aria-*` key always wins. The schema only requires an accessible name (`label`, `aria-label` or `aria-labelledby`).
+- A new field type needs two edits: `formFieldTypes` in `src/schemas/formFieldSchema.ts` and a `case` in `ResultTab/components/FormField.tsx`. Without the `case` the form renders "Unknown field type".
+- `on*` keys hold a handler _name_, never code. `withResolvedHandlers` (`src/formActions.ts`) resolves names listed in `formActionNames` and drops the rest; unlisted names are reserved for the generated code.
+- Field `onChange` and `onBlur` are validated but never run: the field components spread `register()` last, so react-hook-form owns those events.
+- The form sets `noValidate`, so `getValidationRules` (`src/utils.ts`) re-checks native validation attributes (`required`, `min`, `pattern`, …). An attribute without a rule there, such as `step`, is never checked.
+- A radio group's `options` are radio attribute objects (`radioOptionSchema`). Item keys reach every option and an option's own key wins. `aria-label` and `aria-labelledby` name the `fieldset`; `autoFocus` goes to the first option only. The group is required when the item or any option is `required`.
+- A field without an `id` gets `field-<index>`, a radio option `<id>-<index>`. The React key, the react-hook-form registration and the `errors[...]` lookup must all use the same id. A button is keyed by its `id`, falling back to `button-<index>`.
+- Tabs render conditionally, so `ResultTab` remounts on every tab switch. Persisting form data across tabs would first need stable fallback ids.
 
 ## Dependencies
 
-- `typescript` stays on 6.x: typescript-eslint (bundled by eslint-config-next) caps at `<6.1.0`; TS 7 breaks the lint toolchain.
+- `typescript` stays on 6.x: typescript-eslint (bundled by eslint-config-next) caps at `<6.1.0`.
 - `eslint` stays on 9.x: eslint-plugin-react does not support ESLint 10 yet.
-- `@types/node` matches the Node runtime major (24, see Dockerfile).
-- Before bumping any of these, re-check `npm view <pkg> peerDependencies` — the goal is zero warnings from `npm install`.
-- `.npmrc` sets `min-release-age=7` (needs npm 11.6+): installs only resolve versions published at least 7 days ago, so a brand-new release not being found is expected. `npm ci` is unaffected — it installs the lockfile as-is.
-- Commit `package-lock.json` with every `package.json` change; the Docker build runs `npm ci` and fails if the two disagree.
+- `@types/node` matches the Node major in `Dockerfile` (24).
+- Before bumping any of these, re-check `npm view <pkg> peerDependencies`. The goal is zero warnings from `npm install`.
+- `.npmrc` sets `min-release-age=7` (npm 11.6+), so installs skip versions younger than 7 days. `npm ci` installs the lockfile as-is.
+- Commit `package-lock.json` with every `package.json` change; the Docker build runs `npm ci` and fails if they disagree.
 
 ## Testing
 
-- Jest with React Testing Library and jsdom. Tests sit next to the code they cover, named `<file>.test.ts(x)`.
-- `npm test` always writes a coverage report to `coverage/`.
-- jsdom is missing browser APIs the CodeMirror editor needs; `jest.mocks.ts` patches `matchMedia` and `Range.getClientRects`. Add further global patches there, not in single test files.
+- Jest with React Testing Library and jsdom. Tests sit next to their code as `<file>.test.ts(x)`.
+- `jest.mocks.ts` patches the browser APIs jsdom lacks for CodeMirror (`matchMedia`, `Range.getClientRects`). Add global patches there, not in single test files.
 
 ## Conventions and gotchas
 
-- Next 16 changed APIs and conventions — check the guides in `node_modules/next/dist/docs/` before writing Next-specific code.
-- Formatting comes from `.prettierrc` (single quotes, semicolons, 80 columns, 2 spaces) — run `npm run prettier` before committing.
+- Next 16 changed APIs — read `node_modules/next/dist/docs/` before writing Next-specific code.
+- Run `npm run prettier` before committing.
 - Commit messages follow Conventional Commits: `feat:`, `fix:`, `chore:`, `refactor:`.
-- Tailwind CSS v4 dropped `cursor: pointer` on buttons; the base-layer rule in `src/app/globals.css` restores it — keep it.
-- The `sm` breakpoint is overridden to 400px in `src/app/globals.css` (Tailwind's default is 640px). Tailwind is mobile-first, so `sm:` compiles to `min-width: 400px`. If you change it, update the `sizes` attribute of the `Image` in `src/app/layout.tsx` to match.
-- Never use deprecated Tailwind class names. v4 keeps old ones as working aliases, and neither ESLint nor the build flags them — `bg-gradient-to-*` is now `bg-linear-to-*`. The Tailwind VS Code extension is the only thing that reports them.
-- Dark mode follows `prefers-color-scheme` via `dark:` variants. Use `neutral-*` instead of `gray-*` for filled dark surfaces (Tailwind's `gray` is blue-tinted).
-- In `ResultTab`, fields/buttons without an `id` in the JSON config get deterministic fallback ids (`field-<index>`); the React key, the react-hook-form registration, and the `errors[...]` lookup must always use the same id.
-- Tabs render conditionally, so `ResultTab` fully remounts on tab switch. A future "persist form data across tabs" feature must revisit the index-based fallback ids first.
+- Tailwind CSS v4 dropped `cursor: pointer` on buttons; a base-layer rule in `src/app/globals.css` restores it.
+- `src/app/globals.css` sets the `sm` breakpoint to 400px (Tailwind's default is 640px). If you change it, update the `sizes` of the `Image` in `src/app/layout.tsx`.
+- Never use deprecated Tailwind class names, such as `bg-gradient-to-*` (now `bg-linear-to-*`). Tailwind CSS v4 still accepts them, and only the Tailwind VS Code extension reports them.
+- Dark mode follows `prefers-color-scheme` via `dark:` variants. Use `neutral-*`, not the blue-tinted `gray-*`, for filled dark surfaces.
