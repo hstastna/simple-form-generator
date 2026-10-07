@@ -246,6 +246,23 @@ describe('ResultTab native validation', () => {
   });
 });
 
+describe('ResultTab parse error', () => {
+  it('keeps the tab panel the result tab points at', async () => {
+    render(
+      <FormProvider>
+        <ConfigLoader json="{ broken" />
+        <ResultTab />
+      </FormProvider>
+    );
+
+    fireEvent.click(screen.getByText('load config'));
+
+    const alert = await screen.findByRole('alert');
+    expect(alert.textContent).toContain('Cannot render form');
+    expect(screen.getByRole('tabpanel').id).toBe('panel-result');
+  });
+});
+
 describe('ResultTab field semantics', () => {
   it('links every radio option to the group error message', async () => {
     render(

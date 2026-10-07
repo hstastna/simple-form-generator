@@ -49,21 +49,25 @@ export const ResultTab: FC = () => {
 
   if (parseError) {
     return (
-      <div className="p-6 bg-red-200 rounded-md" role="alert">
-        <h2 className="text-xl font-semibold text-red-800 mb-2">
-          Cannot render form
-        </h2>
-        <p className="text-red-800">
-          Please fix the JSON errors in the Config tab.
-        </p>
+      <div id="panel-result" role="tabpanel" aria-labelledby="tab-result">
+        <div className="p-6 bg-red-200 rounded-md" role="alert">
+          <h2 className="text-xl font-semibold text-red-800 mb-2">
+            Cannot render form
+          </h2>
+          <p className="text-red-800">
+            Please fix the JSON errors in the Config tab.
+          </p>
+        </div>
       </div>
     );
   }
 
   if (!formConfig) {
     return (
-      <div className="p-6 bg-yellow-200 rounded-md" role="status">
-        <p className="text-yellow-800">No valid form configuration found</p>
+      <div id="panel-result" role="tabpanel" aria-labelledby="tab-result">
+        <div className="p-6 bg-yellow-200 rounded-md" role="status">
+          <p className="text-yellow-800">No valid form configuration found</p>
+        </div>
       </div>
     );
   }
