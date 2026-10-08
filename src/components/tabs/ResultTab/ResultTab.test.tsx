@@ -147,8 +147,8 @@ describe('ResultTab handler names', () => {
     fireEvent.click(screen.getByText('load config'));
 
     const input = await screen.findByLabelText<HTMLInputElement>('Name');
-    fireEvent.change(input, { target: { value: 'Hilda' } });
-    expect(input.value).toBe('Hilda');
+    fireEvent.change(input, { target: { value: 'typed text' } });
+    expect(input.value).toBe('typed text');
 
     fireEvent.click(screen.getByText('Clear'));
 

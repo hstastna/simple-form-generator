@@ -80,6 +80,18 @@ describe('getValidationRules', () => {
     expect(pattern?.value.test('123abc')).toBe(false);
   });
 
+  it('appends the title to the pattern message, as browsers do', () => {
+    const { pattern } = getValidationRules({
+      type: 'text',
+      pattern: '[0-9]{5}',
+      title: 'Five digits',
+    });
+
+    expect(pattern?.message).toBe(
+      'Please match the requested format: Five digits'
+    );
+  });
+
   it('keeps an alternation inside the anchors', () => {
     const { pattern } = getValidationRules({ type: 'text', pattern: 'a|b' });
 
