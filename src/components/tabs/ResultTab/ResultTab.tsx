@@ -2,7 +2,7 @@
 
 import { useFormContext } from '@/context/FormContext';
 import { FC, SyntheticEvent, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { get, useForm } from 'react-hook-form';
 
 import { FormActions, withResolvedHandlers } from '@/formActions';
 import { FormButton } from './components/FormButton';
@@ -108,7 +108,7 @@ export const ResultTab: FC = () => {
                 id: fieldId,
               }}
               register={register}
-              error={errors[fieldId]}
+              error={get(errors, fieldId)}
             />
           );
         })}

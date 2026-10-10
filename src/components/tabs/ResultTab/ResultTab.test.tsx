@@ -47,6 +47,12 @@ const patternConfig = JSON.stringify({
   buttons: [{ text: 'Send', type: 'submit' }],
 });
 
+const dottedIdConfig = JSON.stringify({
+  title: 'Dotted id form',
+  items: [{ id: 'user.name', type: 'text', label: 'Name', required: true }],
+  buttons: [{ text: 'Send', type: 'submit' }],
+});
+
 const semanticsConfig = JSON.stringify({
   title: 'Semantics form',
   items: [
@@ -287,6 +293,25 @@ describe('ResultTab native validation', () => {
 
     expect((await screen.findByRole('alert')).textContent).toBe(
       'Please match the requested format'
+    );
+  });
+});
+
+describe('ResultTab dotted id', () => {
+  it('shows the error of a field whose id has a dot', async () => {
+    render(
+      <FormProvider>
+        <ConfigLoader json={dottedIdConfig} />
+        <ResultTab />
+      </FormProvider>
+    );
+
+    fireEvent.click(screen.getByText('load config'));
+    fireEvent.click(await screen.findByText('Send'));
+
+    expect((await screen.findByRole('alert')).id).toBe('user.name-error');
+    expect(screen.getByLabelText(/Name/).getAttribute('aria-invalid')).toBe(
+      'true'
     );
   });
 });
