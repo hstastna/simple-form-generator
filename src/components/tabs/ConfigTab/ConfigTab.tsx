@@ -1,28 +1,18 @@
 'use client';
 
-import { FC, useSyncExternalStore } from 'react';
+import { FC } from 'react';
 import { useFormContext } from '@/context/FormContext';
+import { useIsDarkMode } from '@/hooks/useIsDarkMode';
 import { ErrorDisplay, validationErrorsId } from './components/ErrorDisplay';
 import CodeMirror, { EditorView } from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 
 const editorInstructionsId = 'form-config-editor-instructions';
 const editorHintId = 'form-config-editor-hint';
-const darkModeQuery = '(prefers-color-scheme: dark)';
-
-const subscribeToDarkMode = (onChange: () => void) => {
-  const mediaQuery = window.matchMedia(darkModeQuery);
-  mediaQuery.addEventListener('change', onChange);
-  return () => mediaQuery.removeEventListener('change', onChange);
-};
 
 export const ConfigTab: FC = () => {
   const { jsonConfig, setJsonConfig, parseError } = useFormContext();
-  const isDarkMode = useSyncExternalStore(
-    subscribeToDarkMode,
-    () => window.matchMedia(darkModeQuery).matches,
-    () => false
-  );
+  const isDarkMode = useIsDarkMode();
 
   return (
     <div id="panel-config" role="tabpanel" aria-labelledby="tab-config">
