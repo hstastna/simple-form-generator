@@ -1,5 +1,6 @@
 'use client';
 
+import { CodeTab } from '@/components/tabs/CodeTab/CodeTab';
 import { ConfigTab } from '@/components/tabs/ConfigTab/ConfigTab';
 import { ResultTab } from '@/components/tabs/ResultTab/ResultTab';
 import { tabs } from '@/constants';
@@ -76,6 +77,7 @@ const Home: FC = () => {
         <section className="mt-6">
           {activeTab === 'config' && <ConfigTab />}
           {activeTab === 'result' && <ResultTab />}
+          {activeTab === 'code' && <CodeTab />}
         </section>
       </FormProvider>
     </main>

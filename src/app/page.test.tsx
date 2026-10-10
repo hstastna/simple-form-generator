@@ -54,11 +54,18 @@ describe('Home', () => {
   it('renders the correct tab content', async () => {
     const configTab = screen.getByText('config');
     const resultTab = screen.getByText('result');
+    const codeTab = screen.getByText('code');
 
     fireEvent.click(resultTab);
 
     await waitFor(() => {
       expect(document.getElementById('panel-result')).toBeTruthy();
+    });
+
+    fireEvent.click(codeTab);
+
+    await waitFor(() => {
+      expect(document.getElementById('panel-code')).toBeTruthy();
     });
 
     fireEvent.click(configTab);
