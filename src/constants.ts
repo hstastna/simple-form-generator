@@ -1,5 +1,8 @@
 export const tabs = ['config', 'result'] as const;
 
+export const RESET_CONFIRM_MESSAGE =
+  'Are you sure you want to reset the form? All data will be lost.';
+
 export const DEFAULT_FORM_CONFIG = JSON.stringify(
   {
     title: 'Sample Form',

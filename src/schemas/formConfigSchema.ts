@@ -36,3 +36,5 @@ export const formConfigSchema = z
       }
     });
   });
+
+export type FormConfig = z.infer<typeof formConfigSchema>;

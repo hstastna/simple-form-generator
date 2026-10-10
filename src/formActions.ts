@@ -16,7 +16,7 @@ type WithResolvedHandlers<T> = T extends object
   ? Omit<T, EventHandlerName> & Partial<Record<EventHandlerName, FormAction>>
   : never;
 
-const isEventHandlerName = (key: string): key is EventHandlerName =>
+export const isEventHandlerName = (key: string): key is EventHandlerName =>
   (eventHandlerNames as string[]).includes(key);
 
 const isFormActionName = (value: unknown): value is FormActionName =>
