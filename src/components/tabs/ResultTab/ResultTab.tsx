@@ -4,6 +4,7 @@ import { useFormContext } from '@/context/FormContext';
 import { FC, SyntheticEvent, useState } from 'react';
 import { get, useForm } from 'react-hook-form';
 
+import { RESET_CONFIRM_MESSAGE } from '@/constants';
 import { FormActions, withResolvedHandlers } from '@/formActions';
 import { FormButton } from './components/FormButton';
 import { FormData } from './components/FormData';
@@ -33,11 +34,7 @@ export const ResultTab: FC = () => {
   const resetFormWithConfirmation = (event: SyntheticEvent) => {
     event.preventDefault();
 
-    if (
-      window.confirm(
-        'Are you sure you want to reset the form? All data will be lost.'
-      )
-    ) {
+    if (window.confirm(RESET_CONFIRM_MESSAGE)) {
       clearForm();
     }
   };

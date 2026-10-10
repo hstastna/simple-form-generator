@@ -1,11 +1,8 @@
 'use client';
 
 import { createContext, FC, ReactNode, useContext, useState } from 'react';
-import { z } from 'zod';
-import { formConfigSchema } from '@/schemas/formConfigSchema';
+import { FormConfig, formConfigSchema } from '@/schemas/formConfigSchema';
 import { DEFAULT_FORM_CONFIG } from '@/constants';
-
-type FormConfig = z.infer<typeof formConfigSchema>;
 
 type FormContextType = {
   jsonConfig: string;
