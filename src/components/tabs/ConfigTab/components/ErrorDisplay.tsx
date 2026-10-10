@@ -14,7 +14,7 @@ export const ErrorDisplay: FC<ErrorDisplayProps> = ({ error }) => (
     role="status"
     className={
       error
-        ? 'mt-4 p-3 bg-red-200 text-red-800 dark:bg-red-900 dark:text-red-100 rounded-md'
+        ? 'mt-6 p-3 bg-red-200 text-red-800 dark:bg-red-900 dark:text-red-100 rounded-md'
         : 'sr-only'
     }
   >
