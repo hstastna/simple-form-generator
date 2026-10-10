@@ -346,7 +346,7 @@ describe('ResultTab disabled field', () => {
     await screen.findByLabelText('Name');
     fireEvent.click(screen.getByText('Send'));
 
-    const heading = await screen.findByText('Form Data:');
+    const heading = await screen.findByText('Form Data');
     const formData = heading.closest('section')?.textContent;
     expect(formData).toContain('"name"');
     expect(formData).not.toContain('"nick"');
