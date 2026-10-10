@@ -4,9 +4,10 @@
 
 Simple Form Generator is an app for you to generate forms for your apps, based on a specified JSON configuration.
 
-The application consists of two tabs:
+The application consists of three tabs:
 _Config_ – to add the form configuration in JSON format
 _Result_ – to display the form
+_Code_ – to copy the form as a React + TypeScript component
 
 When a text is inserted in the _Config_ tab text area (uses `CodeMirror` from the [@uiw/react-codemirror](https://uiwjs.github.io/react-codemirror/) package), it is validated automatically: the correctness of the JSON format itself as well as the specific configuration with proper values. If the problems occur, you'll be informed briefly by formatted error messages right below the text area.
 
@@ -72,7 +73,9 @@ The _Result_ tab implements two handlers:
 
 Both also clear the submitted _Form Data_ output.
 
-Any other handler passes validation but has no implementation in the _Result_ tab, so it does nothing while you are testing the form. It is reserved for the code that the planned _Code_ tab will generate. Two exceptions: `onChange` and `onBlur` on fields are validated, but they never run in the _Result_ tab, because React Hook Form takes those two events over.
+Any other handler passes validation but has no implementation in the _Result_ tab, so it does nothing while you are testing the form. Two exceptions: `onChange` and `onBlur` on fields are validated, but they never run in the _Result_ tab, because React Hook Form takes those two events over.
+
+The _Code_ tab generates a `handlers` object with a stub for every handler name in your config, ready for your own code. `reset` and `clear` come implemented. Field `onChange` and `onBlur` handlers go into the `register` options of React Hook Form.
 
 ## Getting Started
 
@@ -100,19 +103,17 @@ npm test
 
 ## Further improvements/coming soon:
 
-This project is very fresh, hence lots of improvements can be done, for example:
+This project is fresh, hence lots of improvements can be done, for example:
 
-- add "Code" tab to simply copy the React/TypeScript code for the generated forms
+- extend the _Code_ tab with more output formats to choose from: a React component in plain JavaScript or in TypeScript, optionally styled with Tailwind CSS classes, or plain HTML with a matching CSS stylesheet
 - allow other input types to be accepted, like type of button, submit, reset, email, password etc.
 - make the data entered in the generated forms persistent while switching between the tabs, even before clicking on Submit button (can be useful when playing with the various data and setting the proper JSON attributes to make the inputs work as expected)
 - improve state management, consider getting rid of the Context eventually
 - enable the [React Compiler](https://react.dev/learn/react-compiler) (`reactCompiler: true` in `next.config.ts` + `babel-plugin-react-compiler`) for automatic memoization
-- improve the existing accessibility
 - simplify CSS, maybe add custom utility classes and use them
-- add more unit tests
 - add detailed documentation and examples for advanced usage
 
-Maybe a bit later:
+Later:
 
 - add internationalization (i18n) support for multiple languages
 - implement a drag-and-drop interface for building forms
