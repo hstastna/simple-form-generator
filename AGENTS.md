@@ -33,6 +33,7 @@
 - `typescript` stays on 6.x: typescript-eslint (bundled by eslint-config-next) caps at `<6.1.0`.
 - `eslint` stays on 9.x: eslint-plugin-react does not support ESLint 10 yet.
 - `@types/node` matches the Node major in `Dockerfile` (24).
+- `overrides` in `package.json` swaps `fast-glob` for `tinyglobby` inside `@next/eslint-plugin-next`, removing the high `braces` audit findings. `tinyglobby` expands a `./` `rootDir` to every subfolder, so remove the override before setting `settings.next.rootDir` in `eslint.config.mjs`, or once the plugin drops `fast-glob`.
 - Before bumping any of these, re-check `npm view <pkg> peerDependencies`. The goal is zero warnings from `npm install`.
 - `.npmrc` sets `min-release-age=7` (npm 11.6+), so installs skip versions younger than 7 days. `npm ci` installs the lockfile as-is.
 - Commit `package-lock.json` with every `package.json` change; the Docker build runs `npm ci` and fails if they disagree.
