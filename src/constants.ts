@@ -14,6 +14,11 @@ export const DEFAULT_FORM_CONFIG = JSON.stringify(
         placeholder: 'Enter your name',
         required: true,
       },
+      {
+        id: 'newsletter',
+        type: 'checkbox',
+        label: 'Subscribe to the newsletter',
+      },
     ],
     buttons: [
       {

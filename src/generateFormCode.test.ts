@@ -149,6 +149,22 @@ export const GeneratedForm = () => {
       </div>
 
       <div>
+        <input
+          id="newsletter"
+          type="checkbox"
+          aria-invalid={errors.newsletter ? "true" : undefined}
+          aria-describedby={errors.newsletter ? "newsletter-error" : undefined}
+          {...register("newsletter")}
+        />
+        <label htmlFor="newsletter">Subscribe to the newsletter</label>
+        {errors.newsletter && (
+          <p id="newsletter-error" role="alert">
+            {errors.newsletter.message}
+          </p>
+        )}
+      </div>
+
+      <div>
         <button type="reset" onClick={handlers.reset}>
           Cancel
         </button>
