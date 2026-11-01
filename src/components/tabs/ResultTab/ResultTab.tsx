@@ -6,6 +6,7 @@ import { get, useForm } from 'react-hook-form';
 
 import { RESET_CONFIRM_MESSAGE } from '@/constants';
 import { FormActions, withResolvedHandlers } from '@/formActions';
+import { defaultFormTheme } from '@/formThemes';
 import { FormButton } from './components/FormButton';
 import { FormData } from './components/FormData';
 import { FormField } from './components/FormField';
@@ -83,14 +84,14 @@ export const ResultTab: FC = () => {
         Skip to form controls
       </a>
 
-      <h2 id="form-title" className="text-xl font-bold mb-5">
+      <h2 id="form-title" className={defaultFormTheme.title}>
         {formConfig.title || 'Generated form'}
       </h2>
 
       <form
         onSubmit={handleSubmit(onSubmit)}
         noValidate
-        className="space-y-5"
+        className={defaultFormTheme.form}
         aria-busy={isSubmitting}
         aria-labelledby="form-title"
       >
@@ -115,7 +116,7 @@ export const ResultTab: FC = () => {
           tabIndex={-1}
           role="group"
           aria-label="Form actions"
-          className="flex justify-end space-x-3 pt-4"
+          className={defaultFormTheme.buttons}
         >
           {formConfig.buttons.map((button, index) => (
             <FormButton

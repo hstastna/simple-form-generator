@@ -8,6 +8,7 @@ import { formFieldTypes, RadioOption } from '@/schemas/formFieldSchema';
 import { UseFormRegister } from 'react-hook-form';
 import { FieldError } from 'react-hook-form';
 import { ResultFormData } from '../ResultTab';
+import { defaultFormTheme } from '@/formThemes';
 import { getValidationRules } from '@/utils';
 import { TextNumDateField } from './TextNumDateField';
 import { TextAreaField } from './TextAreaField';
@@ -116,7 +117,7 @@ export const FormField: FC<FormFieldProps> = ({ field, register, error }) => {
               {...errorAria}
             >
               {label && (
-                <legend className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <legend className={defaultFormTheme.legend}>
                   {label}
                   {validationRules.required.value && <RequiredMark />}
                 </legend>
@@ -169,13 +170,17 @@ export const FormField: FC<FormFieldProps> = ({ field, register, error }) => {
   };
 
   return (
-    <div className="relative mb-4 w-full">
+    <div className={defaultFormTheme.field}>
       {renderField()}
 
       {error && (
         <p
           id={errorId}
-          className={`mt-1 text-sm text-red-600 dark:text-red-400 ${['checkbox', 'radio'].includes(type) ? '' : 'ml-[calc(20%)]'}`}
+          className={
+            ['checkbox', 'radio'].includes(type)
+              ? defaultFormTheme.error
+              : defaultFormTheme.gridError
+          }
           role="alert"
         >
           {typeof error.message === 'string' ? error.message : 'Invalid input'}
