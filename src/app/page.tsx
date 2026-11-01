@@ -5,6 +5,7 @@ import { ConfigTab } from '@/components/tabs/ConfigTab/ConfigTab';
 import { ResultTab } from '@/components/tabs/ResultTab/ResultTab';
 import { tabs } from '@/constants';
 import { FormProvider } from '@/context/FormContext';
+import { getNextTabIndex } from '@/utils';
 import { FC, KeyboardEvent, useState } from 'react';
 
 type Tabs = (typeof tabs)[number];
@@ -16,25 +17,14 @@ const Home: FC = () => {
     event: KeyboardEvent<HTMLButtonElement>,
     tab: Tabs
   ) => {
-    const currentIndex = tabs.indexOf(tab);
-    const lastIndex = tabs.length - 1;
-    let nextIndex: number;
+    const nextIndex = getNextTabIndex(
+      event.key,
+      tabs.indexOf(tab),
+      tabs.length
+    );
 
-    switch (event.key) {
-      case 'ArrowLeft':
-        nextIndex = currentIndex === 0 ? lastIndex : currentIndex - 1;
-        break;
-      case 'ArrowRight':
-        nextIndex = currentIndex === lastIndex ? 0 : currentIndex + 1;
-        break;
-      case 'Home':
-        nextIndex = 0;
-        break;
-      case 'End':
-        nextIndex = lastIndex;
-        break;
-      default:
-        return;
+    if (nextIndex === undefined) {
+      return;
     }
 
     event.preventDefault();

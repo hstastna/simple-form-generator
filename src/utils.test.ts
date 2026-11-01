@@ -1,5 +1,5 @@
 import { describe, it, expect } from '@jest/globals';
-import { getValidationRules } from '@/utils';
+import { getNextTabIndex, getValidationRules } from '@/utils';
 
 const noRequired = { required: { value: false, message: '' } };
 
@@ -145,5 +145,26 @@ describe('getValidationRules', () => {
     expect(getValidationRules({ type: 'checkbox', min: 5 })).toEqual(
       noRequired
     );
+  });
+});
+
+describe('getNextTabIndex', () => {
+  it('moves to the neighbouring tab with the arrow keys', () => {
+    expect(getNextTabIndex('ArrowRight', 0, 3)).toBe(1);
+    expect(getNextTabIndex('ArrowLeft', 2, 3)).toBe(1);
+  });
+
+  it('wraps around at both ends', () => {
+    expect(getNextTabIndex('ArrowRight', 2, 3)).toBe(0);
+    expect(getNextTabIndex('ArrowLeft', 0, 3)).toBe(2);
+  });
+
+  it('jumps to the first tab on Home and the last on End', () => {
+    expect(getNextTabIndex('Home', 1, 3)).toBe(0);
+    expect(getNextTabIndex('End', 1, 3)).toBe(2);
+  });
+
+  it('returns undefined for any other key', () => {
+    expect(getNextTabIndex('Enter', 1, 3)).toBeUndefined();
   });
 });

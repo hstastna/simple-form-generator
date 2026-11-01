@@ -128,3 +128,24 @@ export const getValidationRules = ({
       return requiredRule;
   }
 };
+
+export const getNextTabIndex = (
+  key: string,
+  currentIndex: number,
+  tabCount: number
+) => {
+  const lastIndex = tabCount - 1;
+
+  switch (key) {
+    case 'ArrowLeft':
+      return currentIndex === 0 ? lastIndex : currentIndex - 1;
+    case 'ArrowRight':
+      return currentIndex === lastIndex ? 0 : currentIndex + 1;
+    case 'Home':
+      return 0;
+    case 'End':
+      return lastIndex;
+    default:
+      return undefined;
+  }
+};
