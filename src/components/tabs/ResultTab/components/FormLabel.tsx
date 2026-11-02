@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import { defaultFormTheme } from '@/formThemes';
 import { RequiredMark } from './RequiredMark';
 
 type FormLabelProps = {
@@ -16,7 +17,11 @@ export const FormLabel: FC<FormLabelProps> = ({
 }) => (
   <label
     htmlFor={id}
-    className={`${marginRight ? 'mr-1.5' : 'ml-1.5'} block text-sm font-medium`}
+    className={
+      marginRight
+        ? defaultFormTheme.labelBeforeControl
+        : defaultFormTheme.labelAfterControl
+    }
   >
     {label}
     {required && <RequiredMark />}

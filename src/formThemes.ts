@@ -2,6 +2,10 @@ export type FormTheme = Record<
   | 'title'
   | 'form'
   | 'field'
+  | 'labelBeforeControl'
+  | 'labelAfterControl'
+  | 'requiredMark'
+  | 'requiredText'
   | 'legend'
   | 'error'
   | 'gridError'
@@ -17,6 +21,10 @@ export const defaultFormTheme = defineFormTheme({
   title: 'text-xl font-bold mb-5',
   form: 'space-y-5',
   field: 'relative mb-4 w-full',
+  labelBeforeControl: 'mr-1.5 block text-sm font-medium',
+  labelAfterControl: 'ml-1.5 block text-sm font-medium',
+  requiredMark: 'ml-1 text-red-600 dark:text-red-400',
+  requiredText: 'sr-only',
   legend: 'block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2',
   error: 'mt-1 text-sm text-red-600 dark:text-red-400',
   gridError: 'mt-1 text-sm text-red-600 dark:text-red-400 ml-[calc(20%)]',
