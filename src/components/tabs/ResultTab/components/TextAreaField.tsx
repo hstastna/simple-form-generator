@@ -2,6 +2,7 @@ import { FC, TextareaHTMLAttributes } from 'react';
 import { FormLabel } from './FormLabel';
 import { UseFormRegister } from 'react-hook-form';
 import { ResultFormData } from '../ResultTab';
+import { defaultFormTheme } from '@/formThemes';
 import { ValidationRules } from '@/utils';
 
 type TextAreaFieldProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
@@ -23,17 +24,17 @@ export const TextAreaField: FC<TextAreaFieldProps> = ({
   const isRequired = validationRules.required.value;
 
   return (
-    <div className="grid grid-cols-[20%_80%] items-baseline w-full">
-      <div className="wrap-break-word">
+    <div className={defaultFormTheme.textAreaRow}>
+      <div className={defaultFormTheme.labelCell}>
         {label && (
           <FormLabel id={id} label={label} required={isRequired} marginRight />
         )}
       </div>
 
-      <div className="w-full">
+      <div className={defaultFormTheme.controlCell}>
         <textarea
           id={id}
-          className="p-3 block w-full border border-gray-500 rounded dark:border-gray-400 placeholder:text-gray-600 dark:placeholder:text-gray-400"
+          className={defaultFormTheme.textArea}
           {...props}
           defaultValue={text}
           {...register(id, validationRules)}

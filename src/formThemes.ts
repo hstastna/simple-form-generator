@@ -2,10 +2,16 @@ export type FormTheme = Record<
   | 'title'
   | 'form'
   | 'field'
+  | 'textNumDateRow'
+  | 'textAreaRow'
+  | 'labelCell'
   | 'labelBeforeControl'
   | 'labelAfterControl'
   | 'requiredMark'
   | 'requiredText'
+  | 'controlCell'
+  | 'textNumDateInput'
+  | 'textArea'
   | 'legend'
   | 'error'
   | 'gridError'
@@ -21,10 +27,18 @@ export const defaultFormTheme = defineFormTheme({
   title: 'text-xl font-bold mb-5',
   form: 'space-y-5',
   field: 'relative mb-4 w-full',
+  textNumDateRow: 'grid grid-cols-[20%_80%] items-center w-full',
+  textAreaRow: 'grid grid-cols-[20%_80%] items-baseline w-full',
+  labelCell: 'wrap-break-word',
   labelBeforeControl: 'mr-1.5 block text-sm font-medium',
   labelAfterControl: 'ml-1.5 block text-sm font-medium',
   requiredMark: 'ml-1 text-red-600 dark:text-red-400',
   requiredText: 'sr-only',
+  controlCell: 'w-full',
+  textNumDateInput:
+    'p-3 block w-full border border-gray-500 rounded dark:border-gray-400 placeholder:text-gray-500 dark:placeholder:text-gray-400',
+  textArea:
+    'p-3 block w-full border border-gray-500 rounded dark:border-gray-400 placeholder:text-gray-600 dark:placeholder:text-gray-400',
   legend: 'block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2',
   error: 'mt-1 text-sm text-red-600 dark:text-red-400',
   gridError: 'mt-1 text-sm text-red-600 dark:text-red-400 ml-[calc(20%)]',
