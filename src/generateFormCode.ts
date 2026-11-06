@@ -11,7 +11,6 @@ const INDENT = '  ';
 const REQUIRED_MARK = '<span aria-hidden="true"> *</span>';
 
 const identifierPattern = /^[A-Za-z_$][\w$]*$/;
-// react-hook-form reads these characters in a field name as a nested path
 const fieldPathPattern = /[.[\]'"]/;
 
 const fieldOwnKeys = [
@@ -23,11 +22,10 @@ const fieldOwnKeys = [
   'onChange',
   'onBlur',
   'aria-describedby',
-  // register() overwrites name with the id, in the Result tab too
   'name',
 ];
 
-const referenceHandler = (name: string, usedHandlers: Set<string>) => {
+const formatHandlerReference = (name: string, usedHandlers: Set<string>) => {
   usedHandlers.add(name);
 
   return `handlers.${name}`;
@@ -73,7 +71,7 @@ const formatAttributes = (
     .filter(([key, value]) => !skippedKeys.includes(key) && value !== undefined)
     .map(([key, value]) =>
       isEventHandlerName(key)
-        ? `${key}={${referenceHandler(String(value), usedHandlers)}}`
+        ? `${key}={${formatHandlerReference(String(value), usedHandlers)}}`
         : formatAttribute(key, value)
     );
 
@@ -82,7 +80,6 @@ const formatJsxText = (text: string) =>
     ? text
     : `{${JSON.stringify(text)}}`;
 
-// Prettier moves an overflowing condition, such as aria-describedby, onto its own line
 const breakLongCondition = (attribute: string, indent: string) => {
   const [, name, condition] =
     /^([\w-]+)=\{([^"{].* \? .+)\}$/.exec(attribute) ?? [];
@@ -277,7 +274,7 @@ const formatField = (
     const handlerName = field[key];
 
     return handlerName
-      ? [`${key}: ${referenceHandler(handlerName, usedHandlers)},`]
+      ? [`${key}: ${formatHandlerReference(handlerName, usedHandlers)},`]
       : [];
   });
   const register = formatRegister(id, [
@@ -437,7 +434,7 @@ const formatButton = (
   const { text, type = 'button', ...attributes } = button;
   const implicitReset =
     type === 'reset' && !attributes.onClick
-      ? [`onClick={${referenceHandler('reset', usedHandlers)}}`]
+      ? [`onClick={${formatHandlerReference('reset', usedHandlers)}}`]
       : [];
 
   return formatTextElement(
