@@ -2,6 +2,7 @@ import { FC, InputHTMLAttributes } from 'react';
 import { FormLabel } from './FormLabel';
 import { UseFormRegister } from 'react-hook-form';
 import { ResultFormData } from '../ResultTab';
+import { defaultFormTheme } from '@/formThemes';
 import { ValidationRules } from '@/utils';
 
 type RadioFieldProps = InputHTMLAttributes<HTMLInputElement> & {
@@ -25,11 +26,17 @@ export const RadioField: FC<RadioFieldProps> = ({
   const isRequired = isSingleRadio && validationRules.required.value;
 
   return (
-    <div className={`${isSingleRadio ? '' : 'mb-1'} flex items-center`}>
+    <div
+      className={
+        isSingleRadio
+          ? defaultFormTheme.radioRow
+          : defaultFormTheme.radioOptionRow
+      }
+    >
       <input
         id={htmlId}
         type="radio"
-        className="h-4 w-4 border border-gray-400 focus:ring-blue-500"
+        className={defaultFormTheme.radio}
         {...props}
         {...register(id, validationRules)}
       />

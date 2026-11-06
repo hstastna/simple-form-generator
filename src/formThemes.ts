@@ -12,6 +12,11 @@ export type FormTheme = Record<
   | 'controlCell'
   | 'textNumDateInput'
   | 'textArea'
+  | 'checkboxRow'
+  | 'checkbox'
+  | 'radioRow'
+  | 'radioOptionRow'
+  | 'radio'
   | 'legend'
   | 'error'
   | 'gridError'
@@ -39,6 +44,11 @@ export const defaultFormTheme = defineFormTheme({
     'p-3 block w-full border border-gray-500 rounded dark:border-gray-400 placeholder:text-gray-500 dark:placeholder:text-gray-400',
   textArea:
     'p-3 block w-full border border-gray-500 rounded dark:border-gray-400 placeholder:text-gray-600 dark:placeholder:text-gray-400',
+  checkboxRow: 'flex items-center',
+  checkbox: 'h-4 w-4',
+  radioRow: 'flex items-center',
+  radioOptionRow: 'mb-1 flex items-center',
+  radio: 'h-4 w-4 border border-gray-400 focus:ring-blue-500',
   legend: 'block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2',
   error: 'mt-1 text-sm text-red-600 dark:text-red-400',
   gridError: 'mt-1 text-sm text-red-600 dark:text-red-400 ml-[calc(20%)]',
