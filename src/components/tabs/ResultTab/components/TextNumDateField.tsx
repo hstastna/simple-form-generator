@@ -36,7 +36,11 @@ export const TextNumDateField: FC<TextNumDateFieldProps> = ({
         <input
           id={id}
           type={type}
-          className={defaultFormTheme.textNumDateInput}
+          className={
+            type === 'date'
+              ? defaultFormTheme.dateInput
+              : defaultFormTheme.textNumDateInput
+          }
           {...props}
           {...register(id, validationRules)}
         />
