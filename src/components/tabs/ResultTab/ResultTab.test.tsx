@@ -2,11 +2,20 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect } from '@jest/globals';
 import { FC } from 'react';
 import { FormProvider, useFormContext } from '@/context/FormContext';
+import { defaultFormTheme } from '@/formThemes';
 import { ResultTab } from './ResultTab';
 
 const config = JSON.stringify({
   title: 'Handler form',
   items: [{ id: 'name', type: 'text', label: 'Name' }],
+  buttons: [{ text: 'Clear', onClick: 'clear' }],
+});
+
+const presetDateConfig = JSON.stringify({
+  title: 'Preset date form',
+  items: [
+    { id: 'start', type: 'date', label: 'Start', defaultValue: '2026-11-06' },
+  ],
   buttons: [{ text: 'Clear', onClick: 'clear' }],
 });
 
@@ -159,6 +168,29 @@ describe('ResultTab handler names', () => {
     fireEvent.click(screen.getByText('Clear'));
 
     await waitFor(() => expect(input.value).toBe(''));
+  });
+});
+
+describe('ResultTab date colour', () => {
+  it('restores the text colour of a preset date after clear', async () => {
+    render(
+      <FormProvider>
+        <ConfigLoader json={presetDateConfig} />
+        <ResultTab />
+      </FormProvider>
+    );
+
+    fireEvent.click(screen.getByText('load config'));
+
+    const input = await screen.findByLabelText('Start');
+    fireEvent.change(input, { target: { value: '' } });
+    expect(input.className).toBe(defaultFormTheme.emptyDateInput);
+
+    fireEvent.click(screen.getByText('Clear'));
+
+    await waitFor(() =>
+      expect(input.className).toBe(defaultFormTheme.dateInput)
+    );
   });
 });
 

@@ -5,7 +5,7 @@ import {
   TextareaHTMLAttributes,
 } from 'react';
 import { formFieldTypes, RadioOption } from '@/schemas/formFieldSchema';
-import { UseFormRegister } from 'react-hook-form';
+import { Control, UseFormRegister } from 'react-hook-form';
 import { FieldError } from 'react-hook-form';
 import { ResultFormData } from '../ResultTab';
 import { defaultFormTheme } from '@/formThemes';
@@ -40,11 +40,17 @@ export type FormField = InputAndTextAreaProps & {
 
 type FormFieldProps = {
   field: FormField;
+  control: Control<ResultFormData>;
   register: UseFormRegister<ResultFormData>;
   error?: FieldError;
 };
 
-export const FormField: FC<FormFieldProps> = ({ field, register, error }) => {
+export const FormField: FC<FormFieldProps> = ({
+  field,
+  control,
+  register,
+  error,
+}) => {
   const { id, type, label, options, ...props } = field;
 
   const required = field.required || options?.some((option) => option.required);
@@ -68,6 +74,7 @@ export const FormField: FC<FormFieldProps> = ({ field, register, error }) => {
           <TextNumDateField
             id={id}
             type={type}
+            control={control}
             register={register}
             validationRules={validationRules}
             label={label}

@@ -17,6 +17,7 @@ export const ResultTab: FC = () => {
   const { formConfig, parseError } = useFormContext();
   const [formData, setFormData] = useState<ResultFormData>({});
   const {
+    control,
     register,
     handleSubmit,
     formState: { errors, isSubmitting, isSubmitSuccessful },
@@ -105,6 +106,7 @@ export const ResultTab: FC = () => {
                 ...withResolvedHandlers(field, formActions),
                 id: fieldId,
               }}
+              control={control}
               register={register}
               error={get(errors, fieldId)}
             />

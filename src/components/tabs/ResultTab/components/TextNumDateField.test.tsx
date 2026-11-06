@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, it, expect } from '@jest/globals';
 import { FC } from 'react';
 import { useForm } from 'react-hook-form';
+import { defaultFormTheme } from '@/formThemes';
 import { getValidationRules } from '@/utils';
 import { ResultFormData } from '../ResultTab';
 import { FormFieldType } from './FormField';
@@ -17,12 +18,13 @@ type HarnessProps = {
 };
 
 const Harness: FC<HarnessProps> = ({ type = 'text', required, ...props }) => {
-  const { register } = useForm<ResultFormData>();
+  const { control, register } = useForm<ResultFormData>();
 
   return (
     <TextNumDateField
       id="nick"
       type={type}
+      control={control}
       register={register}
       validationRules={getValidationRules({ type, required })}
       required={required}
@@ -48,6 +50,36 @@ describe('TextNumDateField', () => {
     render(<Harness label="Nick" type="date" />);
 
     expect(screen.getByLabelText<HTMLInputElement>('Nick').type).toBe('date');
+  });
+
+  it('greys out the date format of an empty date input like a placeholder', () => {
+    render(<Harness label="Nick" type="date" />);
+
+    const nick = screen.getByLabelText('Nick');
+    expect(nick.className).toBe(defaultFormTheme.emptyDateInput);
+
+    fireEvent.change(nick, { target: { value: '2026-11-06' } });
+    expect(nick.className).toBe(defaultFormTheme.dateInput);
+
+    fireEvent.change(nick, { target: { value: '' } });
+    expect(nick.className).toBe(defaultFormTheme.emptyDateInput);
+  });
+
+  it('keeps the text colour of a date preset in the JSON config', () => {
+    render(<Harness label="Nick" type="date" defaultValue="2026-11-06" />);
+
+    expect(screen.getByLabelText('Nick').className).toBe(
+      defaultFormTheme.dateInput
+    );
+  });
+
+  it('keeps the text colour of a date pinned in the JSON config', () => {
+    render(<Harness label="Nick" type="date" value="2026-11-06" />);
+
+    const nick = screen.getByLabelText('Nick');
+    fireEvent.change(nick, { target: { value: '' } });
+
+    expect(nick.className).toBe(defaultFormTheme.dateInput);
   });
 
   it('predefines the input with the value from the JSON config', () => {

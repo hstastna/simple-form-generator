@@ -12,6 +12,7 @@ export type FormTheme = Record<
   | 'controlCell'
   | 'textNumDateInput'
   | 'dateInput'
+  | 'emptyDateInput'
   | 'textArea'
   | 'checkboxRow'
   | 'checkbox'
@@ -45,6 +46,8 @@ export const defaultFormTheme = defineFormTheme({
     'p-3 block w-full border border-gray-500 rounded dark:border-gray-400 placeholder:text-gray-500 dark:placeholder:text-gray-400',
   dateInput:
     'p-3 block w-full border border-gray-500 rounded dark:border-gray-400 placeholder:text-gray-500 dark:placeholder:text-gray-400 scheme-light-dark',
+  emptyDateInput:
+    'p-3 block w-full border border-gray-500 rounded dark:border-gray-400 placeholder:text-gray-500 dark:placeholder:text-gray-400 scheme-light-dark text-gray-500 dark:text-gray-400',
   textArea:
     'p-3 block w-full border border-gray-500 rounded dark:border-gray-400 placeholder:text-gray-600 dark:placeholder:text-gray-400',
   checkboxRow: 'flex items-center',

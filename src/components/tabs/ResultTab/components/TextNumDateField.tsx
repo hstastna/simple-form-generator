@@ -1,6 +1,6 @@
 import { FC, InputHTMLAttributes } from 'react';
 import { FormLabel } from './FormLabel';
-import { UseFormRegister } from 'react-hook-form';
+import { Control, UseFormRegister, useWatch } from 'react-hook-form';
 import { ResultFormData } from '../ResultTab';
 import { FormFieldType } from './FormField';
 import { defaultFormTheme } from '@/formThemes';
@@ -9,6 +9,7 @@ import { ValidationRules } from '@/utils';
 type TextNumDateFieldProps = InputHTMLAttributes<HTMLInputElement> & {
   id: string;
   type: Extract<FormFieldType, 'text' | 'number' | 'date'>;
+  control: Control<ResultFormData>;
   register: UseFormRegister<ResultFormData>;
   validationRules: ValidationRules;
   label?: string;
@@ -17,12 +18,23 @@ type TextNumDateFieldProps = InputHTMLAttributes<HTMLInputElement> & {
 export const TextNumDateField: FC<TextNumDateFieldProps> = ({
   id,
   type,
+  control,
   register,
   validationRules,
   label,
   ...props
 }) => {
   const isRequired = validationRules.required.value;
+  const { value, defaultValue } = props;
+  const pickedDate = useWatch({
+    control,
+    name: id,
+    disabled: type !== 'date',
+  });
+  const isEmptyDate = !(value ?? pickedDate ?? defaultValue);
+  const dateInputClassName = isEmptyDate
+    ? defaultFormTheme.emptyDateInput
+    : defaultFormTheme.dateInput;
 
   return (
     <div className={defaultFormTheme.textNumDateRow}>
@@ -38,7 +50,7 @@ export const TextNumDateField: FC<TextNumDateFieldProps> = ({
           type={type}
           className={
             type === 'date'
-              ? defaultFormTheme.dateInput
+              ? dateInputClassName
               : defaultFormTheme.textNumDateInput
           }
           {...props}
