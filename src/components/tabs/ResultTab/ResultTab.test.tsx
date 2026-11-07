@@ -1,8 +1,11 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect } from '@jest/globals';
 import { FC } from 'react';
+import ts from 'typescript';
 import { FormProvider, useFormContext } from '@/context/FormContext';
 import { defaultFormTheme } from '@/formThemes';
+import { generateFormCode } from '@/generateFormCode';
+import { formConfigSchema } from '@/schemas/formConfigSchema';
 import { ResultTab } from './ResultTab';
 
 const config = JSON.stringify({
@@ -144,11 +147,62 @@ const ariaLabelConfig = JSON.stringify({
   buttons: [{ text: 'Send', type: 'submit' }],
 });
 
+const parityConfig = JSON.stringify({
+  title: 'Parity form',
+  items: [
+    { id: 'name', type: 'text', label: 'Name', required: true },
+    { id: 'age', type: 'number', label: 'Age' },
+    { id: 'start', type: 'date', label: 'Start', required: true },
+    { id: 'end', type: 'date', label: 'End', defaultValue: '2026-11-06' },
+    { id: 'bio', type: 'textarea', label: 'Bio', text: 'Hello' },
+    { id: 'nick', type: 'text', 'aria-label': 'Nick', className: 'w-24' },
+    { id: 'agree', type: 'checkbox', label: 'Agree', required: true },
+    { id: 'solo', type: 'radio', label: 'Solo' },
+    {
+      id: 'plan',
+      type: 'radio',
+      label: 'Plan',
+      required: true,
+      options: [
+        { value: 'basic', label: 'Basic' },
+        { value: 'pro', label: 'Pro' },
+      ],
+    },
+  ],
+  buttons: [
+    { text: 'Clear', onClick: 'clear' },
+    { text: 'Reset', type: 'reset' },
+    { text: 'Send', type: 'submit' },
+  ],
+});
+
 const ConfigLoader: FC<{ json?: string }> = ({ json = config }) => {
   const { setJsonConfig } = useFormContext();
 
   return <button onClick={() => setJsonConfig(json)}>load config</button>;
 };
+
+const loadGeneratedForm = (json: string) => {
+  const code = generateFormCode(
+    formConfigSchema.parse(JSON.parse(json)),
+    defaultFormTheme
+  );
+  const { outputText } = ts.transpileModule(code, {
+    compilerOptions: {
+      jsx: ts.JsxEmit.ReactJSX,
+      module: ts.ModuleKind.CommonJS,
+    },
+  });
+  const exports: { GeneratedForm?: FC } = {};
+  new Function('require', 'exports', outputText)(require, exports);
+
+  return exports.GeneratedForm as FC;
+};
+
+const listTagsAndClasses = (root: Element) =>
+  [...root.querySelectorAll('*')].map(
+    (element) => `${element.tagName} ${element.getAttribute('class') ?? ''}`
+  );
 
 describe('ResultTab handler names', () => {
   it('runs the built-in action named in the JSON config', async () => {
@@ -191,6 +245,40 @@ describe('ResultTab date colour', () => {
     await waitFor(() =>
       expect(input.className).toBe(defaultFormTheme.dateInput)
     );
+  });
+});
+
+describe('ResultTab and the generated Tailwind CSS code', () => {
+  it('render the same tags and classes after a failed submit', async () => {
+    const { unmount } = render(
+      <FormProvider>
+        <ConfigLoader json={parityConfig} />
+        <ResultTab />
+      </FormProvider>
+    );
+
+    fireEvent.click(screen.getByText('load config'));
+    fireEvent.click(await screen.findByText('Send'));
+    await screen.findAllByRole('alert');
+
+    const resultTitle = listTagsAndClasses(document.body).find((element) =>
+      element.startsWith('H2 ')
+    );
+    const resultForm = listTagsAndClasses(screen.getByRole('form'));
+    unmount();
+
+    const GeneratedForm = loadGeneratedForm(parityConfig);
+    render(<GeneratedForm />);
+
+    fireEvent.click(screen.getByText('Send'));
+    await screen.findAllByRole('alert');
+
+    const [generatedTitle, ...generatedForm] = listTagsAndClasses(
+      screen.getByRole('form')
+    );
+
+    expect(generatedTitle).toBe(resultTitle);
+    expect(generatedForm).toEqual(resultForm);
   });
 });
 
