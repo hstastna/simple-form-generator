@@ -81,12 +81,25 @@ const formatJsxText = (text: string) =>
     : `{${JSON.stringify(text)}}`;
 
 const breakLongCondition = (attribute: string, indent: string) => {
-  const [, name, condition] =
-    /^([\w-]+)=\{([^"{].* \? .+)\}$/.exec(attribute) ?? [];
+  const [, name, test, consequent, alternate] =
+    /^([\w-]+)=\{([^"{].*?) \? ("(?:[^"\\]|\\.)*") : (.+)\}$/.exec(attribute) ??
+    [];
 
-  return condition && indent.length + attribute.length > MAX_LINE_LENGTH
+  if (!name || indent.length + attribute.length <= MAX_LINE_LENGTH) {
+    return attribute;
+  }
+
+  const condition = `${test} ? ${consequent} : ${alternate}`;
+
+  return indent.length + INDENT.length + condition.length <= MAX_LINE_LENGTH
     ? `${name}={\n${INDENT}${condition}\n}`
-    : attribute;
+    : [
+        `${name}={`,
+        `${INDENT}${test}`,
+        `${INDENT}${INDENT}? ${consequent}`,
+        `${INDENT}${INDENT}: ${alternate}`,
+        '}',
+      ].join('\n');
 };
 
 const formatTag = (
@@ -96,8 +109,14 @@ const formatTag = (
   indent: string
 ) => {
   const line = `${indent}${opening}${attributes.map((attribute) => ` ${attribute}`).join('')}${ending}`;
+  // Prettier never breaks a tag with one string attribute, however long
+  const isSingleStringAttribute =
+    attributes.length === 1 && /^[\w-]+="/.test(attributes[0]);
 
-  if (line.length <= MAX_LINE_LENGTH && !line.includes('\n')) {
+  if (
+    (line.length <= MAX_LINE_LENGTH || isSingleStringAttribute) &&
+    !line.includes('\n')
+  ) {
     return [line];
   }
 
@@ -417,9 +436,12 @@ const formatField = (
     [
       ...formatControl(),
       `${childIndent}{${errorRef} && (`,
-      `${childIndent}${INDENT}<p id=${formatString(errorId)} role="alert">`,
-      `${childIndent}${INDENT}${INDENT}{${errorRef}.message}`,
-      `${childIndent}${INDENT}</p>`,
+      ...formatContainer(
+        'p',
+        [`id=${formatString(errorId)}`, 'role="alert"'],
+        [`${childIndent}${INDENT}${INDENT}{${errorRef}.message}`],
+        childIndent + INDENT
+      ),
       `${childIndent})}`,
     ],
     indent

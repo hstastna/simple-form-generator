@@ -354,3 +354,38 @@ describe('validation rules', () => {
     expect(code).toContain('{...register("nick")}');
   });
 });
+
+describe('long lines', () => {
+  const id = 'a-very-long-field-identifier-that-goes-on-and-on-forever';
+  const code = generate({
+    items: [{ id, type: 'text', label: 'Long' }],
+    buttons: [],
+  });
+
+  it('keeps a tag with one long string attribute on one line', () => {
+    expect(code).toContain(`<label htmlFor="${id}">`);
+  });
+
+  it('splits a condition at "?" and ":" when it is still too long', () => {
+    expect(code).toContain(
+      [
+        'aria-invalid={',
+        `            errors["${id}"]`,
+        '              ? "true"',
+        '              : undefined',
+        '          }',
+      ].join('\n')
+    );
+  });
+
+  it('puts each attribute of a long error message on its own line', () => {
+    expect(code).toContain(
+      [
+        '<p',
+        `            id="${id}-error"`,
+        '            role="alert"',
+        '          >',
+      ].join('\n')
+    );
+  });
+});
