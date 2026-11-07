@@ -27,6 +27,7 @@
 - A field without an `id` gets `field-<index>`, a radio option `<id>-<index>`. The React key, the react-hook-form registration, the `errors[...]` lookup and the schema's duplicate check must all use the same id. A button is keyed by its `id`, falling back to `button-<index>`.
 - `formConfigSchema` rejects whitespace in an `id` and duplicates among field, radio option and `<id>-error` ids. Button ids and the app's own ids (`form-title`, `panel-result`, …) are not checked, by decision.
 - Tabs render conditionally, so `ResultTab` remounts on every tab switch. Persisting form data across tabs would first need stable fallback ids.
+- The Result tab takes its form classes from `tailwindFormTheme` in `src/formThemes.ts`, and the Tailwind CSS subtab of the Code tab uses the same classes. Change Result tab tags or classes together with `src/generateFormCode.ts`; `ResultTab.test.tsx` checks it. The generated code runs in other projects, so a theme class must not rely on `src/app/globals.css`; hence `scheme-light-dark` and `enabled:cursor-pointer`.
 
 ## Dependencies
 
@@ -37,11 +38,6 @@
 - Before bumping any of these, re-check `npm view <pkg> peerDependencies`. The goal is zero warnings from `npm install`.
 - `.npmrc` sets `min-release-age=7` (npm 11.6+), so installs skip versions younger than 7 days. `npm ci` installs the lockfile as-is.
 - Commit `package-lock.json` with every `package.json` change; the Docker build runs `npm ci` and fails if they disagree.
-
-## Testing
-
-- Jest with React Testing Library and jsdom. Tests sit next to their code as `<file>.test.ts(x)`.
-- `jest.mocks.ts` patches the browser APIs jsdom lacks for CodeMirror (`matchMedia`, `Range.getClientRects`). Add global patches there, not in single test files.
 
 ## Conventions and gotchas
 

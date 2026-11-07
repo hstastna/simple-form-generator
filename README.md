@@ -9,6 +9,8 @@ _Config_ – to add the form configuration in JSON format
 _Result_ – to display the form
 _Code_ – to copy the form as a React + TypeScript component
 
+The _Code_ tab has two subtabs. _Unstyled_ gives the component without the classes of the _Result_ tab. _Tailwind CSS_ gives it with the same Tailwind CSS classes as the _Result_ tab, and needs Tailwind CSS v4.1 or later in your project.
+
 When a text is inserted in the _Config_ tab text area (uses `CodeMirror` from the [@uiw/react-codemirror](https://uiwjs.github.io/react-codemirror/) package), it is validated automatically: the correctness of the JSON format itself as well as the specific configuration with proper values. If the problems occur, you'll be informed briefly by formatted error messages right below the text area.
 
 If no error occurs after inserting the configuration, you can click on _Result_ tab to see the result.
@@ -105,7 +107,7 @@ npm test
 
 This project is fresh, hence lots of improvements can be done, for example:
 
-- extend the _Code_ tab with more output formats to choose from: a React component in plain JavaScript or in TypeScript, optionally styled with Tailwind CSS classes, or plain HTML with a matching CSS stylesheet
+- extend the _Code_ tab with more output formats to choose from: a React component in plain JavaScript, or plain HTML with a matching CSS stylesheet
 - allow other input types to be accepted, like type of button, submit, reset, email, password etc.
 - make the data entered in the generated forms persistent while switching between the tabs, even before clicking on Submit button (can be useful when playing with the various data and setting the proper JSON attributes to make the inputs work as expected)
 - improve state management, consider getting rid of the Context eventually
