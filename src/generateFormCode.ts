@@ -1,10 +1,16 @@
 import { FormConfig } from '@/schemas/formConfigSchema';
 import { RESET_CONFIRM_MESSAGE } from '@/constants';
 import { isEventHandlerName } from '@/formActions';
+import { FormTheme } from '@/formThemes';
 import { getValidationRules, ValidationRules } from '@/utils';
 
 type FormField = FormConfig['items'][number];
 type FormButton = FormConfig['buttons'][number];
+type WatchedDate = {
+  id: string;
+  variableName: string;
+  defaultValue?: string | number;
+};
 
 const MAX_LINE_LENGTH = 80;
 const INDENT = '  ';
@@ -29,6 +35,28 @@ const formatHandlerReference = (name: string, usedHandlers: Set<string>) => {
   usedHandlers.add(name);
 
   return `handlers.${name}`;
+};
+
+const formatWatchedDateReference = (
+  id: string,
+  defaultValue: string | number | undefined,
+  watchedDates: WatchedDate[]
+) => {
+  const takenNames = new Set(
+    watchedDates.map(({ variableName }) => variableName)
+  );
+  const camelCaseId = id.replace(/[^\w$]+(.)?/g, (_, next = '') =>
+    next.toUpperCase()
+  );
+  let variableName = `${/^\d/.test(camelCaseId) ? '_' : ''}${camelCaseId}Value`;
+
+  while (takenNames.has(variableName)) {
+    variableName = `_${variableName}`;
+  }
+
+  watchedDates.push({ id, variableName, defaultValue });
+
+  return variableName;
 };
 
 const indentLines = (text: string, indent: string) =>
@@ -74,6 +102,15 @@ const formatAttributes = (
         ? `${key}={${formatHandlerReference(String(value), usedHandlers)}}`
         : formatAttribute(key, value)
     );
+
+const formatClassName = (className: string | undefined) =>
+  className === undefined ? [] : [formatAttribute('className', className)];
+
+// a className from the JSON config replaces the theme class, as in the Result tab
+const formatThemeClassName = (
+  className: string | undefined,
+  attributes: { className?: string }
+) => (attributes.className === undefined ? formatClassName(className) : []);
 
 const formatJsxText = (text: string) =>
   text === text.trim() && !/[{}<>&"'\n\r]/.test(text)
@@ -190,12 +227,38 @@ const formatCaption = (
   attributes: string[],
   text: string,
   isRequired: boolean,
-  indent: string
+  indent: string,
+  theme?: FormTheme
 ) => {
   const caption = formatJsxText(text);
 
   if (!isRequired) {
     return formatTextElement(tag, attributes, [caption], indent);
+  }
+
+  if (theme) {
+    const childIndent = indent + INDENT;
+
+    return formatContainer(
+      tag,
+      attributes,
+      [
+        `${childIndent}${caption}`,
+        ...formatTextElement(
+          'span',
+          [...formatClassName(theme.requiredMark), 'aria-hidden="true"'],
+          ['*'],
+          childIndent
+        ),
+        ...formatTextElement(
+          'span',
+          formatClassName(theme.requiredText),
+          [formatJsxText(' (required)')],
+          childIndent
+        ),
+      ],
+      indent
+    );
   }
 
   const children = caption.startsWith('{')
@@ -209,17 +272,48 @@ const formatLabel = (
   htmlFor: string,
   text: string | undefined,
   isRequired: boolean,
-  indent: string
+  indent: string,
+  theme?: FormTheme,
+  className?: string
 ) =>
   text
     ? formatCaption(
         'label',
-        [`htmlFor=${formatString(htmlFor)}`],
+        [`htmlFor=${formatString(htmlFor)}`, ...formatClassName(className)],
         text,
         isRequired,
-        indent
+        indent,
+        theme
       )
     : [];
+
+const formatGridRow = (
+  theme: FormTheme,
+  rowClassName: string | undefined,
+  label: string[],
+  control: string[],
+  indent: string
+) => {
+  const cellIndent = indent + INDENT;
+  const labelCellClassName = formatClassName(theme.labelCell);
+
+  return formatContainer(
+    'div',
+    formatClassName(rowClassName),
+    [
+      ...(label.length
+        ? formatContainer('div', labelCellClassName, label, cellIndent)
+        : formatTextElement('div', labelCellClassName, [], cellIndent)),
+      ...formatContainer(
+        'div',
+        formatClassName(theme.controlCell),
+        control,
+        cellIndent
+      ),
+    ],
+    indent
+  );
+};
 
 const formatRuleValue = (value: boolean | number | string | RegExp) => {
   if (value instanceof RegExp) {
@@ -265,11 +359,35 @@ const formatErrorAria = (
   `aria-describedby={${errorRef} ? ${JSON.stringify(describedBy ? `${describedBy} ${errorId}` : errorId)} : ${describedBy ? JSON.stringify(describedBy) : 'undefined'}}`,
 ];
 
+const formatDateClassName = (
+  id: string,
+  value: string | number | undefined,
+  defaultValue: string | number | undefined,
+  theme: FormTheme,
+  watchedDates: WatchedDate[]
+) => {
+  if (value !== undefined) {
+    return formatClassName(value ? theme.dateInput : theme.emptyDateInput);
+  }
+
+  const variableName = formatWatchedDateReference(
+    id,
+    defaultValue,
+    watchedDates
+  );
+
+  return [
+    `className={${variableName} ? ${JSON.stringify(theme.dateInput)} : ${JSON.stringify(theme.emptyDateInput)}}`,
+  ];
+};
+
 const formatField = (
   field: FormField,
   index: number,
   usedHandlers: Set<string>,
-  indent: string
+  indent: string,
+  watchedDates: WatchedDate[],
+  theme?: FormTheme
 ) => {
   const id = field.id || `field-${index}`;
   const options = field.type === 'radio' ? field.options : undefined;
@@ -304,36 +422,108 @@ const formatField = (
   const childIndent = indent + INDENT;
   const idAttribute = `id=${formatString(id)}`;
 
-  const formatInput = () =>
+  const formatInput = (className: string[], inputIndent: string) =>
     formatSelfClosingElement(
       'input',
       [
         idAttribute,
         `type="${field.type}"`,
+        ...className,
         ...formatAttributes(field, fieldOwnKeys, usedHandlers),
         ...fieldAria,
         register,
       ],
-      childIndent
+      inputIndent
     );
+
+  const gridChildIndent = theme ? childIndent + INDENT + INDENT : childIndent;
+
+  const formatGridField = (
+    rowClassName: string | undefined,
+    control: string[]
+  ) => {
+    const label = formatLabel(
+      id,
+      field.label,
+      isRequired,
+      gridChildIndent,
+      theme,
+      theme?.labelBeforeControl
+    );
+
+    return theme
+      ? formatGridRow(theme, rowClassName, label, control, childIndent)
+      : [...label, ...control];
+  };
+
+  const formatChoiceField = (
+    rowClassName: string | undefined,
+    inputClassName: string | undefined
+  ) => {
+    const rowChildIndent = theme ? childIndent + INDENT : childIndent;
+    const lines = [
+      ...formatInput(
+        formatThemeClassName(inputClassName, field),
+        rowChildIndent
+      ),
+      ...formatLabel(
+        id,
+        field.label,
+        isRequired,
+        rowChildIndent,
+        theme,
+        theme?.labelAfterControl
+      ),
+    ];
+
+    return theme
+      ? formatContainer(
+          'div',
+          formatClassName(rowClassName),
+          lines,
+          childIndent
+        )
+      : lines;
+  };
 
   const formatControl = () => {
     switch (field.type) {
       case 'text':
       case 'number':
-      case 'date':
-        return [
-          ...formatLabel(id, field.label, isRequired, childIndent),
-          ...formatInput(),
-        ];
+        return formatGridField(
+          theme?.textNumDateRow,
+          formatInput(
+            formatThemeClassName(theme?.textNumDateInput, field),
+            gridChildIndent
+          )
+        );
+
+      case 'date': {
+        const className =
+          theme && field.className === undefined
+            ? formatDateClassName(
+                id,
+                field.value,
+                field.defaultValue,
+                theme,
+                watchedDates
+              )
+            : [];
+
+        return formatGridField(
+          theme?.textNumDateRow,
+          formatInput(className, gridChildIndent)
+        );
+      }
 
       case 'textarea':
-        return [
-          ...formatLabel(id, field.label, isRequired, childIndent),
-          ...formatSelfClosingElement(
+        return formatGridField(
+          theme?.textAreaRow,
+          formatSelfClosingElement(
             'textarea',
             [
               idAttribute,
+              ...formatThemeClassName(theme?.textArea, field),
               ...formatAttributes(field, fieldOwnKeys, usedHandlers),
               ...fieldAria,
               ...(field.text === undefined
@@ -341,22 +531,16 @@ const formatField = (
                 : [formatAttribute('defaultValue', field.text)]),
               register,
             ],
-            childIndent
-          ),
-        ];
+            gridChildIndent
+          )
+        );
 
       case 'checkbox':
-        return [
-          ...formatInput(),
-          ...formatLabel(id, field.label, isRequired, childIndent),
-        ];
+        return formatChoiceField(theme?.checkboxRow, theme?.checkbox);
 
       case 'radio': {
         if (!options) {
-          return [
-            ...formatInput(),
-            ...formatLabel(id, field.label, isRequired, childIndent),
-          ];
+          return formatChoiceField(theme?.radioRow, theme?.radio);
         }
 
         const {
@@ -378,13 +562,14 @@ const formatField = (
 
           return formatContainer(
             'div',
-            [],
+            formatClassName(theme?.radioOptionRow),
             [
               ...formatSelfClosingElement(
                 'input',
                 [
                   `id=${formatString(optionId)}`,
                   'type="radio"',
+                  ...formatThemeClassName(theme?.radio, attributes),
                   ...formatAttributes(attributes, fieldOwnKeys, usedHandlers),
                   ...formatErrorAria(
                     errorRef,
@@ -395,7 +580,14 @@ const formatField = (
                 ],
                 optionIndent
               ),
-              ...formatLabel(optionId, optionLabel, false, optionIndent),
+              ...formatLabel(
+                optionId,
+                optionLabel,
+                false,
+                optionIndent,
+                theme,
+                theme?.labelAfterControl
+              ),
             ],
             childIndent + INDENT
           );
@@ -416,10 +608,11 @@ const formatField = (
             ...(field.label
               ? formatCaption(
                   'legend',
-                  [],
+                  formatClassName(theme?.legend),
                   field.label,
                   isRequired,
-                  childIndent + INDENT
+                  childIndent + INDENT,
+                  theme
                 )
               : []),
             ...optionBlocks,
@@ -430,15 +623,24 @@ const formatField = (
     }
   };
 
+  const errorClassName =
+    field.type === 'checkbox' || field.type === 'radio'
+      ? theme?.error
+      : theme?.gridError;
+
   return formatContainer(
     'div',
-    [],
+    formatClassName(theme?.field),
     [
       ...formatControl(),
       `${childIndent}{${errorRef} && (`,
       ...formatContainer(
         'p',
-        [`id=${formatString(errorId)}`, 'role="alert"'],
+        [
+          `id=${formatString(errorId)}`,
+          ...formatClassName(errorClassName),
+          'role="alert"',
+        ],
         [`${childIndent}${INDENT}${INDENT}{${errorRef}.message}`],
         childIndent + INDENT
       ),
@@ -451,7 +653,8 @@ const formatField = (
 const formatButton = (
   button: FormButton,
   usedHandlers: Set<string>,
-  indent: string
+  indent: string,
+  theme?: FormTheme
 ) => {
   const { text, type = 'button', ...attributes } = button;
   const implicitReset =
@@ -463,6 +666,10 @@ const formatButton = (
     'button',
     [
       `type="${type}"`,
+      ...formatThemeClassName(
+        type === 'submit' ? theme?.submitButton : theme?.button,
+        attributes
+      ),
       ...implicitReset,
       ...formatAttributes(attributes, [], usedHandlers),
     ],
@@ -502,9 +709,33 @@ const formatHandler = (name: string, isOnResetButton: boolean) => {
   }
 };
 
-const formatUseForm = (hasFields: boolean, usesReset: boolean) => {
+const formatUseWatch = ({ id, variableName, defaultValue }: WatchedDate) => {
+  const options = [
+    'control',
+    `name: ${JSON.stringify(id)}`,
+    ...(defaultValue === undefined
+      ? []
+      : [`defaultValue: ${JSON.stringify(defaultValue)}`]),
+  ];
+  const line = `  const ${variableName} = useWatch({ ${options.join(', ')} });`;
+
+  return line.length <= MAX_LINE_LENGTH
+    ? [line]
+    : [
+        `  const ${variableName} = useWatch({`,
+        ...options.map((option) => `    ${option},`),
+        '  });',
+      ];
+};
+
+const formatUseForm = (
+  hasFields: boolean,
+  usesReset: boolean,
+  usesControl: boolean
+) => {
   const names = [
     ...(hasFields ? ['register'] : []),
+    ...(usesControl ? ['control'] : []),
     'handleSubmit',
     ...(usesReset ? ['reset'] : []),
   ];
@@ -521,19 +752,23 @@ const formatUseForm = (hasFields: boolean, usesReset: boolean) => {
   ];
 };
 
-export const generateFormCode = (config: FormConfig): string => {
+export const generateFormCode = (
+  config: FormConfig,
+  theme?: FormTheme
+): string => {
   const usedHandlers = new Set<string>();
+  const watchedDates: WatchedDate[] = [];
   const bodyIndent = INDENT.repeat(3);
 
   const blocks = [
     formatTextElement(
       'h2',
-      ['id="form-title"'],
+      ['id="form-title"', ...formatClassName(theme?.title)],
       [formatJsxText(config.title || 'Generated form')],
       bodyIndent
     ),
     ...config.items.map((field, index) =>
-      formatField(field, index, usedHandlers, bodyIndent)
+      formatField(field, index, usedHandlers, bodyIndent, watchedDates, theme)
     ),
   ];
 
@@ -541,9 +776,9 @@ export const generateFormCode = (config: FormConfig): string => {
     blocks.push(
       formatContainer(
         'div',
-        [],
+        formatClassName(theme?.buttons),
         config.buttons.flatMap((button) =>
-          formatButton(button, usedHandlers, bodyIndent + INDENT)
+          formatButton(button, usedHandlers, bodyIndent + INDENT, theme)
         ),
         bodyIndent
       )
@@ -572,12 +807,17 @@ export const generateFormCode = (config: FormConfig): string => {
     ...(usedHandlers.has('reset')
       ? ['import { SyntheticEvent } from "react";']
       : []),
-    `import { ${usesGet ? 'get, ' : ''}useForm } from "react-hook-form";`,
+    `import { ${usesGet ? 'get, ' : ''}useForm${watchedDates.length ? ', useWatch' : ''} } from "react-hook-form";`,
     '',
     'type FormValues = Record<string, string | number | boolean>;',
     '',
     'export const GeneratedForm = () => {',
-    ...formatUseForm(config.items.length > 0, usesReset),
+    ...formatUseForm(
+      config.items.length > 0,
+      usesReset,
+      watchedDates.length > 0
+    ),
+    ...watchedDates.flatMap(formatUseWatch),
     '',
     ...(handlers.length
       ? [
@@ -598,6 +838,7 @@ export const generateFormCode = (config: FormConfig): string => {
       [
         'onSubmit={handleSubmit(onSubmit)}',
         'noValidate',
+        ...formatClassName(theme?.form),
         'aria-labelledby="form-title"',
       ],
       blocks.flatMap((block, index) => (index ? ['', ...block] : block)),

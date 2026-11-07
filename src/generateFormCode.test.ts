@@ -1,12 +1,13 @@
 import { describe, it, expect } from '@jest/globals';
 import ts from 'typescript';
 import { DEFAULT_FORM_CONFIG } from '@/constants';
+import { defaultFormTheme, FormTheme } from '@/formThemes';
 import { generateFormCode } from '@/generateFormCode';
 import { FormConfig, formConfigSchema } from '@/schemas/formConfigSchema';
 import { getValidationRules } from '@/utils';
 
-const generate = (config: unknown) =>
-  generateFormCode(formConfigSchema.parse(config));
+const generate = (config: unknown, theme?: FormTheme) =>
+  generateFormCode(formConfigSchema.parse(config), theme);
 
 const submit = { text: 'Save', type: 'submit' };
 
@@ -387,5 +388,270 @@ describe('long lines', () => {
         '          >',
       ].join('\n')
     );
+  });
+});
+
+describe('theme', () => {
+  it('adds the theme classes and the Result tab wrappers to the default config', () => {
+    expect(generate(JSON.parse(DEFAULT_FORM_CONFIG), defaultFormTheme))
+      .toBe(`"use client";
+
+import { SyntheticEvent } from "react";
+import { useForm } from "react-hook-form";
+
+type FormValues = Record<string, string | number | boolean>;
+
+export const GeneratedForm = () => {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<FormValues>();
+
+  const handlers = {
+    reset: (event: SyntheticEvent) => {
+      event.preventDefault();
+
+      if (
+        window.confirm(
+          "Are you sure you want to reset the form? All data will be lost."
+        )
+      ) {
+        reset();
+      }
+    },
+  };
+
+  const onSubmit = (data: FormValues) => {
+    // TODO: send the data
+    console.log(data);
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      noValidate
+      className="space-y-5"
+      aria-labelledby="form-title"
+    >
+      <h2 id="form-title" className="text-xl font-bold mb-5">
+        Sample Form
+      </h2>
+
+      <div className="relative mb-4 w-full">
+        <div className="grid grid-cols-[20%_80%] items-center w-full">
+          <div className="wrap-break-word">
+            <label htmlFor="name" className="mr-1.5 block text-sm font-medium">
+              Name
+              <span
+                className="ml-1 text-red-600 dark:text-red-400"
+                aria-hidden="true"
+              >
+                *
+              </span>
+              <span className="sr-only">{" (required)"}</span>
+            </label>
+          </div>
+          <div className="w-full">
+            <input
+              id="name"
+              type="text"
+              className="p-3 block w-full border border-gray-500 rounded dark:border-gray-400 placeholder:text-gray-500 dark:placeholder:text-gray-400"
+              placeholder="Enter your name"
+              required
+              aria-invalid={errors.name ? "true" : undefined}
+              aria-describedby={errors.name ? "name-error" : undefined}
+              {...register("name", {
+                required: "This field is required",
+              })}
+            />
+          </div>
+        </div>
+        {errors.name && (
+          <p
+            id="name-error"
+            className="mt-1 text-sm text-red-600 dark:text-red-400 ml-[calc(20%)]"
+            role="alert"
+          >
+            {errors.name.message}
+          </p>
+        )}
+      </div>
+
+      <div className="relative mb-4 w-full">
+        <div className="flex items-center">
+          <input
+            id="newsletter"
+            type="checkbox"
+            className="h-4 w-4"
+            aria-invalid={errors.newsletter ? "true" : undefined}
+            aria-describedby={
+              errors.newsletter ? "newsletter-error" : undefined
+            }
+            {...register("newsletter")}
+          />
+          <label
+            htmlFor="newsletter"
+            className="ml-1.5 block text-sm font-medium"
+          >
+            Subscribe to the newsletter
+          </label>
+        </div>
+        {errors.newsletter && (
+          <p
+            id="newsletter-error"
+            className="mt-1 text-sm text-red-600 dark:text-red-400"
+            role="alert"
+          >
+            {errors.newsletter.message}
+          </p>
+        )}
+      </div>
+
+      <div className="flex justify-end space-x-3 pt-4">
+        <button
+          type="reset"
+          className="px-4 py-2 block rounded border border-gray-500 bg-gray-200 text-gray-700 hover:border-gray-700 hover:bg-gray-300 dark:border-neutral-500 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:border-neutral-400 dark:hover:bg-neutral-700 enabled:cursor-pointer"
+          onClick={handlers.reset}
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="px-4 py-2 block bg-blue-600 text-white rounded hover:bg-linear-to-r from-green-400 to-lime-500 hover:text-black enabled:cursor-pointer"
+        >
+          Save
+        </button>
+      </div>
+    </form>
+  );
+};
+`);
+  });
+
+  it('generates valid TSX with a theme for a config full of special characters', () => {
+    expect(
+      getDiagnostics(generate(kitchenSinkConfig, defaultFormTheme))
+    ).toEqual([]);
+  });
+
+  it('lets a className in the JSON config replace the theme class', () => {
+    const code = generate(
+      {
+        items: [
+          { id: 'nick', type: 'text', label: 'Nick', className: 'own-input' },
+        ],
+        buttons: [{ text: 'Save', type: 'submit', className: 'own-button' }],
+      },
+      defaultFormTheme
+    );
+
+    expect(code).toContain('className="own-input"');
+    expect(code).toContain('className="own-button"');
+    expect(code).not.toContain(defaultFormTheme.textNumDateInput);
+    expect(code).not.toContain(defaultFormTheme.submitButton);
+  });
+
+  it('renders the label cell of a grid field without a label', () => {
+    const code = generate(
+      {
+        items: [{ id: 'nick', type: 'text', 'aria-label': 'Nick' }],
+        buttons: [],
+      },
+      defaultFormTheme
+    );
+
+    expect(code).toContain(
+      `<div className="${defaultFormTheme.labelCell}"></div>`
+    );
+  });
+
+  it('keeps a legend with one long class on one line', () => {
+    expect(generate(kitchenSinkConfig, defaultFormTheme)).toContain(
+      `<legend className="${defaultFormTheme.legend}">`
+    );
+  });
+});
+
+describe('theme date class', () => {
+  it('watches an empty date to pick the empty date class', () => {
+    const code = generate(
+      { items: [{ id: 'start', type: 'date', label: 'Start' }], buttons: [] },
+      defaultFormTheme
+    );
+
+    expect(code).toContain(
+      'import { useForm, useWatch } from "react-hook-form";'
+    );
+    expect(code).toContain('    register,\n    control,\n    handleSubmit,\n');
+    expect(code).toContain(
+      'const startValue = useWatch({ control, name: "start" });'
+    );
+    expect(code).toContain(
+      [
+        'className={',
+        '                startValue',
+        `                  ? "${defaultFormTheme.dateInput}"`,
+        `                  : "${defaultFormTheme.emptyDateInput}"`,
+        '              }',
+      ].join('\n')
+    );
+  });
+
+  it('passes a preset date to useWatch', () => {
+    const code = generate(
+      {
+        items: [
+          {
+            id: 'end-date',
+            type: 'date',
+            label: 'End',
+            defaultValue: '2026-11-06',
+          },
+        ],
+        buttons: [],
+      },
+      defaultFormTheme
+    );
+
+    expect(code).toContain(
+      'const endDateValue = useWatch({\n    control,\n    name: "end-date",\n    defaultValue: "2026-11-06",\n  });'
+    );
+  });
+
+  it('gives two date ids with the same camel case two variables', () => {
+    const code = generate(
+      {
+        items: [
+          { id: 'end-date', type: 'date', label: 'End' },
+          { id: 'end.date', type: 'date', label: 'End 2' },
+        ],
+        buttons: [],
+      },
+      defaultFormTheme
+    );
+
+    expect(code).toContain(
+      'const endDateValue = useWatch({ control, name: "end-date" });'
+    );
+    expect(code).toContain(
+      'const _endDateValue = useWatch({ control, name: "end.date" });'
+    );
+  });
+
+  it('sets the date class of a pinned date without watching it', () => {
+    const code = generate(
+      {
+        items: [
+          { id: 'start', type: 'date', label: 'Start', value: '2026-11-06' },
+        ],
+        buttons: [],
+      },
+      defaultFormTheme
+    );
+
+    expect(code).toContain(`className="${defaultFormTheme.dateInput}"`);
+    expect(code).not.toContain('useWatch');
   });
 });
