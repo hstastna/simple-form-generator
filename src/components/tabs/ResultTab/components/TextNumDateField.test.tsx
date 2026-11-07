@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, it, expect } from '@jest/globals';
 import { FC } from 'react';
 import { useForm } from 'react-hook-form';
-import { defaultFormTheme } from '@/formThemes';
+import { tailwindFormTheme } from '@/formThemes';
 import { getValidationRules } from '@/utils';
 import { ResultFormData } from '../ResultTab';
 import { FormFieldType } from './FormField';
@@ -56,20 +56,20 @@ describe('TextNumDateField', () => {
     render(<Harness label="Nick" type="date" />);
 
     const nick = screen.getByLabelText('Nick');
-    expect(nick.className).toBe(defaultFormTheme.emptyDateInput);
+    expect(nick.className).toBe(tailwindFormTheme.emptyDateInput);
 
     fireEvent.change(nick, { target: { value: '2026-11-06' } });
-    expect(nick.className).toBe(defaultFormTheme.dateInput);
+    expect(nick.className).toBe(tailwindFormTheme.dateInput);
 
     fireEvent.change(nick, { target: { value: '' } });
-    expect(nick.className).toBe(defaultFormTheme.emptyDateInput);
+    expect(nick.className).toBe(tailwindFormTheme.emptyDateInput);
   });
 
   it('keeps the text colour of a date preset in the JSON config', () => {
     render(<Harness label="Nick" type="date" defaultValue="2026-11-06" />);
 
     expect(screen.getByLabelText('Nick').className).toBe(
-      defaultFormTheme.dateInput
+      tailwindFormTheme.dateInput
     );
   });
 
@@ -79,7 +79,7 @@ describe('TextNumDateField', () => {
     const nick = screen.getByLabelText('Nick');
     fireEvent.change(nick, { target: { value: '' } });
 
-    expect(nick.className).toBe(defaultFormTheme.dateInput);
+    expect(nick.className).toBe(tailwindFormTheme.dateInput);
   });
 
   it('predefines the input with the value from the JSON config', () => {

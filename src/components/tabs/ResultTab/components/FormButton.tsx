@@ -1,6 +1,6 @@
 import { ButtonHTMLAttributes, FC } from 'react';
 import { FormAction } from '@/formActions';
-import { defaultFormTheme } from '@/formThemes';
+import { tailwindFormTheme } from '@/formThemes';
 
 type FormButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   isSubmitting: boolean;
@@ -21,7 +21,9 @@ export const FormButton: FC<FormButtonProps> = ({
     <button
       type={type}
       className={
-        isSubmitButton ? defaultFormTheme.submitButton : defaultFormTheme.button
+        isSubmitButton
+          ? tailwindFormTheme.submitButton
+          : tailwindFormTheme.button
       }
       disabled={isSubmitButton && isSubmitting}
       aria-busy={isSubmitButton && isSubmitting ? 'true' : 'false'}

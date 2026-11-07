@@ -1,7 +1,7 @@
 import { describe, it, expect } from '@jest/globals';
 import ts from 'typescript';
 import { DEFAULT_FORM_CONFIG } from '@/constants';
-import { defaultFormTheme, FormTheme } from '@/formThemes';
+import { FormTheme, tailwindFormTheme } from '@/formThemes';
 import { generateFormCode } from '@/generateFormCode';
 import { FormConfig, formConfigSchema } from '@/schemas/formConfigSchema';
 import { getValidationRules } from '@/utils';
@@ -393,7 +393,7 @@ describe('long lines', () => {
 
 describe('theme', () => {
   it('adds the theme classes and the Result tab wrappers to the default config', () => {
-    expect(generate(JSON.parse(DEFAULT_FORM_CONFIG), defaultFormTheme))
+    expect(generate(JSON.parse(DEFAULT_FORM_CONFIG), tailwindFormTheme))
       .toBe(`"use client";
 
 import { SyntheticEvent } from "react";
@@ -532,7 +532,7 @@ export const GeneratedForm = () => {
 
   it('generates valid TSX with a theme for a config full of special characters', () => {
     expect(
-      getDiagnostics(generate(kitchenSinkConfig, defaultFormTheme))
+      getDiagnostics(generate(kitchenSinkConfig, tailwindFormTheme))
     ).toEqual([]);
   });
 
@@ -544,13 +544,13 @@ export const GeneratedForm = () => {
         ],
         buttons: [{ text: 'Save', type: 'submit', className: 'own-button' }],
       },
-      defaultFormTheme
+      tailwindFormTheme
     );
 
     expect(code).toContain('className="own-input"');
     expect(code).toContain('className="own-button"');
-    expect(code).not.toContain(defaultFormTheme.textNumDateInput);
-    expect(code).not.toContain(defaultFormTheme.submitButton);
+    expect(code).not.toContain(tailwindFormTheme.textNumDateInput);
+    expect(code).not.toContain(tailwindFormTheme.submitButton);
   });
 
   it('renders the label cell of a grid field without a label', () => {
@@ -559,17 +559,17 @@ export const GeneratedForm = () => {
         items: [{ id: 'nick', type: 'text', 'aria-label': 'Nick' }],
         buttons: [],
       },
-      defaultFormTheme
+      tailwindFormTheme
     );
 
     expect(code).toContain(
-      `<div className="${defaultFormTheme.labelCell}"></div>`
+      `<div className="${tailwindFormTheme.labelCell}"></div>`
     );
   });
 
   it('keeps a legend with one long class on one line', () => {
-    expect(generate(kitchenSinkConfig, defaultFormTheme)).toContain(
-      `<legend className="${defaultFormTheme.legend}">`
+    expect(generate(kitchenSinkConfig, tailwindFormTheme)).toContain(
+      `<legend className="${tailwindFormTheme.legend}">`
     );
   });
 });
@@ -578,7 +578,7 @@ describe('theme date class', () => {
   it('watches an empty date to pick the empty date class', () => {
     const code = generate(
       { items: [{ id: 'start', type: 'date', label: 'Start' }], buttons: [] },
-      defaultFormTheme
+      tailwindFormTheme
     );
 
     expect(code).toContain(
@@ -592,8 +592,8 @@ describe('theme date class', () => {
       [
         'className={',
         '                startValue',
-        `                  ? "${defaultFormTheme.dateInput}"`,
-        `                  : "${defaultFormTheme.emptyDateInput}"`,
+        `                  ? "${tailwindFormTheme.dateInput}"`,
+        `                  : "${tailwindFormTheme.emptyDateInput}"`,
         '              }',
       ].join('\n')
     );
@@ -612,7 +612,7 @@ describe('theme date class', () => {
         ],
         buttons: [],
       },
-      defaultFormTheme
+      tailwindFormTheme
     );
 
     expect(code).toContain(
@@ -629,7 +629,7 @@ describe('theme date class', () => {
         ],
         buttons: [],
       },
-      defaultFormTheme
+      tailwindFormTheme
     );
 
     expect(code).toContain(
@@ -648,10 +648,10 @@ describe('theme date class', () => {
         ],
         buttons: [],
       },
-      defaultFormTheme
+      tailwindFormTheme
     );
 
-    expect(code).toContain(`className="${defaultFormTheme.dateInput}"`);
+    expect(code).toContain(`className="${tailwindFormTheme.dateInput}"`);
     expect(code).not.toContain('useWatch');
   });
 });

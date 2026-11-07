@@ -3,7 +3,7 @@ import { describe, it, expect } from '@jest/globals';
 import { FC } from 'react';
 import ts from 'typescript';
 import { FormProvider, useFormContext } from '@/context/FormContext';
-import { defaultFormTheme } from '@/formThemes';
+import { tailwindFormTheme } from '@/formThemes';
 import { generateFormCode } from '@/generateFormCode';
 import { formConfigSchema } from '@/schemas/formConfigSchema';
 import { ResultTab } from './ResultTab';
@@ -185,7 +185,7 @@ const ConfigLoader: FC<{ json?: string }> = ({ json = config }) => {
 const loadGeneratedForm = (json: string) => {
   const code = generateFormCode(
     formConfigSchema.parse(JSON.parse(json)),
-    defaultFormTheme
+    tailwindFormTheme
   );
   const { outputText } = ts.transpileModule(code, {
     compilerOptions: {
@@ -238,12 +238,12 @@ describe('ResultTab date colour', () => {
 
     const input = await screen.findByLabelText('Start');
     fireEvent.change(input, { target: { value: '' } });
-    expect(input.className).toBe(defaultFormTheme.emptyDateInput);
+    expect(input.className).toBe(tailwindFormTheme.emptyDateInput);
 
     fireEvent.click(screen.getByText('Clear'));
 
     await waitFor(() =>
-      expect(input.className).toBe(defaultFormTheme.dateInput)
+      expect(input.className).toBe(tailwindFormTheme.dateInput)
     );
   });
 });

@@ -2,7 +2,7 @@ import { FC, InputHTMLAttributes } from 'react';
 import { FormLabel } from './FormLabel';
 import { UseFormRegister } from 'react-hook-form';
 import { ResultFormData } from '../ResultTab';
-import { defaultFormTheme } from '@/formThemes';
+import { tailwindFormTheme } from '@/formThemes';
 import { ValidationRules } from '@/utils';
 
 type RadioFieldProps = InputHTMLAttributes<HTMLInputElement> & {
@@ -29,14 +29,14 @@ export const RadioField: FC<RadioFieldProps> = ({
     <div
       className={
         isSingleRadio
-          ? defaultFormTheme.radioRow
-          : defaultFormTheme.radioOptionRow
+          ? tailwindFormTheme.radioRow
+          : tailwindFormTheme.radioOptionRow
       }
     >
       <input
         id={htmlId}
         type="radio"
-        className={defaultFormTheme.radio}
+        className={tailwindFormTheme.radio}
         {...props}
         {...register(id, validationRules)}
       />

@@ -2,7 +2,7 @@ import { FC, TextareaHTMLAttributes } from 'react';
 import { FormLabel } from './FormLabel';
 import { UseFormRegister } from 'react-hook-form';
 import { ResultFormData } from '../ResultTab';
-import { defaultFormTheme } from '@/formThemes';
+import { tailwindFormTheme } from '@/formThemes';
 import { ValidationRules } from '@/utils';
 
 type TextAreaFieldProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
@@ -24,17 +24,17 @@ export const TextAreaField: FC<TextAreaFieldProps> = ({
   const isRequired = validationRules.required.value;
 
   return (
-    <div className={defaultFormTheme.textAreaRow}>
-      <div className={defaultFormTheme.labelCell}>
+    <div className={tailwindFormTheme.textAreaRow}>
+      <div className={tailwindFormTheme.labelCell}>
         {label && (
           <FormLabel id={id} label={label} required={isRequired} marginRight />
         )}
       </div>
 
-      <div className={defaultFormTheme.controlCell}>
+      <div className={tailwindFormTheme.controlCell}>
         <textarea
           id={id}
-          className={defaultFormTheme.textArea}
+          className={tailwindFormTheme.textArea}
           {...props}
           defaultValue={text}
           {...register(id, validationRules)}

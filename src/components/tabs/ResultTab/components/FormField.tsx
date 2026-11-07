@@ -8,7 +8,7 @@ import { formFieldTypes, RadioOption } from '@/schemas/formFieldSchema';
 import { Control, UseFormRegister } from 'react-hook-form';
 import { FieldError } from 'react-hook-form';
 import { ResultFormData } from '../ResultTab';
-import { defaultFormTheme } from '@/formThemes';
+import { tailwindFormTheme } from '@/formThemes';
 import { getValidationRules } from '@/utils';
 import { TextNumDateField } from './TextNumDateField';
 import { TextAreaField } from './TextAreaField';
@@ -124,7 +124,7 @@ export const FormField: FC<FormFieldProps> = ({
               {...errorAria}
             >
               {label && (
-                <legend className={defaultFormTheme.legend}>
+                <legend className={tailwindFormTheme.legend}>
                   {label}
                   {validationRules.required.value && <RequiredMark />}
                 </legend>
@@ -177,7 +177,7 @@ export const FormField: FC<FormFieldProps> = ({
   };
 
   return (
-    <div className={defaultFormTheme.field}>
+    <div className={tailwindFormTheme.field}>
       {renderField()}
 
       {error && (
@@ -185,8 +185,8 @@ export const FormField: FC<FormFieldProps> = ({
           id={errorId}
           className={
             ['checkbox', 'radio'].includes(type)
-              ? defaultFormTheme.error
-              : defaultFormTheme.gridError
+              ? tailwindFormTheme.error
+              : tailwindFormTheme.gridError
           }
           role="alert"
         >

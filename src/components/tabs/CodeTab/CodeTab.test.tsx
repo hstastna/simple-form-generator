@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import { describe, it, expect, afterEach, jest } from '@jest/globals';
 import { FC } from 'react';
 import { FormProvider, useFormContext } from '@/context/FormContext';
-import { defaultFormTheme } from '@/formThemes';
+import { tailwindFormTheme } from '@/formThemes';
 import { CodeTab } from './CodeTab';
 
 const ConfigLoader: FC<{ json: string }> = ({ json }) => {
@@ -88,7 +88,7 @@ describe('CodeTab', () => {
     ).toBe('true');
     expect(
       screen.getByRole('textbox', { name: 'Generated React code' }).textContent
-    ).toContain(`className="${defaultFormTheme.form}"`);
+    ).toContain(`className="${tailwindFormTheme.form}"`);
     expect(document.getElementById('form-code-hint')?.textContent).toContain(
       'and Tailwind CSS v4.1 or later.'
     );
@@ -122,7 +122,7 @@ describe('CodeTab', () => {
     });
 
     expect(writeText.mock.calls[0][0]).toContain(
-      `className="${defaultFormTheme.form}"`
+      `className="${tailwindFormTheme.form}"`
     );
   });
 

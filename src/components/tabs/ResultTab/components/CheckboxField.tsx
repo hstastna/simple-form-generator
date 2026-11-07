@@ -2,7 +2,7 @@ import { FC, InputHTMLAttributes } from 'react';
 import { FormLabel } from './FormLabel';
 import { UseFormRegister } from 'react-hook-form';
 import { ResultFormData } from '../ResultTab';
-import { defaultFormTheme } from '@/formThemes';
+import { tailwindFormTheme } from '@/formThemes';
 import { ValidationRules } from '@/utils';
 
 type CheckboxFieldProps = InputHTMLAttributes<HTMLInputElement> & {
@@ -22,11 +22,11 @@ export const CheckboxField: FC<CheckboxFieldProps> = ({
   const isRequired = validationRules.required.value;
 
   return (
-    <div className={defaultFormTheme.checkboxRow}>
+    <div className={tailwindFormTheme.checkboxRow}>
       <input
         id={id}
         type="checkbox"
-        className={defaultFormTheme.checkbox}
+        className={tailwindFormTheme.checkbox}
         {...props}
         {...register(id, validationRules)}
       />

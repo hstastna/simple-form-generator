@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { defaultFormTheme } from '@/formThemes';
+import { tailwindFormTheme } from '@/formThemes';
 import { RequiredMark } from './RequiredMark';
 
 type FormLabelProps = {
@@ -19,8 +19,8 @@ export const FormLabel: FC<FormLabelProps> = ({
     htmlFor={id}
     className={
       marginRight
-        ? defaultFormTheme.labelBeforeControl
-        : defaultFormTheme.labelAfterControl
+        ? tailwindFormTheme.labelBeforeControl
+        : tailwindFormTheme.labelAfterControl
     }
   >
     {label}

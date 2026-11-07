@@ -3,7 +3,7 @@ import { FormLabel } from './FormLabel';
 import { Control, UseFormRegister, useWatch } from 'react-hook-form';
 import { ResultFormData } from '../ResultTab';
 import { FormFieldType } from './FormField';
-import { defaultFormTheme } from '@/formThemes';
+import { tailwindFormTheme } from '@/formThemes';
 import { ValidationRules } from '@/utils';
 
 type TextNumDateFieldProps = InputHTMLAttributes<HTMLInputElement> & {
@@ -33,25 +33,25 @@ export const TextNumDateField: FC<TextNumDateFieldProps> = ({
   });
   const isEmptyDate = !(value ?? pickedDate ?? defaultValue);
   const dateInputClassName = isEmptyDate
-    ? defaultFormTheme.emptyDateInput
-    : defaultFormTheme.dateInput;
+    ? tailwindFormTheme.emptyDateInput
+    : tailwindFormTheme.dateInput;
 
   return (
-    <div className={defaultFormTheme.textNumDateRow}>
-      <div className={defaultFormTheme.labelCell}>
+    <div className={tailwindFormTheme.textNumDateRow}>
+      <div className={tailwindFormTheme.labelCell}>
         {label && (
           <FormLabel id={id} label={label} required={isRequired} marginRight />
         )}
       </div>
 
-      <div className={defaultFormTheme.controlCell}>
+      <div className={tailwindFormTheme.controlCell}>
         <input
           id={id}
           type={type}
           className={
             type === 'date'
               ? dateInputClassName
-              : defaultFormTheme.textNumDateInput
+              : tailwindFormTheme.textNumDateInput
           }
           {...props}
           {...register(id, validationRules)}

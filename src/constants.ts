@@ -1,4 +1,4 @@
-import { defaultFormTheme, FormTheme } from '@/formThemes';
+import { FormTheme, tailwindFormTheme } from '@/formThemes';
 
 export const tabs = ['config', 'result', 'code'] as const;
 
@@ -14,7 +14,7 @@ export const codeVariants: readonly CodeVariant[] = [
   {
     id: 'tailwind',
     label: 'Tailwind CSS',
-    theme: defaultFormTheme,
+    theme: tailwindFormTheme,
     requirement: 'Tailwind CSS v4.1 or later',
   },
 ];

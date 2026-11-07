@@ -30,7 +30,7 @@ export type FormTheme = Record<
 
 const defineFormTheme = <const T extends FormTheme>(theme: T) => theme;
 
-export const defaultFormTheme = defineFormTheme({
+export const tailwindFormTheme = defineFormTheme({
   title: 'text-xl font-bold mb-5',
   form: 'space-y-5',
   field: 'relative mb-4 w-full',
