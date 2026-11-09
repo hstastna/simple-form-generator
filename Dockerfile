@@ -1,8 +1,10 @@
 FROM node:24-alpine
+LABEL service="form-generator"
 WORKDIR /simple-form-generator
 COPY package*.json ./
 RUN npm ci
 COPY . .
-RUN npm run build
+RUN npm run build && chown -R node:node .next
+USER node
 EXPOSE 3000
-CMD ["npm", "start"]
+CMD ["node_modules/.bin/next", "start"]
