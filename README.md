@@ -93,7 +93,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Inter](https://fonts.google.com/specimen/Inter), a Google font.
+This project uses [`next/font`](https://nextjs.org/docs/app/getting-started/fonts) to automatically optimize and load [Inter](https://fonts.google.com/specimen/Inter), a Google font.
 
 ## Unit tests
 
