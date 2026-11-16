@@ -39,7 +39,7 @@ export const ConfigTab: FC = () => {
               'aria-invalid': parseError ? 'true' : 'false',
             }),
           ]}
-          className="h-128 border border-gray-500 rounded-md overflow-auto focus-within:[outline-style:auto] focus-within:outline-offset-2 [&_.cm-editor.cm-focused]:outline-none! dark:border-gray-400"
+          className="h-128 border border-gray-500 rounded-md overflow-auto text-sm focus-within:[outline-style:auto] focus-within:outline-offset-2 [&_.cm-editor.cm-focused]:outline-none! dark:border-gray-400"
           theme={isDarkMode ? 'dark' : 'light'}
           onChange={setJsonConfig}
           onKeyDown={(event) => {

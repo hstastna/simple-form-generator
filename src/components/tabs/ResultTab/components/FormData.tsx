@@ -11,7 +11,7 @@ export const FormData: FC<FormDataProps> = ({ formData }) => (
     </h3>
 
     <pre
-      className="border border-gray-500 p-4 rounded overflow-x-auto dark:border-gray-400"
+      className="border border-gray-500 p-4 rounded overflow-x-auto text-sm dark:border-gray-400"
       role="region"
       aria-label="Submitted form data in JSON format"
       tabIndex={0}

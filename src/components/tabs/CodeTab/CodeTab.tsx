@@ -118,7 +118,7 @@ export const CodeTab: FC = () => {
               'aria-describedby': codeHintId,
             }),
           ]}
-          className="max-h-128 overflow-auto rounded-b-md focus-within:[outline-style:auto] focus-within:-outline-offset-2 [&_.cm-editor.cm-focused]:outline-none!"
+          className="max-h-128 overflow-auto rounded-b-md text-sm focus-within:[outline-style:auto] focus-within:-outline-offset-2 [&_.cm-editor.cm-focused]:outline-none!"
           theme={isDarkMode ? 'dark' : 'light'}
           onKeyDown={(event) => {
             if (event.key === 'Escape') {
