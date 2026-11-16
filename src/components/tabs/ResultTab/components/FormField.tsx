@@ -181,15 +181,7 @@ export const FormField: FC<FormFieldProps> = ({
       {renderField()}
 
       {error && (
-        <p
-          id={errorId}
-          className={
-            ['checkbox', 'radio'].includes(type)
-              ? tailwindFormTheme.error
-              : tailwindFormTheme.gridError
-          }
-          role="alert"
-        >
+        <p id={errorId} className={tailwindFormTheme.error} role="alert">
           {typeof error.message === 'string' ? error.message : 'Invalid input'}
         </p>
       )}

@@ -627,11 +627,6 @@ const formatField = (
     }
   };
 
-  const errorClassName =
-    field.type === 'checkbox' || field.type === 'radio'
-      ? theme?.error
-      : theme?.gridError;
-
   return formatContainer(
     'div',
     formatClassName(theme?.field),
@@ -642,7 +637,7 @@ const formatField = (
         'p',
         [
           `id=${formatString(errorId)}`,
-          ...formatClassName(errorClassName),
+          ...formatClassName(theme?.error),
           'role="alert"',
         ],
         [`${childIndent}${INDENT}${INDENT}{${errorRef}.message}`],

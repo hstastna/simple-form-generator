@@ -440,7 +440,7 @@ export const GeneratedForm = () => {
       </h2>
 
       <div className="relative mb-4 w-full">
-        <div className="grid grid-cols-[20%_80%] items-center w-full">
+        <div className="grid gap-1 items-center w-full">
           <div className="wrap-break-word">
             <label htmlFor="name" className="mr-1.5 block text-sm font-medium">
               Name
@@ -471,7 +471,7 @@ export const GeneratedForm = () => {
         {errors.name && (
           <p
             id="name-error"
-            className="mt-1 text-sm text-red-600 dark:text-red-400 ml-[calc(20%)]"
+            className="mt-1 text-sm text-red-600 dark:text-red-400"
             role="alert"
           >
             {errors.name.message}

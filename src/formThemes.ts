@@ -21,7 +21,6 @@ export type FormTheme = Record<
   | 'radio'
   | 'legend'
   | 'error'
-  | 'gridError'
   | 'buttons'
   | 'button'
   | 'submitButton',
@@ -34,8 +33,8 @@ export const tailwindFormTheme = defineFormTheme({
   title: 'text-xl font-bold mb-5',
   form: 'space-y-5',
   field: 'relative mb-4 w-full',
-  textNumDateRow: 'grid grid-cols-[20%_80%] items-center w-full',
-  textAreaRow: 'grid grid-cols-[20%_80%] items-baseline w-full',
+  textNumDateRow: 'grid gap-1 items-center w-full',
+  textAreaRow: 'grid gap-1 items-baseline w-full',
   labelCell: 'wrap-break-word',
   labelBeforeControl: 'mr-1.5 block text-sm font-medium',
   labelAfterControl: 'ml-1.5 block text-sm font-medium',
@@ -57,7 +56,6 @@ export const tailwindFormTheme = defineFormTheme({
   radio: 'h-4 w-4 border border-gray-400 focus:ring-blue-500',
   legend: 'block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2',
   error: 'mt-1 text-sm text-red-600 dark:text-red-400',
-  gridError: 'mt-1 text-sm text-red-600 dark:text-red-400 ml-[calc(20%)]',
   buttons: 'flex justify-end space-x-3 pt-4',
   button:
     'px-4 py-2 block rounded border border-gray-500 bg-gray-200 text-gray-700 hover:border-gray-700 hover:bg-gray-300 dark:border-neutral-500 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:border-neutral-400 dark:hover:bg-neutral-700 enabled:cursor-pointer',
