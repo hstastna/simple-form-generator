@@ -1,4 +1,4 @@
-FROM node:24-alpine
+FROM node:26-alpine
 LABEL service="form-generator"
 WORKDIR /simple-form-generator
 COPY package*.json ./
