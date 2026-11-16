@@ -133,7 +133,7 @@ export const ResultTab: FC = () => {
 
       <div role="status">
         {isSubmitSuccessful && (
-          <div className="mt-8 p-6 bg-lime-200 dark:bg-green-900 rounded-md">
+          <div className="mt-4 p-6 bg-lime-200 dark:bg-green-900 rounded-md">
             <h3 className="text-lg font-bold text-green-800 dark:text-green-100">
               Form submitted successfully!
             </h3>

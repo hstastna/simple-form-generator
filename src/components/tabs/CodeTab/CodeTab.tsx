@@ -55,7 +55,7 @@ export const CodeTab: FC = () => {
       <div
         role="tablist"
         aria-label="Code variants"
-        className="flex gap-6 my-3 border-b border-gray-200 dark:border-gray-700"
+        className="flex gap-6 mt-2 mb-4 border-b border-gray-200 dark:border-gray-700"
       >
         {codeVariants.map((variant, index) => {
           const isActive = variant === activeVariant;
@@ -85,7 +85,7 @@ export const CodeTab: FC = () => {
 
       <p
         id={codeHintId}
-        className="text-xs mb-6 text-gray-600 dark:text-gray-400"
+        className="text-xs mb-4 text-gray-600 dark:text-gray-400"
       >
         A React + TypeScript component of your form. It needs the{' '}
         <code className="px-1.5 py-0.5 bg-gray-200 border border-gray-300 text-gray-700 rounded dark:bg-neutral-800 dark:border-neutral-600 dark:text-neutral-300">

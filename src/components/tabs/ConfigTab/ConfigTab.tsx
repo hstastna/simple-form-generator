@@ -18,7 +18,7 @@ export const ConfigTab: FC = () => {
     <div id="panel-config" role="tabpanel" aria-labelledby="tab-config">
       <h2 className="text-xl font-semibold">Form Configuration</h2>
 
-      <div className="mb-6">
+      <div className="mb-4">
         <p
           id={editorInstructionsId}
           className="text-xs mb-2 text-gray-600 dark:text-gray-400"

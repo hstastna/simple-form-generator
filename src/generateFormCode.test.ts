@@ -435,7 +435,7 @@ export const GeneratedForm = () => {
       className="space-y-5"
       aria-labelledby="form-title"
     >
-      <h2 id="form-title" className="text-xl font-bold mb-5">
+      <h2 id="form-title" className="text-xl font-bold mb-4">
         Sample Form
       </h2>
 
@@ -509,7 +509,7 @@ export const GeneratedForm = () => {
         )}
       </div>
 
-      <div className="flex justify-end space-x-3 pt-4">
+      <div className="flex justify-end space-x-3">
         <button
           type="reset"
           className="px-4 py-2 block rounded border border-gray-500 bg-gray-200 text-gray-700 hover:border-gray-700 hover:bg-gray-300 dark:border-neutral-500 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:border-neutral-400 dark:hover:bg-neutral-700 enabled:cursor-pointer"
