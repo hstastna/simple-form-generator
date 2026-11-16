@@ -82,6 +82,22 @@ describe('TextNumDateField', () => {
     expect(nick.className).toBe(tailwindFormTheme.dateInput);
   });
 
+  it('grays out a date input whose preset date is invalid', () => {
+    render(<Harness label="Nick" type="date" defaultValue="2026-02-30" />);
+
+    expect(screen.getByLabelText('Nick').className).toBe(
+      tailwindFormTheme.emptyDateInput
+    );
+  });
+
+  it('grays out a date input whose pinned date is invalid', () => {
+    render(<Harness label="Nick" type="date" value="2026-02-30" />);
+
+    expect(screen.getByLabelText('Nick').className).toBe(
+      tailwindFormTheme.emptyDateInput
+    );
+  });
+
   it('predefines the input with the value from the JSON config', () => {
     render(<Harness label="Nick" value="preset" />);
 

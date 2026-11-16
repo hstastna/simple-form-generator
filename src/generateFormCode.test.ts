@@ -654,4 +654,39 @@ describe('theme date class', () => {
     expect(code).toContain(`className="${tailwindFormTheme.dateInput}"`);
     expect(code).not.toContain('useWatch');
   });
+
+  it('sets the empty date class of an invalid pinned date', () => {
+    const code = generate(
+      {
+        items: [
+          { id: 'start', type: 'date', label: 'Start', value: '2026-02-30' },
+        ],
+        buttons: [],
+      },
+      tailwindFormTheme
+    );
+
+    expect(code).toContain(`className="${tailwindFormTheme.emptyDateInput}"`);
+  });
+
+  it('leaves an invalid preset date out of useWatch', () => {
+    const code = generate(
+      {
+        items: [
+          {
+            id: 'start',
+            type: 'date',
+            label: 'Start',
+            defaultValue: '2026-02-30',
+          },
+        ],
+        buttons: [],
+      },
+      tailwindFormTheme
+    );
+
+    expect(code).toContain(
+      'const startValue = useWatch({ control, name: "start" });'
+    );
+  });
 });

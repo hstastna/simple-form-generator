@@ -4,7 +4,7 @@ import { Control, UseFormRegister, useWatch } from 'react-hook-form';
 import { ResultFormData } from '../ResultTab';
 import { FormFieldType } from './FormField';
 import { tailwindFormTheme } from '@/formThemes';
-import { ValidationRules } from '@/utils';
+import { isoDateSchema, ValidationRules } from '@/utils';
 
 type TextNumDateFieldProps = InputHTMLAttributes<HTMLInputElement> & {
   id: string;
@@ -31,7 +31,9 @@ export const TextNumDateField: FC<TextNumDateFieldProps> = ({
     name: id,
     disabled: type !== 'date',
   });
-  const isEmptyDate = !(value ?? pickedDate ?? defaultValue);
+  const isEmptyDate = !isoDateSchema.safeParse(
+    value ?? pickedDate ?? defaultValue
+  ).success;
   const dateInputClassName = isEmptyDate
     ? tailwindFormTheme.emptyDateInput
     : tailwindFormTheme.dateInput;

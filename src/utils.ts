@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 type MinMaxValue = number | string;
 
 type ValidationProps = {
@@ -128,6 +130,8 @@ export const getValidationRules = ({
       return requiredRule;
   }
 };
+
+export const isoDateSchema = z.iso.date();
 
 export const getNextTabIndex = (
   key: string,

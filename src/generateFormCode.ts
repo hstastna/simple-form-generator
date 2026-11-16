@@ -2,7 +2,7 @@ import { FormConfig } from '@/schemas/formConfigSchema';
 import { RESET_CONFIRM_MESSAGE } from '@/constants';
 import { isEventHandlerName } from '@/formActions';
 import { FormTheme } from '@/formThemes';
-import { getValidationRules, ValidationRules } from '@/utils';
+import { getValidationRules, isoDateSchema, ValidationRules } from '@/utils';
 
 type FormField = FormConfig['items'][number];
 type FormButton = FormConfig['buttons'][number];
@@ -367,12 +367,16 @@ const formatDateClassName = (
   watchedDates: WatchedDate[]
 ) => {
   if (value !== undefined) {
-    return formatClassName(value ? theme.dateInput : theme.emptyDateInput);
+    return formatClassName(
+      isoDateSchema.safeParse(value).success
+        ? theme.dateInput
+        : theme.emptyDateInput
+    );
   }
 
   const variableName = formatWatchedDateReference(
     id,
-    defaultValue,
+    isoDateSchema.safeParse(defaultValue).success ? defaultValue : undefined,
     watchedDates
   );
 
