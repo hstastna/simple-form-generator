@@ -5,8 +5,11 @@ type FormDataProps = {
 };
 
 export const FormData: FC<FormDataProps> = ({ formData }) => (
-  <section className="mt-10 pt-6" aria-labelledby="form-data-heading">
-    <h3 id="form-data-heading" className="text-lg font-medium mb-5">
+  <section
+    className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700"
+    aria-labelledby="form-data-heading"
+  >
+    <h3 id="form-data-heading" className="text-xl font-bold mb-4">
       Form Data
     </h3>
 
