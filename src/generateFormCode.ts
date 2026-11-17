@@ -13,8 +13,8 @@ type WatchedDate = {
 };
 
 const MAX_LINE_LENGTH = 80;
-const INDENT = '  ';
-const REQUIRED_MARK = '<span aria-hidden="true"> *</span>';
+export const INDENT = '  ';
+export const REQUIRED_MARK = '<span aria-hidden="true"> *</span>';
 
 const identifierPattern = /^[A-Za-z_$][\w$]*$/;
 const fieldPathPattern = /[.[\]'"]/;
@@ -139,7 +139,7 @@ const breakLongCondition = (attribute: string, indent: string) => {
       ].join('\n');
 };
 
-const formatTag = (
+export const formatTag = (
   opening: string,
   attributes: string[],
   ending: string,
@@ -171,14 +171,14 @@ const formatTag = (
   ];
 };
 
-const formatSelfClosingElement = (
+export const formatSelfClosingElement = (
   tag: string,
   attributes: string[],
   indent: string
 ) => formatTag(`<${tag}`, attributes, ' />', indent);
 
 // Prettier breaks an element whose children include a tag or that has 2+ attributes
-const formatTextElement = (
+export const formatTextElement = (
   tag: string,
   attributes: string[],
   children: string[],
@@ -211,7 +211,7 @@ const formatTextElement = (
   ];
 };
 
-const formatContainer = (
+export const formatContainer = (
   tag: string,
   attributes: string[],
   children: string[],
