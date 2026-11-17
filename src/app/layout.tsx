@@ -32,9 +32,7 @@ const RootLayout: FC<RootLayoutProps> = ({ children }) => {
               <h1 className="text-3xl font-bold bg-linear-to-r from-green-400 to-lime-500 bg-clip-text text-transparent">
                 Simple Form Generator
               </h1>
-              <p className="text-gray-600 dark:text-gray-400">
-                Build forms from JSON configuration for your React project!
-              </p>
+              <p>Build forms from JSON configuration for your React project!</p>
             </div>
 
             <Image

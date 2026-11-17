@@ -90,7 +90,7 @@ describe('CodeTab', () => {
       screen.getByRole('textbox', { name: 'Generated React code' }).textContent
     ).toContain(`className="${tailwindFormTheme.form}"`);
     expect(document.getElementById('form-code-hint')?.textContent).toContain(
-      'and Tailwind CSS v4.1 or later.'
+      '+ Tailwind CSS v4.1 or later required.'
     );
   });
 

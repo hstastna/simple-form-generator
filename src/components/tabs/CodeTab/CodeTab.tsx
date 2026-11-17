@@ -55,7 +55,7 @@ export const CodeTab: FC = () => {
       <div
         role="tablist"
         aria-label="Code variants"
-        className="flex gap-6 mt-2 mb-4 border-b border-gray-200 dark:border-gray-700"
+        className="flex w-fit gap-4 mt-2 mb-4 border-b border-gray-200 dark:border-gray-700"
       >
         {codeVariants.map((variant, index) => {
           const isActive = variant === activeVariant;
@@ -71,10 +71,10 @@ export const CodeTab: FC = () => {
               tabIndex={isActive ? 0 : -1}
               onClick={() => setActiveVariant(variant)}
               onKeyDown={(event) => handleKeyDown(event, index)}
-              className={`pt-2 pb-1 px-1 border-b-2 text-sm font-medium ${
+              className={`pt-2 pb-1 px-1 border-b-2 font-bold leading-5 transition-all motion-reduce:transition-none ${
                 isActive
-                  ? 'border-green-600 text-green-700 dark:border-green-500 dark:text-green-500'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-700 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-300'
+                  ? 'border-green-600 text-sm text-green-700 dark:border-green-500 dark:text-green-500'
+                  : 'border-transparent text-xs text-gray-500 hover:text-gray-700 hover:border-gray-700 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-300'
               }`}
             >
               {variant.label}
@@ -87,12 +87,13 @@ export const CodeTab: FC = () => {
         id={codeHintId}
         className="text-xs mb-4 text-gray-600 dark:text-gray-400"
       >
-        A React + TypeScript component of your form. It needs the{' '}
+        React + TypeScript component of your form.{' '}
         <code className="px-1.5 py-0.5 bg-gray-200 border border-gray-300 text-gray-700 rounded dark:bg-neutral-800 dark:border-neutral-600 dark:text-neutral-300">
           react-hook-form
         </code>{' '}
         package
-        {activeVariant.requirement && ` and ${activeVariant.requirement}`}.
+        {activeVariant.requirement && ` + ${activeVariant.requirement}`}{' '}
+        required.
       </p>
 
       <div
