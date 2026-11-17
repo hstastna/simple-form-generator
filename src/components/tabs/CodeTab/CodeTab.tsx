@@ -2,10 +2,12 @@
 
 import { FC, KeyboardEvent, useState } from 'react';
 import CodeMirror, { EditorView } from '@uiw/react-codemirror';
+import { html } from '@codemirror/lang-html';
 import { javascript } from '@codemirror/lang-javascript';
 import { codeVariants } from '@/constants';
 import { useFormContext } from '@/context/FormContext';
 import { generateFormCode } from '@/generateFormCode';
+import { generateFormHtml } from '@/generateFormHtml';
 import { useIsDarkMode } from '@/hooks/useIsDarkMode';
 import { getNextTabIndex } from '@/utils';
 import { CopyButton } from './components/CopyButton';
@@ -46,7 +48,10 @@ export const CodeTab: FC = () => {
     );
   }
 
-  const code = generateFormCode(formConfig, activeVariant.theme);
+  const isHtml = activeVariant.id === 'html';
+  const code = isHtml
+    ? generateFormHtml(formConfig)
+    : generateFormCode(formConfig, activeVariant.theme);
 
   return (
     <div id="panel-code" role="tabpanel" aria-labelledby="tab-code">
@@ -87,13 +92,20 @@ export const CodeTab: FC = () => {
         id={codeHintId}
         className="text-xs mb-4 text-gray-600 dark:text-gray-400"
       >
-        React + TypeScript component of your form.{' '}
-        <code className="px-1.5 py-0.5 bg-gray-200 border border-gray-300 text-gray-700 rounded dark:bg-neutral-800 dark:border-neutral-600 dark:text-neutral-300">
-          react-hook-form
-        </code>{' '}
-        package
-        {activeVariant.requirement && ` + ${activeVariant.requirement}`}{' '}
-        required.
+        {isHtml ? (
+          'Plain HTML of your form. The browser validates it on submit; event handlers are not included.'
+        ) : (
+          <>
+            React + TypeScript component of your form.{' '}
+            <code className="px-1.5 py-0.5 bg-gray-200 border border-gray-300 text-gray-700 rounded dark:bg-neutral-800 dark:border-neutral-600 dark:text-neutral-300">
+              react-hook-form
+            </code>{' '}
+            package
+            {activeVariant.requirement &&
+              ` + ${activeVariant.requirement}`}{' '}
+            required.
+          </>
+        )}
       </p>
 
       <div
@@ -104,7 +116,7 @@ export const CodeTab: FC = () => {
       >
         <div className="flex items-center justify-between px-4 py-2 border-b border-gray-500 bg-gray-100 rounded-t-md dark:border-gray-400 dark:bg-neutral-900">
           <span className="font-mono text-sm text-gray-700 dark:text-neutral-300">
-            GeneratedForm.tsx
+            {isHtml ? 'GeneratedForm.html' : 'GeneratedForm.tsx'}
           </span>
           <CopyButton text={code} />
         </div>
@@ -113,9 +125,11 @@ export const CodeTab: FC = () => {
           value={code}
           readOnly
           extensions={[
-            javascript({ jsx: true, typescript: true }),
+            isHtml ? html() : javascript({ jsx: true, typescript: true }),
             EditorView.contentAttributes.of({
-              'aria-label': 'Generated React code',
+              'aria-label': isHtml
+                ? 'Generated HTML code'
+                : 'Generated React code',
               'aria-describedby': codeHintId,
             }),
           ]}

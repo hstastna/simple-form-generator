@@ -98,12 +98,30 @@ describe('CodeTab', () => {
     renderCodeTab();
     const unstyled = screen.getByRole('tab', { name: 'Unstyled' });
     const tailwind = screen.getByRole('tab', { name: 'Tailwind CSS' });
+    const html = screen.getByRole('tab', { name: 'HTML' });
 
     fireEvent.keyDown(unstyled, { key: 'ArrowRight' });
     expect(document.activeElement).toBe(tailwind);
 
     fireEvent.keyDown(tailwind, { key: 'ArrowRight' });
+    expect(document.activeElement).toBe(html);
+
+    fireEvent.keyDown(html, { key: 'ArrowRight' });
     expect(document.activeElement).toBe(unstyled);
+  });
+
+  it('shows the plain HTML, its file name and its hint after a click on its tab', () => {
+    renderCodeTab();
+
+    fireEvent.click(screen.getByRole('tab', { name: 'HTML' }));
+
+    expect(
+      screen.getByRole('textbox', { name: 'Generated HTML code' }).textContent
+    ).toContain('<form aria-labelledby="form-title">');
+    expect(screen.getByText('GeneratedForm.html')).toBeTruthy();
+    expect(document.getElementById('form-code-hint')?.textContent).toContain(
+      'Plain HTML of your form.'
+    );
   });
 
   it('copies the code of the selected tab', async () => {

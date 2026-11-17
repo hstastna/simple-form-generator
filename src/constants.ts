@@ -17,6 +17,7 @@ export const codeVariants: readonly CodeVariant[] = [
     theme: tailwindFormTheme,
     requirement: 'Tailwind CSS v4.1 or later',
   },
+  { id: 'html', label: 'HTML' },
 ];
 
 export const RESET_CONFIRM_MESSAGE =
