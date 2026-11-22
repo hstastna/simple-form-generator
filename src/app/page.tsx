@@ -54,7 +54,7 @@ const Home: FC = () => {
                 onKeyDown={(event) => handleKeyDown(event, tab)}
                 className={`pt-4 pb-2 px-1 border-b-4 capitalize leading-7 transition-all motion-reduce:transition-none ${
                   activeTab === tab
-                    ? 'border-green-500 font-semibold text-xl text-green-500'
+                    ? 'border-green-500 font-semibold text-xl text-green-700 dark:text-green-500'
                     : 'border-transparent font-medium text-base text-gray-500 hover:text-gray-700 hover:border-gray-700 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-300'
                 }`}
               >
