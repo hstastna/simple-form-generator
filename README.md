@@ -11,6 +11,11 @@ _Code_ – to copy the form as a React + TypeScript component or as plain HTML
 
 The _Config_ tab validates the configuration on every change in its editor, `CodeMirror` from the [@uiw/react-codemirror](https://uiwjs.github.io/react-codemirror/) package. It checks both the JSON syntax and the configuration values, and displays any errors below the editor.
 
+The _Config_ tab can show two buttons that save the current configuration to the browser's `localStorage` or remove it from there. This way, you can easily control which configuration the browser keeps. When you open the app for the first time, neither button is displayed. After a page refresh, the _Config_ tab displays the saved configuration, or the default config example if nothing is saved. Each button appears only when its action is possible:
+
+- _Save to browser_ - appears when the editor content differs from the saved configuration, or from the default config example if nothing is saved. It saves the content even when it is invalid, so you can come back later and fix the JSON.
+- _Remove from browser_ - appears while a configuration is saved. Clicking it deletes the saved configuration but keeps the editor content. The default config example appears after the next page refresh.
+
 If no error occurs after specifying the configuration, you can click on _Result_ tab to see the result.
 You can test your forms by entering the values into appropriate fields.
 
