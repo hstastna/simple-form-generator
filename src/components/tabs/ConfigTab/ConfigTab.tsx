@@ -4,6 +4,7 @@ import { FC } from 'react';
 import { useFormContext } from '@/context/FormContext';
 import { useIsDarkMode } from '@/hooks/useIsDarkMode';
 import { ErrorDisplay, validationErrorsId } from './components/ErrorDisplay';
+import { StorageButtons } from './components/StorageButtons';
 import CodeMirror, { EditorView } from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 
@@ -18,13 +19,14 @@ export const ConfigTab: FC = () => {
     <div id="panel-config" role="tabpanel" aria-labelledby="tab-config">
       <h2 className="text-xl font-semibold">Form Configuration</h2>
 
-      <div className="mb-4">
+      <div className="mb-4 flex items-baseline justify-between gap-4">
         <p
           id={editorInstructionsId}
           className="text-xs mb-2 text-gray-600 dark:text-gray-400"
         >
           Enter your form configuration in JSON format below:
         </p>
+        <StorageButtons />
       </div>
 
       <div className="relative">

@@ -23,6 +23,8 @@ export const codeVariants: readonly CodeVariant[] = [
 export const RESET_CONFIRM_MESSAGE =
   'Are you sure you want to reset the form? All data will be lost.';
 
+export const CONFIG_STORAGE_KEY = 'simple-form-generator:config';
+
 export const DEFAULT_FORM_CONFIG = JSON.stringify(
   {
     title: 'Sample Form',

@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, afterEach } from '@jest/globals';
+import { CONFIG_STORAGE_KEY } from '@/constants';
 import { FormProvider } from '@/context/FormContext';
 import { ConfigTab } from './ConfigTab';
 
@@ -80,6 +81,59 @@ describe('ConfigTab invalid configuration', () => {
         'items.0.label: Add a label, aria-label or aria-labelledby'
       )
     );
+  });
+});
+
+describe('ConfigTab saved configuration', () => {
+  const invalidConfig = '{ "items": [';
+
+  afterEach(() => localStorage.clear());
+
+  const typeConfig = async (editor: HTMLElement, text: string) => {
+    fireEvent.input(editor, { target: { textContent: text } });
+    await waitFor(() => expect(editor.textContent).toBe(text));
+  };
+
+  const querySaveButton = () =>
+    screen.queryByRole('button', { name: 'Save to browser' });
+  const queryRemoveButton = () =>
+    screen.queryByRole('button', { name: 'Remove from browser' });
+
+  it('offers saving once the example changes and saves on click', async () => {
+    const editor = renderConfigTab();
+    expect(querySaveButton()).toBeNull();
+    expect(queryRemoveButton()).toBeNull();
+
+    await typeConfig(editor, invalidConfig);
+    fireEvent.click(querySaveButton()!);
+
+    expect(localStorage.getItem(CONFIG_STORAGE_KEY)).toBe(invalidConfig);
+    expect(querySaveButton()).toBeNull();
+    expect(document.activeElement).toBe(queryRemoveButton());
+  });
+
+  it('restores the saved configuration and offers saving once it changes', async () => {
+    localStorage.setItem(CONFIG_STORAGE_KEY, invalidConfig);
+    const editor = renderConfigTab();
+    expect(editor.textContent).toBe(invalidConfig);
+    expect(querySaveButton()).toBeNull();
+
+    await typeConfig(editor, '{ "items": [] }');
+
+    expect(querySaveButton()).toBeTruthy();
+    expect(queryRemoveButton()).toBeTruthy();
+  });
+
+  it('removes the saved configuration and keeps the editor text', () => {
+    localStorage.setItem(CONFIG_STORAGE_KEY, invalidConfig);
+    const editor = renderConfigTab();
+
+    fireEvent.click(queryRemoveButton()!);
+
+    expect(localStorage.getItem(CONFIG_STORAGE_KEY)).toBeNull();
+    expect(editor.textContent).toBe(invalidConfig);
+    expect(queryRemoveButton()).toBeNull();
+    expect(document.activeElement).toBe(querySaveButton());
   });
 });
 
