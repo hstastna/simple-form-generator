@@ -7,16 +7,20 @@ Simple Form Generator is an app for you to generate forms for your apps, based o
 The application consists of three tabs:
 _Config_ – to add the form configuration in JSON format
 _Result_ – to display the form
-_Code_ – to copy the form as a React + TypeScript component
+_Code_ – to copy the form as a React + TypeScript component or as plain HTML
 
-The _Code_ tab has two subtabs. _Unstyled_ gives the component without the classes of the _Result_ tab. _Tailwind CSS_ gives it with the same Tailwind CSS classes as the _Result_ tab, and needs Tailwind CSS v4.1 or later in your project.
+The _Config_ tab validates the configuration on every change in its editor, `CodeMirror` from the [@uiw/react-codemirror](https://uiwjs.github.io/react-codemirror/) package. It checks both the JSON syntax and the configuration values, and displays any errors below the editor.
 
-When a text is inserted in the _Config_ tab text area (uses `CodeMirror` from the [@uiw/react-codemirror](https://uiwjs.github.io/react-codemirror/) package), it is validated automatically: the correctness of the JSON format itself as well as the specific configuration with proper values. If the problems occur, you'll be informed briefly by formatted error messages right below the text area.
-
-If no error occurs after inserting the configuration, you can click on _Result_ tab to see the result.
+If no error occurs after specifying the configuration, you can click on _Result_ tab to see the result.
 You can test your forms by entering the values into appropriate fields.
 
-The project uses also [React Hook Form](https://react-hook-form.com/) library, hence the validation of the form data comes with it.
+The _Result_ tab validates the form data with the [React Hook Form](https://react-hook-form.com/) library.
+
+The _Code_ tab has three subtabs:
+
+- _Unstyled_ - shows the component without the classes of the _Result_ tab.
+- _Tailwind CSS_ - displays the component with the same Tailwind CSS classes as the _Result_ tab. This code requires Tailwind CSS v4.1 or later in your project.
+- _HTML_ - represents the form as plain HTML, without the classes of the _Result_ tab and without event handlers. The browser validates this form on submit.
 
 The generator uses Tailwind CSS and is quite good adapted also for your mobile phone screen.
 
@@ -43,7 +47,7 @@ The JSON configuration entered in the _Config_ tab is validated by using [Zod](h
 
 ## Radio groups
 
-A `radio` item renders one `<fieldset>`, and its `label` becomes the `legend`. Each entry of `options` is one `<input type="radio">` and takes the same attributes as in HTML, plus a `label` for its visible text:
+A `radio` item renders one `<fieldset>`, and its `label` becomes the `legend`. Each entry of `options` is one `<input type="radio">` and accepts the same attributes as in HTML, plus a `label` for its visible text:
 
 ```json
 {
@@ -58,7 +62,7 @@ A `radio` item renders one `<fieldset>`, and its `label` becomes the `legend`. E
 }
 ```
 
-Keys set on the `radio` item apply to every option, and an option's own key wins. An option without `id` gets `<id>-<index>`. As in HTML, `required` on any option makes the whole group required.
+Keys set on the `radio` item apply to every option, and an option's own key wins. The id of an option without `id` defaults to `<id>-<index>`. As in HTML, `required` on any option makes the whole group required.
 
 ## Event handlers
 
@@ -70,14 +74,14 @@ Fields and buttons accept the `onClick`, `onChange`, `onFocus`, `onBlur`, `onMou
 
 The _Result_ tab implements two handlers:
 
-- `reset` - asks for a confirmation, then restores the form to the defaults from your config. Every button with `"type": "reset"` gets it, no `onClick` key needed.
+- `reset` - asks for a confirmation, then restores the form to the defaults from your config. Every button with `"type": "reset"` calls it by default, without an `onClick` key.
 - `clear` - restores the form right away, with no confirmation. It runs only where a handler key names it.
 
 Both also clear the submitted _Form Data_ output.
 
-Any other handler passes validation but has no implementation in the _Result_ tab, so it does nothing while you are testing the form. Two exceptions: `onChange` and `onBlur` on fields are validated, but they never run in the _Result_ tab, because React Hook Form takes those two events over.
+Any other handler passes validation but has no implementation in the _Result_ tab, so it does nothing while you are testing the form. Two exceptions: `onChange` and `onBlur` on fields are validated, but they never run in the _Result_ tab, because React Hook Form handles those two events.
 
-The _Code_ tab generates a `handlers` object with a stub for every handler name in your config, ready for your own code. `reset` and `clear` come implemented. Field `onChange` and `onBlur` handlers go into the `register` options of React Hook Form.
+The _Unstyled_ and _Tailwind CSS_ subtabs of the _Code_ tab generate a `handlers` object with a stub for every handler name in your config, ready for your own code. `reset` and `clear` are already implemented. Field `onChange` and `onBlur` handlers are passed in the `register` options of React Hook Form.
 
 ## Getting Started
 
@@ -107,7 +111,7 @@ npm test
 
 This project is fresh, hence lots of improvements can be done, for example:
 
-- extend the _Code_ tab with more output formats to choose from: a React component in plain JavaScript, or plain HTML with a matching CSS stylesheet
+- extend the _Code_ tab with more output formats to choose from: a React component in plain JavaScript, or a matching CSS stylesheet for the _HTML_ subtab, possibly also using styled components with React
 - allow other input types to be accepted, like type of button, submit, reset, email, password etc.
 - make the data entered in the generated forms persistent while switching between the tabs, even before clicking on Submit button (can be useful when playing with the various data and setting the proper JSON attributes to make the inputs work as expected)
 - improve state management, consider getting rid of the Context eventually
