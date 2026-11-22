@@ -62,7 +62,13 @@ A `radio` item renders one `<fieldset>`, and its `label` becomes the `legend`. E
 }
 ```
 
-Keys set on the `radio` item apply to every option, and an option's own key wins. The id of an option without `id` defaults to `<id>-<index>`. As in HTML, `required` on any option makes the whole group required.
+Keys set on the `radio` item apply to every option, and an option's own key wins. These item keys are exceptions:
+
+- `aria-label` and `aria-labelledby` - are set on the `<fieldset>`, not on the options.
+- `autoFocus` - is set only on the first option.
+- `"disabled": true` - disables every option, even an option with `"disabled": false`.
+
+The id of an option without `id` defaults to `<id>-<index>`. As in HTML, `required` on any option makes the whole group required.
 
 ## Event handlers
 
