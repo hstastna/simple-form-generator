@@ -2,9 +2,14 @@ import {
   DetailedHTMLProps,
   FC,
   InputHTMLAttributes,
+  SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from 'react';
-import { formFieldTypes, RadioOption } from '@/schemas/formFieldSchema';
+import {
+  formFieldTypes,
+  RadioOption,
+  SelectOption,
+} from '@/schemas/formFieldSchema';
 import { Control, UseFormRegister } from 'react-hook-form';
 import { FieldError } from 'react-hook-form';
 import { ResultFormData } from '../ResultTab';
@@ -12,6 +17,7 @@ import { tailwindFormTheme } from '@/formThemes';
 import { getValidationRules } from '@/utils';
 import { TextNumDateField } from './TextNumDateField';
 import { TextAreaField } from './TextAreaField';
+import { SelectField } from './SelectField';
 import { CheckboxField } from './CheckboxField';
 import { RadioField } from './RadioField';
 import { RequiredMark } from './RequiredMark';
@@ -28,14 +34,21 @@ type TextAreaProps = DetailedHTMLProps<
   HTMLTextAreaElement
 >;
 
+type SelectProps = DetailedHTMLProps<
+  SelectHTMLAttributes<HTMLSelectElement>,
+  HTMLSelectElement
+>;
+
 type InputAndTextAreaProps = InputProps & TextAreaProps;
 
-export type FormField = InputAndTextAreaProps & {
-  id: string;
-  label?: string;
-} & (
+export type FormField = InputAndTextAreaProps &
+  SelectProps & {
+    id: string;
+    label?: string;
+  } & (
     | { type: 'radio'; options?: RadioOption[] }
-    | { type: Exclude<FormFieldType, 'radio'>; options?: never }
+    | { type: 'select'; options?: SelectOption[] }
+    | { type: Exclude<FormFieldType, 'radio' | 'select'>; options?: never }
   );
 
 type FormFieldProps = {
@@ -53,7 +66,9 @@ export const FormField: FC<FormFieldProps> = ({
 }) => {
   const { id, type, label, options, ...props } = field;
 
-  const required = field.required || options?.some((option) => option.required);
+  const required =
+    field.required ||
+    (type === 'radio' && options?.some((option) => option.required));
   const validationRules = getValidationRules({ ...field, required });
 
   const errorId = error ? `${id}-error` : undefined;
@@ -113,6 +128,19 @@ export const FormField: FC<FormFieldProps> = ({
             register={register}
             validationRules={validationRules}
             label={label}
+            {...props}
+            {...errorAria}
+          />
+        );
+
+      case 'select':
+        return (
+          <SelectField
+            id={id}
+            register={register}
+            validationRules={validationRules}
+            label={label}
+            options={options}
             {...props}
             {...errorAria}
           />

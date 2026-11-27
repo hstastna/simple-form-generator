@@ -15,6 +15,7 @@ export type FormTheme = Record<
   | 'emptyDateInput'
   | 'colorInput'
   | 'rangeInput'
+  | 'select'
   | 'textArea'
   | 'checkboxRow'
   | 'checkbox'
@@ -52,6 +53,8 @@ export const tailwindFormTheme = defineFormTheme({
   colorInput:
     'p-1 block h-12.5 w-20 border border-gray-500 rounded dark:border-gray-400 scheme-light-dark',
   rangeInput: 'block w-full scheme-light-dark',
+  select:
+    'p-3 block w-full border border-gray-500 rounded dark:border-gray-400 scheme-light-dark',
   textArea:
     'p-3 block w-full border border-gray-500 rounded dark:border-gray-400 placeholder:text-gray-500 dark:placeholder:text-gray-400',
   checkboxRow: 'flex items-center',

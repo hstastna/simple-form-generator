@@ -254,6 +254,68 @@ describe('generateFormHtml', () => {
     ).toEqual(['Basic', 'Pro', 'Team']);
   });
 
+  it('renders a select with its options, marking the preset one as selected', () => {
+    expect(
+      generate({
+        items: [
+          {
+            id: 'fruit',
+            type: 'select',
+            label: 'Fruit',
+            required: true,
+            defaultValue: 'pear',
+            options: [
+              { value: 'apple', label: 'Apple & co' },
+              { value: 'pear', label: 'Pear' },
+            ],
+          },
+        ],
+        buttons: [],
+      })
+    ).toContain(`
+    <label for="fruit">Fruit<span aria-hidden="true"> *</span></label>
+    <select id="fruit" name="fruit" required>
+      <option value="apple">Apple &amp; co</option>
+      <option value="pear" selected>
+        Pear
+      </option>
+    </select>
+`);
+  });
+
+  it('selects the options matching value or defaultValue, as React does', () => {
+    document.body.innerHTML = generate({
+      items: [
+        {
+          id: 'size',
+          type: 'select',
+          label: 'Size',
+          value: 2,
+          defaultValue: '1',
+          options: [
+            { value: 1, label: 'S' },
+            { value: '2', label: 'M' },
+          ],
+        },
+        {
+          id: 'tags',
+          type: 'select',
+          label: 'Tags',
+          multiple: true,
+          defaultValue: ['a', 'B'],
+          options: [{ label: 'a' }, { value: 'B', label: 'b' }, { label: 'c' }],
+        },
+      ],
+      buttons: [],
+    });
+
+    expect(
+      [...document.querySelectorAll('option')].map(
+        (option) => option.defaultSelected
+      )
+    ).toEqual([false, true, true, true, false]);
+  });
+
   it('round-trips through the browser HTML parser', () => {
     const intro = '\nstarts on the second line';
     const notes = 'a </textarea> & "b"';

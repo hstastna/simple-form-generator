@@ -27,6 +27,7 @@ export const formFieldTypes = [
   'submit',
   'reset',
   'image',
+  'select',
 ] as const;
 
 const inputAndTextAreaAttributes = {
@@ -77,6 +78,30 @@ export const radioOptionSchema = z
 
 export type RadioOption = z.infer<typeof radioOptionSchema>;
 
+export const selectOptionSchema = z
+  .object({
+    ...commonHtmlAttributes,
+    label: z.string().optional(), // custom: the option text
+    value: z.union([z.string(), z.number()]).optional(),
+  })
+  .strict();
+
+export type SelectOption = z.infer<typeof selectOptionSchema>;
+
+const selectValue = z.union([z.string(), z.number(), z.array(z.string())]);
+
+const selectAttributes = {
+  ...commonHtmlAttributes,
+  ...eventHandlerAttributes,
+  autoComplete: z.string().optional(),
+  defaultValue: selectValue.optional(), // custom: React's editable preset; "value" pins the select
+  label: z.string().optional(), // custom: FormLabel renders it
+  multiple: z.boolean().optional(),
+  required: z.boolean().optional(),
+  size: z.number().optional(),
+  value: selectValue.optional(), // custom: React pins the chosen option
+};
+
 const textareaAttributes = {
   ...commonHtmlAttributes,
   ...inputAndTextAreaAttributes,
@@ -100,6 +125,14 @@ const formFieldVariants = z.discriminatedUnion('type', [
       type: z.literal('radio'),
       options: z.array(radioOptionSchema).optional(), // custom: one radio per entry, with its own attributes
       ...inputAttributes,
+    })
+    .strict(),
+
+  z
+    .object({
+      type: z.literal('select'),
+      options: z.array(selectOptionSchema).optional(), // custom: one option per entry, with its own attributes
+      ...selectAttributes,
     })
     .strict(),
 
@@ -129,6 +162,7 @@ const formFieldVariants = z.discriminatedUnion('type', [
         .exclude([
           'radio',
           'textarea',
+          'select',
           'hidden',
           'button',
           'submit',
@@ -147,6 +181,19 @@ export const formFieldSchema = formFieldVariants
         ctx.addIssue({
           code: 'custom',
           message: 'A file input cannot have a value or defaultValue',
+          path: [key],
+        });
+      }
+
+      if (
+        field.type === 'select' &&
+        field[key] !== undefined &&
+        Array.isArray(field[key]) !== Boolean(field.multiple)
+      ) {
+        ctx.addIssue({
+          code: 'custom',
+          message:
+            'A multiple select takes a list of values, other selects one value',
           path: [key],
         });
       }

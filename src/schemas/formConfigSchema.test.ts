@@ -84,6 +84,34 @@ describe('unique field ids', () => {
     ]);
   });
 
+  it('checks the own ids of select options, which get no fallback id', () => {
+    const select = {
+      id: 'country',
+      type: 'select',
+      label: 'Country',
+      options: [{ id: 'name', value: 'cz' }, { value: 'sk' }],
+    };
+    const name = { id: 'name', type: 'text', label: 'Name' };
+    const result = formConfigSchema.safeParse({
+      items: [name, select],
+      buttons: [button],
+    });
+
+    expect(result.error?.issues[0].path).toEqual([
+      'items',
+      1,
+      'options',
+      0,
+      'id',
+    ]);
+    expect(
+      formConfigSchema.safeParse({
+        items: [{ ...name, id: 'country-1' }, select],
+        buttons: [button],
+      }).success
+    ).toBe(true);
+  });
+
   it("rejects a field id that repeats another field's error id", () => {
     const result = formConfigSchema.safeParse({
       items: [

@@ -132,3 +132,44 @@ describe('file', () => {
     ).toEqual(['defaultValue']);
   });
 });
+
+describe('select', () => {
+  const select = {
+    type: 'select',
+    label: 'Country',
+    options: [{ value: 'cz', label: 'Czechia' }, { value: 'sk' }],
+  };
+
+  it('accepts options and a list of preset values for multiple', () => {
+    expect(
+      formFieldSchema.safeParse({
+        ...select,
+        multiple: true,
+        defaultValue: ['cz', 'sk'],
+      }).success
+    ).toBe(true);
+  });
+
+  it('takes a list of values only on a multiple select, as React does', () => {
+    expect(
+      formFieldSchema.safeParse({
+        ...select,
+        multiple: true,
+        defaultValue: 'cz',
+      }).error?.issues[0].path
+    ).toEqual(['defaultValue']);
+    expect(
+      formFieldSchema.safeParse({ ...select, value: ['cz'] }).error?.issues[0]
+        .path
+    ).toEqual(['value']);
+  });
+
+  it('rejects selected on an option, as React presets the select instead', () => {
+    expect(
+      formFieldSchema.safeParse({
+        ...select,
+        options: [{ value: 'cz', selected: true }],
+      }).success
+    ).toBe(false);
+  });
+});

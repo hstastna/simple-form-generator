@@ -92,6 +92,10 @@ const formatAttribute = (name: string, value: unknown) => {
     return `${name}=${formatString(value)}`;
   }
 
+  if (Array.isArray(value)) {
+    return `${name}={[${value.map((item) => JSON.stringify(item)).join(', ')}]}`;
+  }
+
   if (typeof value === 'object' && value !== null) {
     return `${name}=${formatObject(value)}`;
   }
@@ -698,6 +702,30 @@ const formatField = (
           )
         );
 
+      case 'select':
+        return formatGridField(
+          theme?.textNumDateRow,
+          formatContainer(
+            'select',
+            [
+              idAttribute,
+              ...formatThemeClassName(theme?.select, field),
+              ...formatAttributes(field, fieldOwnKeys, usedHandlers),
+              ...fieldAria,
+              register,
+            ],
+            (field.options ?? []).flatMap((option) =>
+              formatTextElement(
+                'option',
+                formatAttributes(option, ['label'], usedHandlers),
+                option.label ? [formatJsxText(option.label)] : [],
+                gridChildIndent + INDENT
+              )
+            ),
+            gridChildIndent
+          )
+        );
+
       case 'checkbox':
         return formatChoiceField(theme?.checkboxRow, theme?.checkbox);
 
@@ -863,6 +891,28 @@ const formatHandler = (name: string, isOnResetButton: boolean) => {
   }
 };
 
+const formatFormValuesType = (items: FormField[]) => {
+  const valueType = [
+    'string',
+    'number',
+    'boolean',
+    ...(items.some((field) => field.type === 'select' && field.multiple)
+      ? ['string[]']
+      : []),
+    ...(items.some((field) => field.type === 'file') ? ['FileList'] : []),
+  ].join(' | ');
+  const line = `type FormValues = Record<string, ${valueType}>;`;
+
+  return line.length <= MAX_LINE_LENGTH
+    ? [line]
+    : [
+        'type FormValues = Record<',
+        `${INDENT}string,`,
+        `${INDENT}${valueType}`,
+        '>;',
+      ];
+};
+
 const formatUseWatch = ({ id, variableName, defaultValue }: WatchedDate) => {
   const options = [
     'control',
@@ -958,9 +1008,6 @@ export const generateFormCode = (
   const usesGet = fieldsWithErrors.some(
     (field) => field.id && fieldPathPattern.test(field.id)
   );
-  const fileListType = config.items.some((field) => field.type === 'file')
-    ? ' | FileList'
-    : '';
   const handlers = [...usedHandlers].flatMap((name) =>
     formatHandler(name, resetButtonHandlers.has(name))
   );
@@ -973,7 +1020,7 @@ export const generateFormCode = (
       : []),
     `import { ${usesGet ? 'get, ' : ''}useForm${watchedDates.length ? ', useWatch' : ''} } from "react-hook-form";`,
     '',
-    `type FormValues = Record<string, string | number | boolean${fileListType}>;`,
+    ...formatFormValuesType(config.items),
     '',
     'export const GeneratedForm = () => {',
     ...formatUseForm(

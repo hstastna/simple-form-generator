@@ -13,7 +13,7 @@ import { FormField } from './components/FormField';
 
 export type ResultFormData = Record<
   string,
-  string | number | boolean | FileList
+  string | number | boolean | string[] | FileList
 >;
 
 export const ResultTab: FC = () => {

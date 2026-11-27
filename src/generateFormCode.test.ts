@@ -71,6 +71,19 @@ const kitchenSinkConfig = {
         { value: 'team', disabled: true, 'aria-describedby': 'team-hint' },
       ],
     },
+    {
+      id: 'fruits',
+      type: 'select',
+      label: 'Fruits',
+      required: true,
+      multiple: true,
+      defaultValue: ['apple', 'pear'],
+      options: [
+        { value: 'apple', label: 'Apple & co' },
+        { value: 'pear', label: 'Pear' },
+        { label: 'Plum' },
+      ],
+    },
   ],
   buttons: [
     { text: 'Clear & restart', onClick: 'clear' },
@@ -207,9 +220,34 @@ export const GeneratedForm = () => {
     );
   });
 
-  it('adds FileList to the form values only for a file input', () => {
+  it('renders a select with one option per entry', () => {
+    expect(generate(kitchenSinkConfig)).toContain(`
+        <select
+          id="fruits"
+          defaultValue={["apple", "pear"]}
+          multiple
+          required
+          aria-invalid={errors.fruits ? "true" : undefined}
+          aria-describedby={errors.fruits ? "fruits-error" : undefined}
+          {...register("fruits", {
+            required: "This field is required",
+          })}
+        >
+          <option value="apple">{"Apple & co"}</option>
+          <option value="pear">Pear</option>
+          <option>Plum</option>
+        </select>
+`);
+  });
+
+  it('adds string[] for a multiple select and FileList for a file input', () => {
     expect(generate(kitchenSinkConfig)).toContain(
-      'type FormValues = Record<string, string | number | boolean | FileList>;'
+      [
+        'type FormValues = Record<',
+        '  string,',
+        '  string | number | boolean | string[] | FileList',
+        '>;',
+      ].join('\n')
     );
   });
 

@@ -68,6 +68,24 @@ const fileConfig = JSON.stringify({
   buttons: [{ text: 'Send', type: 'submit' }],
 });
 
+const multipleSelectConfig = JSON.stringify({
+  title: 'Multiple select form',
+  items: [
+    {
+      id: 'colors',
+      type: 'select',
+      label: 'Colors',
+      multiple: true,
+      options: [
+        { value: 'red', label: 'Red' },
+        { value: 'green', label: 'Green' },
+        { value: 'blue', label: 'Blue' },
+      ],
+    },
+  ],
+  buttons: [{ text: 'Send', type: 'submit' }],
+});
+
 const resetInputConfig = JSON.stringify({
   title: 'Reset input form',
   items: [
@@ -188,6 +206,16 @@ const parityConfig = JSON.stringify({
     { id: 'go', type: 'submit', value: 'Go' },
     { id: 'undo', type: 'reset' },
     { id: 'logo', type: 'image', src: '/go.png', alt: 'Go' },
+    {
+      id: 'country',
+      type: 'select',
+      label: 'Country',
+      required: true,
+      options: [
+        { value: '', label: 'Choose a country' },
+        { value: 'cz', label: 'Czechia' },
+      ],
+    },
     { id: 'bio', type: 'textarea', label: 'Bio', text: 'Hello' },
     { id: 'nick', type: 'text', 'aria-label': 'Nick', className: 'w-24' },
     { id: 'agree', type: 'checkbox', label: 'Agree', required: true },
@@ -549,6 +577,32 @@ describe('ResultTab file and hidden inputs', () => {
     const formData = heading.closest('section')?.textContent;
     expect(formData).toContain('"cv": [\n    "cv.pdf",\n    "cv.txt"\n  ]');
     expect(formData).toContain('"token": "abc"');
+  });
+});
+
+describe('ResultTab multiple select', () => {
+  it('lists the picked options as an array in the form data', async () => {
+    render(
+      <FormProvider>
+        <ConfigLoader json={multipleSelectConfig} />
+        <ResultTab />
+      </FormProvider>
+    );
+
+    fireEvent.click(screen.getByText('load config'));
+
+    const colors = await screen.findByRole('listbox', { name: 'Colors' });
+    screen.getByRole<HTMLOptionElement>('option', { name: 'Red' }).selected =
+      true;
+    screen.getByRole<HTMLOptionElement>('option', { name: 'Blue' }).selected =
+      true;
+    fireEvent.change(colors);
+    fireEvent.click(screen.getByText('Send'));
+
+    const heading = await screen.findByText('Form Data');
+    expect(heading.closest('section')?.textContent).toContain(
+      '"colors": [\n    "red",\n    "blue"\n  ]'
+    );
   });
 });
 

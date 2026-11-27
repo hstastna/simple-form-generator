@@ -34,6 +34,14 @@ export const formConfigSchema = z
           checkId(option.id || `${id}-${optionIndex}`, optionPath);
         });
       }
+
+      if (field.type === 'select') {
+        field.options?.forEach((option, optionIndex) => {
+          if (option.id) {
+            checkId(option.id, ['items', index, 'options', optionIndex, 'id']);
+          }
+        });
+      }
     });
   });
 

@@ -157,6 +157,44 @@ const formatField = (field: FormField, index: number) => {
           ),
         ];
 
+      case 'select': {
+        const selectedValues = [field.value ?? field.defaultValue ?? []]
+          .flat()
+          .map(String);
+
+        return [
+          ...label,
+          ...formatContainer(
+            'select',
+            [
+              ...formatAttributes({ id, name: id }),
+              ...formatAttributes(field, [
+                ...fieldOwnKeys,
+                'value',
+                'defaultValue',
+              ]),
+            ],
+            (field.options ?? []).flatMap((option) =>
+              formatTextElement(
+                'option',
+                formatAttributes(
+                  {
+                    ...option,
+                    selected: selectedValues.includes(
+                      String(option.value ?? option.label ?? '')
+                    ),
+                  },
+                  ['label']
+                ),
+                option.label ? [escapeHtml(option.label)] : [],
+                childIndent + INDENT
+              )
+            ),
+            childIndent
+          ),
+        ];
+      }
+
       case 'checkbox':
         return [...formatInput(childIndent), ...label];
 
