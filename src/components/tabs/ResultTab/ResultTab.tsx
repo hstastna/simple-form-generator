@@ -106,6 +106,7 @@ export const ResultTab: FC = () => {
             <FormField
               key={fieldId}
               field={{
+                ...(field.type === 'reset' && { onClick: formActions.reset }),
                 ...withResolvedHandlers(field, formActions),
                 id: fieldId,
               }}

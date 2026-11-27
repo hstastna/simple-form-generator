@@ -23,6 +23,10 @@ export const formFieldTypes = [
   'range',
   'file',
   'hidden',
+  'button',
+  'submit',
+  'reset',
+  'image',
 ] as const;
 
 const inputAndTextAreaAttributes = {
@@ -108,10 +112,29 @@ const formFieldVariants = z.discriminatedUnion('type', [
     .omit({ label: true })
     .strict(),
 
+  // a button input is named by its value or alt, not by a label
+  z
+    .object({
+      type: z.enum(['button', 'submit', 'reset', 'image']),
+      ...inputAttributes,
+    })
+    .omit({ label: true })
+    .strict(),
+
   // All other input types schema
   z
     .object({
-      type: z.enum(formFieldTypes).exclude(['radio', 'textarea', 'hidden']),
+      type: z
+        .enum(formFieldTypes)
+        .exclude([
+          'radio',
+          'textarea',
+          'hidden',
+          'button',
+          'submit',
+          'reset',
+          'image',
+        ]),
       ...inputAttributes,
     })
     .strict(),
@@ -129,13 +152,38 @@ export const formFieldSchema = formFieldVariants
       }
     }
   })
-  .refine(
-    (field) =>
-      field.type === 'hidden' ||
-      Boolean(field.label || field['aria-label'] || field['aria-labelledby']),
-    {
-      error:
-        'Add a label, aria-label or aria-labelledby so the field has an accessible name',
-      path: ['label'],
+  .superRefine((field, ctx) => {
+    const hasAriaName = Boolean(
+      field['aria-label'] || field['aria-labelledby']
+    );
+    const addNameIssue = (name: string, key: string) =>
+      ctx.addIssue({
+        code: 'custom',
+        message: `Add ${name}, aria-label or aria-labelledby so the field has an accessible name`,
+        path: [key],
+      });
+
+    switch (field.type) {
+      case 'hidden':
+      case 'submit':
+      case 'reset':
+        return;
+
+      case 'button':
+        if ((field.value === undefined || field.value === '') && !hasAriaName) {
+          addNameIssue('a value', 'value');
+        }
+        return;
+
+      case 'image':
+        if (!field.alt && !hasAriaName) {
+          addNameIssue('alt', 'alt');
+        }
+        return;
+
+      default:
+        if (!field.label && !hasAriaName) {
+          addNameIssue('a label', 'label');
+        }
     }
-  );
+  });

@@ -100,6 +100,27 @@ const formatField = (field: FormField, index: number) => {
   }
 
   const childIndent = INDENT + INDENT;
+
+  switch (field.type) {
+    case 'button':
+    case 'submit':
+    case 'reset':
+    case 'image':
+      return formatContainer(
+        'div',
+        [],
+        formatSelfClosingElement(
+          'input',
+          [
+            ...formatAttributes({ id, type: field.type }),
+            ...formatAttributes(field, ['id', 'type']),
+          ],
+          childIndent
+        ),
+        INDENT
+      );
+  }
+
   const label = formatLabel(id, field.label, isRequired, childIndent);
 
   const formatControl = () => {

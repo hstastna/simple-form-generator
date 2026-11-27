@@ -255,6 +255,23 @@ describe('handlers', () => {
     expect(code).toContain('const { handleSubmit, reset } = useForm');
   });
 
+  it('handles a reset input like a reset button', () => {
+    const code = generate({
+      items: [
+        { id: 'undo', type: 'reset' },
+        { id: 'redo', type: 'reset', onClick: 'logReset' },
+      ],
+      buttons: [],
+    });
+
+    expect(code).toContain(
+      '<input id="undo" type="reset" onClick={handlers.reset} />'
+    );
+    expect(code).toContain(
+      'logReset: () => {\n      // TODO: implement "logReset"\n      reset();\n    },'
+    );
+  });
+
   it('imports SyntheticEvent only for the reset handler', () => {
     const code = generate({
       items: [],
@@ -401,15 +418,21 @@ describe('validation rules', () => {
     });
   });
 
-  it('emits no unused useForm names for hidden inputs', () => {
+  it('emits no unused useForm names for button and hidden inputs', () => {
     const code = generate({
-      items: [{ id: 'user.token', type: 'hidden', value: 'x' }],
+      items: [
+        { id: 'user.token', type: 'hidden', value: 'x' },
+        { type: 'submit' },
+      ],
       buttons: [],
     });
 
     expect(code).toContain('import { useForm } from "react-hook-form";');
     expect(code).toContain(
       'const { register, handleSubmit } = useForm<FormValues>();'
+    );
+    expect(generate({ items: [{ type: 'submit' }], buttons: [] })).toContain(
+      'const { handleSubmit } = useForm<FormValues>();'
     );
   });
 
@@ -609,6 +632,26 @@ export const GeneratedForm = () => {
     expect(
       getDiagnostics(generate(kitchenSinkConfig, tailwindFormTheme))
     ).toEqual([]);
+  });
+
+  it('gives button inputs the button classes, but not an image input', () => {
+    const code = generate(
+      {
+        items: [
+          { id: 'go', type: 'submit', value: 'Go' },
+          { id: 'logo', type: 'image', src: '/go.png', alt: 'Go' },
+        ],
+        buttons: [],
+      },
+      tailwindFormTheme
+    );
+
+    expect(code).toContain(
+      `type="submit"\n          className="${tailwindFormTheme.submitButton}"`
+    );
+    expect(code).toContain(
+      '<input id="logo" type="image" alt="Go" src="/go.png" />'
+    );
   });
 
   it('lets a className in the JSON config replace the theme class', () => {

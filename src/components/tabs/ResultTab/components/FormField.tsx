@@ -118,6 +118,25 @@ export const FormField: FC<FormFieldProps> = ({
           />
         );
 
+      case 'button':
+      case 'submit':
+      case 'reset':
+      case 'image':
+        return (
+          <input
+            id={id}
+            type={type}
+            className={
+              type === 'submit'
+                ? tailwindFormTheme.submitButton
+                : type === 'image'
+                  ? undefined
+                  : tailwindFormTheme.button
+            }
+            {...props}
+          />
+        );
+
       case 'checkbox':
         return (
           <CheckboxField

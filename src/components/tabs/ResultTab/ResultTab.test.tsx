@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect, jest } from '@jest/globals';
 import { FC } from 'react';
 import ts from 'typescript';
 import { FormProvider, useFormContext } from '@/context/FormContext';
@@ -66,6 +66,15 @@ const fileConfig = JSON.stringify({
     { id: 'token', type: 'hidden', value: 'abc' },
   ],
   buttons: [{ text: 'Send', type: 'submit' }],
+});
+
+const resetInputConfig = JSON.stringify({
+  title: 'Reset input form',
+  items: [
+    { id: 'name', type: 'text', label: 'Name' },
+    { id: 'undo', type: 'reset', value: 'Undo', onClick: 'logReset' },
+  ],
+  buttons: [],
 });
 
 const emailConfig = JSON.stringify({
@@ -175,6 +184,10 @@ const parityConfig = JSON.stringify({
     { id: 'volume', type: 'range', label: 'Volume' },
     { id: 'cv', type: 'file', label: 'CV', required: true },
     { id: 'token', type: 'hidden', value: 'abc' },
+    { id: 'ping', type: 'button', value: 'Ping' },
+    { id: 'go', type: 'submit', value: 'Go' },
+    { id: 'undo', type: 'reset' },
+    { id: 'logo', type: 'image', src: '/go.png', alt: 'Go' },
     { id: 'bio', type: 'textarea', label: 'Bio', text: 'Hello' },
     { id: 'nick', type: 'text', 'aria-label': 'Nick', className: 'w-24' },
     { id: 'agree', type: 'checkbox', label: 'Agree', required: true },
@@ -536,6 +549,27 @@ describe('ResultTab file and hidden inputs', () => {
     const formData = heading.closest('section')?.textContent;
     expect(formData).toContain('"cv": [\n    "cv.pdf",\n    "cv.txt"\n  ]');
     expect(formData).toContain('"token": "abc"');
+  });
+});
+
+describe('ResultTab reset input', () => {
+  it('asks before it resets the form, even with a custom handler name', async () => {
+    const confirm = jest.spyOn(window, 'confirm').mockReturnValue(true);
+    render(
+      <FormProvider>
+        <ConfigLoader json={resetInputConfig} />
+        <ResultTab />
+      </FormProvider>
+    );
+
+    fireEvent.click(screen.getByText('load config'));
+
+    const name = await screen.findByLabelText<HTMLInputElement>('Name');
+    fireEvent.change(name, { target: { value: 'Jane' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }));
+
+    expect(confirm).toHaveBeenCalled();
+    await waitFor(() => expect(name.value).toBe(''));
   });
 });
 

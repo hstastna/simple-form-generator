@@ -332,6 +332,15 @@ const formatRuleValue = (value: boolean | number | string | RegExp) => {
   return typeof value === 'string' ? JSON.stringify(value) : String(value);
 };
 
+const formatImplicitReset = (
+  type: string | undefined,
+  onClick: string | undefined,
+  usedHandlers: Set<string>
+) =>
+  type === 'reset' && !onClick
+    ? [`onClick={${formatHandlerReference('reset', usedHandlers)}}`]
+    : [];
+
 const formatValidateRule = (field: FormField) => {
   const formatValidate = (
     checks: string[],
@@ -470,6 +479,41 @@ const formatField = (
   theme?: FormTheme
 ) => {
   const id = field.id || `field-${index}`;
+  const childIndent = indent + INDENT;
+  const idAttribute = `id=${formatString(id)}`;
+
+  switch (field.type) {
+    case 'button':
+    case 'submit':
+    case 'reset':
+    case 'image': {
+      const { type, ...attributes } = field;
+      const themeClassName =
+        type === 'submit'
+          ? theme?.submitButton
+          : type === 'image'
+            ? undefined
+            : theme?.button;
+
+      return formatContainer(
+        'div',
+        formatClassName(theme?.field),
+        formatSelfClosingElement(
+          'input',
+          [
+            idAttribute,
+            `type="${type}"`,
+            ...formatThemeClassName(themeClassName, attributes),
+            ...formatImplicitReset(type, attributes.onClick, usedHandlers),
+            ...formatAttributes(attributes, ['id'], usedHandlers),
+          ],
+          childIndent
+        ),
+        indent
+      );
+    }
+  }
+
   const options = field.type === 'radio' ? field.options : undefined;
   const required = field.required || options?.some((option) => option.required);
   const rules = getValidationRules({ ...field, required });
@@ -498,9 +542,6 @@ const formatField = (
     ...formatRuleEntries(rules, field),
     ...eventOptions,
   ]);
-
-  const childIndent = indent + INDENT;
-  const idAttribute = `id=${formatString(id)}`;
 
   if (field.type === 'hidden') {
     return formatSelfClosingElement(
@@ -774,10 +815,6 @@ const formatButton = (
   theme?: FormTheme
 ) => {
   const { text, type = 'button', ...attributes } = button;
-  const implicitReset =
-    type === 'reset' && !attributes.onClick
-      ? [`onClick={${formatHandlerReference('reset', usedHandlers)}}`]
-      : [];
 
   return formatTextElement(
     'button',
@@ -787,7 +824,7 @@ const formatButton = (
         type === 'submit' ? theme?.submitButton : theme?.button,
         attributes
       ),
-      ...implicitReset,
+      ...formatImplicitReset(type, attributes.onClick, usedHandlers),
       ...formatAttributes(attributes, [], usedHandlers),
     ],
     text ? [formatJsxText(text)] : [],
@@ -904,15 +941,18 @@ export const generateFormCode = (
   }
 
   const resetButtonHandlers = new Set(
-    config.buttons.flatMap((button) =>
-      button.type === 'reset' && button.onClick ? [button.onClick] : []
+    [...config.buttons, ...config.items].flatMap((control) =>
+      control.type === 'reset' && control.onClick ? [control.onClick] : []
     )
   );
   const usesReset =
     resetButtonHandlers.size > 0 ||
     usedHandlers.has('reset') ||
     usedHandlers.has('clear');
-  const fieldsWithErrors = config.items.filter(
+  const registeredFields = config.items.filter(
+    (field) => !['button', 'submit', 'reset', 'image'].includes(field.type)
+  );
+  const fieldsWithErrors = registeredFields.filter(
     (field) => field.type !== 'hidden'
   );
   const usesGet = fieldsWithErrors.some(
@@ -937,7 +977,7 @@ export const generateFormCode = (
     '',
     'export const GeneratedForm = () => {',
     ...formatUseForm(
-      config.items.length > 0,
+      registeredFields.length > 0,
       fieldsWithErrors.length > 0,
       usesReset,
       watchedDates.length > 0

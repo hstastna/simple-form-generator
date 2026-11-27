@@ -58,6 +58,17 @@ describe('generateFormHtml', () => {
     );
   });
 
+  it('leaves the name off a button input, as on a button', () => {
+    expect(
+      generate({
+        items: [{ id: 'go', type: 'submit', value: 'Go' }],
+        buttons: [],
+      })
+    ).toContain(
+      '<div>\n    <input id="go" type="submit" value="Go" />\n  </div>'
+    );
+  });
+
   it('converts React attribute names and values to HTML', () => {
     const html = generate({
       items: [

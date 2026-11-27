@@ -20,6 +20,23 @@ describe('accessible name', () => {
     ).toBe(false);
   });
 
+  it('names a button input by its value or alt, not by a label', () => {
+    expect(formFieldSchema.safeParse({ type: 'submit' }).success).toBe(true);
+    expect(
+      formFieldSchema.safeParse({ type: 'submit', label: 'Send' }).success
+    ).toBe(false);
+    expect(
+      formFieldSchema.safeParse({ type: 'button' }).error?.issues[0].path
+    ).toEqual(['value']);
+    expect(
+      formFieldSchema.safeParse({ type: 'button', value: 0 }).success
+    ).toBe(true);
+    expect(
+      formFieldSchema.safeParse({ type: 'image', src: 'go.png' }).error
+        ?.issues[0].path
+    ).toEqual(['alt']);
+  });
+
   it('points at the attribute to add', () => {
     const result = formFieldSchema.safeParse({ type: 'text' });
 
