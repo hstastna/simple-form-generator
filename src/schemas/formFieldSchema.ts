@@ -19,6 +19,10 @@ export const formFieldTypes = [
   'datetime-local',
   'month',
   'week',
+  'color',
+  'range',
+  'file',
+  'hidden',
 ] as const;
 
 const inputAndTextAreaAttributes = {
@@ -95,21 +99,43 @@ const formFieldVariants = z.discriminatedUnion('type', [
     })
     .strict(),
 
+  // a hidden input has no label
+  z
+    .object({
+      type: z.literal('hidden'),
+      ...inputAttributes,
+    })
+    .omit({ label: true })
+    .strict(),
+
   // All other input types schema
   z
     .object({
-      type: z.enum(formFieldTypes).exclude(['radio', 'textarea']),
+      type: z.enum(formFieldTypes).exclude(['radio', 'textarea', 'hidden']),
       ...inputAttributes,
     })
     .strict(),
 ]);
 
-export const formFieldSchema = formFieldVariants.refine(
-  (field) =>
-    Boolean(field.label || field['aria-label'] || field['aria-labelledby']),
-  {
-    error:
-      'Add a label, aria-label or aria-labelledby so the field has an accessible name',
-    path: ['label'],
-  }
-);
+export const formFieldSchema = formFieldVariants
+  .superRefine((field, ctx) => {
+    for (const key of ['value', 'defaultValue'] as const) {
+      if (field.type === 'file' && field[key] !== undefined) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'A file input cannot have a value or defaultValue',
+          path: [key],
+        });
+      }
+    }
+  })
+  .refine(
+    (field) =>
+      field.type === 'hidden' ||
+      Boolean(field.label || field['aria-label'] || field['aria-labelledby']),
+    {
+      error:
+        'Add a label, aria-label or aria-labelledby so the field has an accessible name',
+      path: ['label'],
+    }
+  );

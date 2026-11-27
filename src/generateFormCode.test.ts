@@ -48,6 +48,8 @@ const kitchenSinkConfig = {
     { id: 'agree', type: 'checkbox', label: "I'm in", required: true },
     { id: 'mails', type: 'email', label: 'Mails', multiple: true },
     { id: 'site', type: 'url', label: 'Site' },
+    { id: 'cv', type: 'file', label: 'CV', accept: '.pdf' },
+    { id: 'token', type: 'hidden', defaultValue: 'abc' },
     {
       id: 'locked',
       type: 'text',
@@ -196,6 +198,18 @@ export const GeneratedForm = () => {
     expect(code.match(/\{\.\.\.register\("plan", \{/g)).toHaveLength(3);
     expect(code).toContain(
       'errors.plan ? "team-hint plan-error" : "team-hint"'
+    );
+  });
+
+  it('renders a hidden input with no wrapper, label or error', () => {
+    expect(generate(kitchenSinkConfig)).toContain(
+      '\n\n      <input\n        id="token"\n        type="hidden"\n        defaultValue="abc"\n        {...register("token")}\n      />\n\n'
+    );
+  });
+
+  it('adds FileList to the form values only for a file input', () => {
+    expect(generate(kitchenSinkConfig)).toContain(
+      'type FormValues = Record<string, string | number | boolean | FileList>;'
     );
   });
 
@@ -385,6 +399,18 @@ describe('validation rules', () => {
         ).toBe(validate?.(value));
       }
     });
+  });
+
+  it('emits no unused useForm names for hidden inputs', () => {
+    const code = generate({
+      items: [{ id: 'user.token', type: 'hidden', value: 'x' }],
+      buttons: [],
+    });
+
+    expect(code).toContain('import { useForm } from "react-hook-form";');
+    expect(code).toContain(
+      'const { register, handleSubmit } = useForm<FormValues>();'
+    );
   });
 
   it('keeps only the disabled rule on a disabled field', () => {

@@ -59,6 +59,15 @@ const patternConfig = JSON.stringify({
   buttons: [{ text: 'Send', type: 'submit' }],
 });
 
+const fileConfig = JSON.stringify({
+  title: 'File form',
+  items: [
+    { id: 'cv', type: 'file', label: 'CV', multiple: true },
+    { id: 'token', type: 'hidden', value: 'abc' },
+  ],
+  buttons: [{ text: 'Send', type: 'submit' }],
+});
+
 const emailConfig = JSON.stringify({
   title: 'Email form',
   items: [{ id: 'mail', type: 'email', label: 'Mail' }],
@@ -162,6 +171,10 @@ const parityConfig = JSON.stringify({
     { id: 'end', type: 'date', label: 'End', defaultValue: '2026-11-06' },
     { id: 'mail', type: 'email', label: 'Mail', required: true },
     { id: 'at', type: 'time', label: 'At' },
+    { id: 'tone', type: 'color', label: 'Tone' },
+    { id: 'volume', type: 'range', label: 'Volume' },
+    { id: 'cv', type: 'file', label: 'CV', required: true },
+    { id: 'token', type: 'hidden', value: 'abc' },
     { id: 'bio', type: 'textarea', label: 'Bio', text: 'Hello' },
     { id: 'nick', type: 'text', 'aria-label': 'Nick', className: 'w-24' },
     { id: 'agree', type: 'checkbox', label: 'Agree', required: true },
@@ -499,6 +512,30 @@ describe('ResultTab disabled field', () => {
     const formData = heading.closest('section')?.textContent;
     expect(formData).toContain('"name"');
     expect(formData).not.toContain('"nick"');
+  });
+});
+
+describe('ResultTab file and hidden inputs', () => {
+  it('submits the hidden value and lists the picked file names', async () => {
+    render(
+      <FormProvider>
+        <ConfigLoader json={fileConfig} />
+        <ResultTab />
+      </FormProvider>
+    );
+
+    fireEvent.click(screen.getByText('load config'));
+
+    const cv = await screen.findByLabelText('CV');
+    fireEvent.change(cv, {
+      target: { files: [new File(['a'], 'cv.pdf'), new File(['b'], 'cv.txt')] },
+    });
+    fireEvent.click(screen.getByText('Send'));
+
+    const heading = await screen.findByText('Form Data');
+    const formData = heading.closest('section')?.textContent;
+    expect(formData).toContain('"cv": [\n    "cv.pdf",\n    "cv.txt"\n  ]');
+    expect(formData).toContain('"token": "abc"');
   });
 });
 

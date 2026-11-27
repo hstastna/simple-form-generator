@@ -13,6 +13,13 @@ describe('accessible name', () => {
     ).toBe(true);
   });
 
+  it('needs no name on a hidden input, which takes no label', () => {
+    expect(formFieldSchema.safeParse({ type: 'hidden' }).success).toBe(true);
+    expect(
+      formFieldSchema.safeParse({ type: 'hidden', label: 'Token' }).success
+    ).toBe(false);
+  });
+
   it('points at the attribute to add', () => {
     const result = formFieldSchema.safeParse({ type: 'text' });
 
@@ -94,5 +101,17 @@ describe('React-only prop names', () => {
         defaultChecked: true,
       }).success
     ).toBe(true);
+  });
+});
+
+describe('file', () => {
+  it('rejects a preset value, which React cannot set on a file input', () => {
+    const file = { type: 'file', label: 'CV' };
+
+    expect(formFieldSchema.safeParse(file).success).toBe(true);
+    expect(
+      formFieldSchema.safeParse({ ...file, defaultValue: 'cv.pdf' }).error
+        ?.issues[0].path
+    ).toEqual(['defaultValue']);
   });
 });

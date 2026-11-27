@@ -84,18 +84,23 @@ const formatField = (field: FormField, index: number) => {
   const options = field.type === 'radio' ? field.options : undefined;
   const required = field.required || options?.some((option) => option.required);
   const isRequired = getValidationRules({ ...field, required }).required.value;
-  const childIndent = INDENT + INDENT;
-  const label = formatLabel(id, field.label, isRequired, childIndent);
 
-  const formatInput = () =>
+  const formatInput = (indent: string) =>
     formatSelfClosingElement(
       'input',
       [
         ...formatAttributes({ id, name: id, type: field.type }),
         ...formatAttributes(field, fieldOwnKeys),
       ],
-      childIndent
+      indent
     );
+
+  if (field.type === 'hidden') {
+    return formatInput(INDENT);
+  }
+
+  const childIndent = INDENT + INDENT;
+  const label = formatLabel(id, field.label, isRequired, childIndent);
 
   const formatControl = () => {
     switch (field.type) {
@@ -111,7 +116,10 @@ const formatField = (field: FormField, index: number) => {
       case 'datetime-local':
       case 'month':
       case 'week':
-        return [...label, ...formatInput()];
+      case 'color':
+      case 'range':
+      case 'file':
+        return [...label, ...formatInput(childIndent)];
 
       case 'textarea':
         return [
@@ -129,11 +137,11 @@ const formatField = (field: FormField, index: number) => {
         ];
 
       case 'checkbox':
-        return [...formatInput(), ...label];
+        return [...formatInput(childIndent), ...label];
 
       case 'radio': {
         if (!options) {
-          return [...formatInput(), ...label];
+          return [...formatInput(childIndent), ...label];
         }
 
         const {

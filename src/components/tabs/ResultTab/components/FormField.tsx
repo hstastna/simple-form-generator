@@ -65,6 +65,17 @@ export const FormField: FC<FormFieldProps> = ({
       undefined,
   } as const;
 
+  if (type === 'hidden') {
+    return (
+      <input
+        id={id}
+        type={type}
+        {...props}
+        {...register(id, validationRules)}
+      />
+    );
+  }
+
   const renderField = () => {
     switch (type) {
       case 'text':
@@ -79,6 +90,9 @@ export const FormField: FC<FormFieldProps> = ({
       case 'datetime-local':
       case 'month':
       case 'week':
+      case 'color':
+      case 'range':
+      case 'file':
         return (
           <TextNumDateField
             id={id}

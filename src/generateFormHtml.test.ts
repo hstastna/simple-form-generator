@@ -47,6 +47,17 @@ describe('generateFormHtml', () => {
     );
   });
 
+  it('renders a hidden input with no wrapper', () => {
+    expect(
+      generate({
+        items: [{ id: 'token', type: 'hidden', value: 'abc' }],
+        buttons: [],
+      })
+    ).toContain(
+      '\n\n  <input id="token" name="token" type="hidden" value="abc" />\n'
+    );
+  });
+
   it('converts React attribute names and values to HTML', () => {
     const html = generate({
       items: [

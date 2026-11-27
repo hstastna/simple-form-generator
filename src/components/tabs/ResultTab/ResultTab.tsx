@@ -11,7 +11,10 @@ import { FormButton } from './components/FormButton';
 import { FormData } from './components/FormData';
 import { FormField } from './components/FormField';
 
-export type ResultFormData = Record<string, string | number | boolean>;
+export type ResultFormData = Record<
+  string,
+  string | number | boolean | FileList
+>;
 
 export const ResultTab: FC = () => {
   const { formConfig, parseError } = useFormContext();

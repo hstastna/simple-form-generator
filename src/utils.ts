@@ -90,8 +90,9 @@ export const getValidationRules = ({
   disabled,
   multiple,
 }: ValidationProps): ValidationRules => {
-  const isReadOnlyText = readOnly && !['checkbox', 'radio'].includes(type);
-  const shouldSkipValidation = disabled || isReadOnlyText;
+  const isReadOnlyText =
+    readOnly && !['checkbox', 'radio', 'file'].includes(type);
+  const shouldSkipValidation = disabled || isReadOnlyText || type === 'hidden';
 
   const requiredRule = {
     required: {

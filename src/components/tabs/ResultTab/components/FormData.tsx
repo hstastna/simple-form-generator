@@ -1,7 +1,8 @@
 import { FC } from 'react';
+import { ResultFormData } from '../ResultTab';
 
 type FormDataProps = {
-  formData: Record<string, string | number | boolean>;
+  formData: ResultFormData;
 };
 
 export const FormData: FC<FormDataProps> = ({ formData }) => (
@@ -19,7 +20,16 @@ export const FormData: FC<FormDataProps> = ({ formData }) => (
       aria-label="Submitted form data in JSON format"
       tabIndex={0}
     >
-      {JSON.stringify(formData, null, 2)}
+      {JSON.stringify(
+        formData,
+        (_, value) =>
+          value instanceof FileList
+            ? [...value]
+            : value instanceof File
+              ? value.name
+              : value,
+        2
+      )}
     </pre>
   </section>
 );

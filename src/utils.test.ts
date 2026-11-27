@@ -29,6 +29,12 @@ describe('getValidationRules', () => {
     });
   });
 
+  it('skips every rule on a hidden input, as HTML does', () => {
+    expect(getValidationRules({ type: 'hidden', required: true })).toEqual(
+      noRequired
+    );
+  });
+
   it('skips every rule on a disabled control and passes disabled on', () => {
     expect(
       getValidationRules({

@@ -36,9 +36,16 @@ export const TextNumDateField: FC<TextNumDateFieldProps> = ({
     isDateTime &&
     !dateTimeSchemas[type].safeParse(value ?? pickedDate ?? defaultValue)
       .success;
-  const dateInputClassName = isEmptyDate
-    ? tailwindFormTheme.emptyDateInput
-    : tailwindFormTheme.dateInput;
+  const inputClassName =
+    type === 'color'
+      ? tailwindFormTheme.colorInput
+      : type === 'range'
+        ? tailwindFormTheme.rangeInput
+        : isEmptyDate
+          ? tailwindFormTheme.emptyDateInput
+          : isDateTime
+            ? tailwindFormTheme.dateInput
+            : tailwindFormTheme.textNumDateInput;
 
   return (
     <div className={tailwindFormTheme.textNumDateRow}>
@@ -52,9 +59,7 @@ export const TextNumDateField: FC<TextNumDateFieldProps> = ({
         <input
           id={id}
           type={type}
-          className={
-            isDateTime ? dateInputClassName : tailwindFormTheme.textNumDateInput
-          }
+          className={inputClassName}
           {...props}
           {...register(id, validationRules)}
         />

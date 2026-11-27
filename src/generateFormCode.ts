@@ -502,6 +502,19 @@ const formatField = (
   const childIndent = indent + INDENT;
   const idAttribute = `id=${formatString(id)}`;
 
+  if (field.type === 'hidden') {
+    return formatSelfClosingElement(
+      'input',
+      [
+        idAttribute,
+        'type="hidden"',
+        ...formatAttributes(field, fieldOwnKeys, usedHandlers),
+        register,
+      ],
+      indent
+    );
+  }
+
   const formatInput = (className: string[], inputIndent: string) =>
     formatSelfClosingElement(
       'input',
@@ -575,10 +588,29 @@ const formatField = (
       case 'search':
       case 'tel':
       case 'url':
+      case 'file':
         return formatGridField(
           theme?.textNumDateRow,
           formatInput(
             formatThemeClassName(theme?.textNumDateInput, field),
+            gridChildIndent
+          )
+        );
+
+      case 'color':
+        return formatGridField(
+          theme?.textNumDateRow,
+          formatInput(
+            formatThemeClassName(theme?.colorInput, field),
+            gridChildIndent
+          )
+        );
+
+      case 'range':
+        return formatGridField(
+          theme?.textNumDateRow,
+          formatInput(
+            formatThemeClassName(theme?.rangeInput, field),
             gridChildIndent
           )
         );
@@ -814,18 +846,19 @@ const formatUseWatch = ({ id, variableName, defaultValue }: WatchedDate) => {
 };
 
 const formatUseForm = (
-  hasFields: boolean,
+  usesRegister: boolean,
+  usesErrors: boolean,
   usesReset: boolean,
   usesControl: boolean
 ) => {
   const names = [
-    ...(hasFields ? ['register'] : []),
+    ...(usesRegister ? ['register'] : []),
     ...(usesControl ? ['control'] : []),
     'handleSubmit',
     ...(usesReset ? ['reset'] : []),
   ];
 
-  if (!hasFields) {
+  if (!usesErrors) {
     return [`  const { ${names.join(', ')} } = useForm<FormValues>();`];
   }
 
@@ -879,9 +912,15 @@ export const generateFormCode = (
     resetButtonHandlers.size > 0 ||
     usedHandlers.has('reset') ||
     usedHandlers.has('clear');
-  const usesGet = config.items.some(
+  const fieldsWithErrors = config.items.filter(
+    (field) => field.type !== 'hidden'
+  );
+  const usesGet = fieldsWithErrors.some(
     (field) => field.id && fieldPathPattern.test(field.id)
   );
+  const fileListType = config.items.some((field) => field.type === 'file')
+    ? ' | FileList'
+    : '';
   const handlers = [...usedHandlers].flatMap((name) =>
     formatHandler(name, resetButtonHandlers.has(name))
   );
@@ -894,11 +933,12 @@ export const generateFormCode = (
       : []),
     `import { ${usesGet ? 'get, ' : ''}useForm${watchedDates.length ? ', useWatch' : ''} } from "react-hook-form";`,
     '',
-    'type FormValues = Record<string, string | number | boolean>;',
+    `type FormValues = Record<string, string | number | boolean${fileListType}>;`,
     '',
     'export const GeneratedForm = () => {',
     ...formatUseForm(
       config.items.length > 0,
+      fieldsWithErrors.length > 0,
       usesReset,
       watchedDates.length > 0
     ),
