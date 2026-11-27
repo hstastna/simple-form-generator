@@ -37,18 +37,19 @@ The JSON configuration object consists of three main keys:
 
 `title` - represents the main title of the form
 
-`items` - the actual form fields of various types, such as:
+`items` - the actual form fields. Their `type` accepts every HTML input type, plus `textarea` and `select`:
 
-- `number` - number field
-- `text` - text field
-- `textarea` - text area
-- `checkbox` - checkbox field
-- `date` - date field
-- `radio` - radio button
+- Text: `text`, `email`, `password`, `search`, `tel`, `url`, `textarea`
+- Numbers: `number`, `range`
+- Dates and times: `date`, `time`, `datetime-local`, `month`, `week`
+- Choices: `checkbox`, `radio`, `select`
+- Color and file pickers: `color`, `file`
+- Hidden value: `hidden`
+- Buttons: `button`, `submit`, `reset`, `image`
 
 `buttons` - form buttons of type: `button`, `submit`, `reset`
 
-The JSON configuration entered in the _Config_ tab is validated by using [Zod](https://zod.dev/). You can find the specific schemas defined in the _src/schemas_ directory. Most of the common html attributes for `input`, `textarea` and `button` HTML elements are accepted. Keys are passed to React as they are: `value` and `checked` pin the control, while `defaultValue` and `defaultChecked` preset it and leave it editable.
+The JSON configuration entered in the _Config_ tab is validated by using [Zod](https://zod.dev/). You can find the specific schemas defined in the _src/schemas_ directory. Most of the common html attributes for `input`, `textarea`, `select` and `button` HTML elements are accepted. Keys are passed to React as they are: `value` and `checked` pin the control, while `defaultValue` and `defaultChecked` preset it and leave it editable.
 
 ## Radio groups
 
@@ -75,6 +76,12 @@ Keys set on the `radio` item apply to every option, and an option's own key wins
 
 The id of an option without `id` defaults to `<id>-<index>`. As in HTML, `required` on any option makes the whole group required.
 
+## Select boxes
+
+A `select` item renders one `<select>`, and each entry of `options` is one `<option>` with its HTML attributes, plus a `label` for its visible text.
+
+As in React, `defaultValue` on the `select` presets the chosen option and `value` pins it, so options take no `selected` key. With `multiple`, both take a list of values.
+
 ## Event handlers
 
 Fields and buttons accept the `onClick`, `onChange`, `onFocus`, `onBlur`, `onMouseDown`, `onMouseUp`, `onKeyDown` and `onKeyUp` keys. Since JSON cannot hold a function, the value is the _name_ of a handler:
@@ -85,7 +92,7 @@ Fields and buttons accept the `onClick`, `onChange`, `onFocus`, `onBlur`, `onMou
 
 The _Result_ tab implements two handlers:
 
-- `reset` - asks for a confirmation, then restores the form to the defaults from your config. Every button with `"type": "reset"` calls it by default, without an `onClick` key.
+- `reset` - asks for a confirmation, then restores the form to the defaults from your config. Every button or input with `"type": "reset"` calls it by default, without an `onClick` key.
 - `clear` - restores the form right away, with no confirmation. It runs only where a handler key names it.
 
 Both also clear the submitted _Form Data_ output.
@@ -123,7 +130,6 @@ npm test
 This project is fresh, hence lots of improvements can be done, for example:
 
 - extend the _Code_ tab with more output formats to choose from: a React component in plain JavaScript, or a matching CSS stylesheet for the _HTML_ subtab, possibly also using styled components with React
-- allow other input types to be accepted, like type of button, submit, reset, email, password etc.
 - make the data entered in the generated forms persistent while switching between the tabs, even before clicking on Submit button (can be useful when playing with the various data and setting the proper JSON attributes to make the inputs work as expected)
 - improve state management, consider getting rid of the Context eventually
 - enable the [React Compiler](https://react.dev/learn/react-compiler) (`reactCompiler: true` in `next.config.ts` + `babel-plugin-react-compiler`) for automatic memoization
