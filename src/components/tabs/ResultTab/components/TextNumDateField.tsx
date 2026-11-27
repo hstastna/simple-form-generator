@@ -4,11 +4,11 @@ import { Control, UseFormRegister, useWatch } from 'react-hook-form';
 import { ResultFormData } from '../ResultTab';
 import { FormFieldType } from './FormField';
 import { tailwindFormTheme } from '@/formThemes';
-import { isoDateSchema, ValidationRules } from '@/utils';
+import { dateTimeSchemas, isDateTimeType, ValidationRules } from '@/utils';
 
 type TextNumDateFieldProps = InputHTMLAttributes<HTMLInputElement> & {
   id: string;
-  type: Extract<FormFieldType, 'text' | 'number' | 'date'>;
+  type: Exclude<FormFieldType, 'textarea' | 'checkbox' | 'radio'>;
   control: Control<ResultFormData>;
   register: UseFormRegister<ResultFormData>;
   validationRules: ValidationRules;
@@ -26,14 +26,16 @@ export const TextNumDateField: FC<TextNumDateFieldProps> = ({
 }) => {
   const isRequired = validationRules.required.value;
   const { value, defaultValue } = props;
+  const isDateTime = isDateTimeType(type);
   const pickedDate = useWatch({
     control,
     name: id,
-    disabled: type !== 'date',
+    disabled: !isDateTime,
   });
-  const isEmptyDate = !isoDateSchema.safeParse(
-    value ?? pickedDate ?? defaultValue
-  ).success;
+  const isEmptyDate =
+    isDateTime &&
+    !dateTimeSchemas[type].safeParse(value ?? pickedDate ?? defaultValue)
+      .success;
   const dateInputClassName = isEmptyDate
     ? tailwindFormTheme.emptyDateInput
     : tailwindFormTheme.dateInput;
@@ -51,9 +53,7 @@ export const TextNumDateField: FC<TextNumDateFieldProps> = ({
           id={id}
           type={type}
           className={
-            type === 'date'
-              ? dateInputClassName
-              : tailwindFormTheme.textNumDateInput
+            isDateTime ? dateInputClassName : tailwindFormTheme.textNumDateInput
           }
           {...props}
           {...register(id, validationRules)}

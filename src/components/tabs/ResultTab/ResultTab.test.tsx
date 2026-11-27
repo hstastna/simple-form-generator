@@ -59,6 +59,12 @@ const patternConfig = JSON.stringify({
   buttons: [{ text: 'Send', type: 'submit' }],
 });
 
+const emailConfig = JSON.stringify({
+  title: 'Email form',
+  items: [{ id: 'mail', type: 'email', label: 'Mail' }],
+  buttons: [{ text: 'Send', type: 'submit' }],
+});
+
 const dottedIdConfig = JSON.stringify({
   title: 'Dotted id form',
   items: [{ id: 'user.name', type: 'text', label: 'Name', required: true }],
@@ -154,6 +160,8 @@ const parityConfig = JSON.stringify({
     { id: 'age', type: 'number', label: 'Age' },
     { id: 'start', type: 'date', label: 'Start', required: true },
     { id: 'end', type: 'date', label: 'End', defaultValue: '2026-11-06' },
+    { id: 'mail', type: 'email', label: 'Mail', required: true },
+    { id: 'at', type: 'time', label: 'At' },
     { id: 'bio', type: 'textarea', label: 'Bio', text: 'Hello' },
     { id: 'nick', type: 'text', 'aria-label': 'Nick', className: 'w-24' },
     { id: 'agree', type: 'checkbox', label: 'Agree', required: true },
@@ -413,6 +421,27 @@ describe('ResultTab native validation', () => {
 
     expect((await screen.findByRole('alert')).textContent).toBe(
       'Please match the requested format'
+    );
+  });
+});
+
+describe('ResultTab type mismatch', () => {
+  it('reports an invalid email with the form error, not the browser', async () => {
+    render(
+      <FormProvider>
+        <ConfigLoader json={emailConfig} />
+        <ResultTab />
+      </FormProvider>
+    );
+
+    fireEvent.click(screen.getByText('load config'));
+
+    const mail = await screen.findByLabelText<HTMLInputElement>('Mail');
+    fireEvent.change(mail, { target: { value: 'jane.doe' } });
+    fireEvent.click(screen.getByText('Send'));
+
+    expect((await screen.findByRole('alert')).textContent).toBe(
+      'Please enter an email address'
     );
   });
 });

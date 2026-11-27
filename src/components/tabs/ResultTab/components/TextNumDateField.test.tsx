@@ -9,7 +9,7 @@ import { FormFieldType } from './FormField';
 import { TextNumDateField } from './TextNumDateField';
 
 type HarnessProps = {
-  type?: Extract<FormFieldType, 'text' | 'number' | 'date'>;
+  type?: Extract<FormFieldType, 'text' | 'number' | 'date' | 'time'>;
   label?: string;
   required?: boolean;
   value?: string;
@@ -63,6 +63,16 @@ describe('TextNumDateField', () => {
 
     fireEvent.change(nick, { target: { value: '' } });
     expect(nick.className).toBe(tailwindFormTheme.emptyDateInput);
+  });
+
+  it('grays out an empty time input the same way as a date input', () => {
+    render(<Harness label="Nick" type="time" />);
+
+    const nick = screen.getByLabelText('Nick');
+    expect(nick.className).toBe(tailwindFormTheme.emptyDateInput);
+
+    fireEvent.change(nick, { target: { value: '09:30' } });
+    expect(nick.className).toBe(tailwindFormTheme.dateInput);
   });
 
   it('keeps the text colour of a date preset in the JSON config', () => {

@@ -102,6 +102,15 @@ const formatField = (field: FormField, index: number) => {
       case 'text':
       case 'number':
       case 'date':
+      case 'email':
+      case 'password':
+      case 'search':
+      case 'tel':
+      case 'url':
+      case 'time':
+      case 'datetime-local':
+      case 'month':
+      case 'week':
         return [...label, ...formatInput()];
 
       case 'textarea':

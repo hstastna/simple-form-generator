@@ -46,6 +46,8 @@ const kitchenSinkConfig = {
       text: 'Line 1\nLine "2"',
     },
     { id: 'agree', type: 'checkbox', label: "I'm in", required: true },
+    { id: 'mails', type: 'email', label: 'Mails', multiple: true },
+    { id: 'site', type: 'url', label: 'Site' },
     {
       id: 'locked',
       type: 'text',
@@ -336,6 +338,53 @@ describe('validation rules', () => {
     expect(regExp.flags).toBe('v');
     expect(regExp.test('abc/"123')).toBe(true);
     expect(regExp.test('abc/123')).toBe(false);
+  });
+
+  it('emits validate checks that match what the Result tab checks', () => {
+    const fields = [
+      { id: 'mail', type: 'email', label: 'Mail' },
+      { id: 'mails', type: 'email', label: 'Mails', multiple: true },
+      { id: 'site', type: 'url', label: 'Site' },
+      { id: 'night', type: 'time', label: 'Night', min: '22:00', max: '06:00' },
+      {
+        id: 'team',
+        type: 'email',
+        label: 'Team',
+        multiple: true,
+        pattern: '.+@d\\.cz',
+      },
+    ];
+    const code = generate({ items: fields, buttons: [] });
+    const checks = [...code.matchAll(/(\(value\) =>[^]*?"),\n/g)].map(
+      ([, check]) => new Function(`return ${check}`)()
+    );
+    // the last field prints an email check and a pattern check
+    const fieldChecks = [
+      ...checks.slice(0, 4).map((check) => [check]),
+      checks.slice(4),
+    ];
+
+    expect(checks).toHaveLength(fields.length + 1);
+    fields.forEach((field, index) => {
+      const { validate } = getValidationRules(field);
+
+      for (const value of [
+        '',
+        'a@b.cz',
+        'a@b.cz,c@d.cz',
+        'c@d.cz',
+        'ab',
+        'https://b.cz',
+        '23:00',
+        '12:00',
+      ]) {
+        expect(
+          fieldChecks[index]
+            .map((check) => check(value))
+            .find((result) => result !== true) ?? true
+        ).toBe(validate?.(value));
+      }
+    });
   });
 
   it('keeps only the disabled rule on a disabled field', () => {

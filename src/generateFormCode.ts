@@ -2,7 +2,16 @@ import { FormConfig } from '@/schemas/formConfigSchema';
 import { RESET_CONFIRM_MESSAGE } from '@/constants';
 import { isEventHandlerName } from '@/formActions';
 import { FormTheme } from '@/formThemes';
-import { getValidationRules, isoDateSchema, ValidationRules } from '@/utils';
+import {
+  DateTimeType,
+  dateTimeSchemas,
+  emailPattern,
+  getPatternRule,
+  getReversedTimeRangeMessage,
+  getValidationRules,
+  typeMismatchMessages,
+  ValidationRules,
+} from '@/utils';
 
 type FormField = FormConfig['items'][number];
 type FormButton = FormConfig['buttons'][number];
@@ -323,10 +332,75 @@ const formatRuleValue = (value: boolean | number | string | RegExp) => {
   return typeof value === 'string' ? JSON.stringify(value) : String(value);
 };
 
-const formatRuleEntries = (rules: ValidationRules) =>
+const formatValidateRule = (field: FormField) => {
+  const formatValidate = (
+    checks: string[],
+    message: string,
+    key = 'validate'
+  ) => [
+    `${key}: (value) =>`,
+    ...['!value', ...checks].map((check) => `${INDENT}${check} ||`),
+    `${INDENT}${JSON.stringify(message)},`,
+  ];
+
+  switch (field.type) {
+    case 'url':
+      return formatValidate(
+        ['URL.canParse(String(value))'],
+        typeMismatchMessages.url
+      );
+
+    case 'time':
+      return formatValidate(
+        [
+          `String(value) >= ${JSON.stringify(String(field.min))}`,
+          `String(value) <= ${JSON.stringify(String(field.max))}`,
+        ],
+        getReversedTimeRangeMessage(String(field.min), String(field.max))
+      );
+
+    default: {
+      const isList = field.type === 'email' && field.multiple;
+      const patternRule =
+        isList && field.pattern
+          ? getPatternRule(field.pattern, field.title)?.pattern
+          : undefined;
+      const formatCheck = (regExp: string) =>
+        isList
+          ? `String(value).split(",").every((email) => ${regExp}.test(email))`
+          : `${regExp}.test(String(value))`;
+      const emailValidate = formatValidate(
+        [formatCheck(String(emailPattern))],
+        typeMismatchMessages.email,
+        patternRule ? 'email' : 'validate'
+      );
+
+      return patternRule
+        ? [
+            'validate: {',
+            ...[
+              ...emailValidate,
+              ...formatValidate(
+                [formatCheck(formatRuleValue(patternRule.value))],
+                patternRule.message,
+                'pattern'
+              ),
+            ].map((line) => `${INDENT}${line}`),
+            '},',
+          ]
+        : emailValidate;
+    }
+  }
+};
+
+const formatRuleEntries = (rules: ValidationRules, field: FormField) =>
   Object.entries(rules).flatMap(([key, rule]) => {
     if (typeof rule === 'boolean') {
       return [`${key}: ${rule},`];
+    }
+
+    if (typeof rule === 'function') {
+      return formatValidateRule(field);
     }
 
     if (key === 'required') {
@@ -361,22 +435,24 @@ const formatErrorAria = (
 
 const formatDateClassName = (
   id: string,
+  type: DateTimeType,
   value: string | number | undefined,
   defaultValue: string | number | undefined,
   theme: FormTheme,
   watchedDates: WatchedDate[]
 ) => {
+  const isValidDate = (date: string | number | undefined) =>
+    dateTimeSchemas[type].safeParse(date).success;
+
   if (value !== undefined) {
     return formatClassName(
-      isoDateSchema.safeParse(value).success
-        ? theme.dateInput
-        : theme.emptyDateInput
+      isValidDate(value) ? theme.dateInput : theme.emptyDateInput
     );
   }
 
   const variableName = formatWatchedDateReference(
     id,
-    isoDateSchema.safeParse(defaultValue).success ? defaultValue : undefined,
+    isValidDate(defaultValue) ? defaultValue : undefined,
     watchedDates
   );
 
@@ -419,7 +495,7 @@ const formatField = (
       : [];
   });
   const register = formatRegister(id, [
-    ...formatRuleEntries(rules),
+    ...formatRuleEntries(rules, field),
     ...eventOptions,
   ]);
 
@@ -494,6 +570,11 @@ const formatField = (
     switch (field.type) {
       case 'text':
       case 'number':
+      case 'email':
+      case 'password':
+      case 'search':
+      case 'tel':
+      case 'url':
         return formatGridField(
           theme?.textNumDateRow,
           formatInput(
@@ -502,11 +583,16 @@ const formatField = (
           )
         );
 
-      case 'date': {
+      case 'date':
+      case 'time':
+      case 'datetime-local':
+      case 'month':
+      case 'week': {
         const className =
           theme && field.className === undefined
             ? formatDateClassName(
                 id,
+                field.type,
                 field.value,
                 field.defaultValue,
                 theme,

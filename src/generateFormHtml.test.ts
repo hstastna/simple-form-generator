@@ -36,6 +36,17 @@ describe('generateFormHtml', () => {
 `);
   });
 
+  it('renders the other input types like a text input', () => {
+    expect(
+      generate({
+        items: [{ id: 'mail', type: 'email', label: 'Mail' }],
+        buttons: [],
+      })
+    ).toContain(
+      '<label for="mail">Mail</label>\n    <input id="mail" name="mail" type="email" />'
+    );
+  });
+
   it('converts React attribute names and values to HTML', () => {
     const html = generate({
       items: [

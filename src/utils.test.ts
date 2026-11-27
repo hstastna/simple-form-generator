@@ -141,6 +141,86 @@ describe('getValidationRules', () => {
     ).toEqual(lengthRules);
   });
 
+  it('applies text rules to the other text input types, as HTML does', () => {
+    for (const type of ['password', 'search', 'tel', 'email', 'url']) {
+      expect(getValidationRules({ type, minLength: 2 }).minLength).toEqual({
+        value: 2,
+        message: 'Minimum length is 2 characters',
+      });
+    }
+  });
+
+  it('checks the email format the way HTML defines it', () => {
+    const { validate } = getValidationRules({ type: 'email' });
+
+    expect(validate?.('')).toBe(true);
+    expect(validate?.('jane.doe@example.com')).toBe(true);
+    expect(validate?.('jane.doe')).toBe('Please enter an email address');
+    expect(validate?.('jane@doe.com,john@doe.com')).toBe(
+      'Please enter an email address'
+    );
+  });
+
+  it('checks every address of an email field with multiple', () => {
+    const { validate } = getValidationRules({ type: 'email', multiple: true });
+
+    expect(validate?.('jane@doe.com,john@doe.com')).toBe(true);
+    expect(validate?.('jane@doe.com,john')).toBe(
+      'Please enter an email address'
+    );
+  });
+
+  it('checks the URL format with the URL parser', () => {
+    const { validate } = getValidationRules({ type: 'url' });
+
+    expect(validate?.('https://example.com')).toBe(true);
+    expect(validate?.('example.com')).toBe('Please enter a URL');
+  });
+
+  it('matches a pattern against each address of a multiple email field', () => {
+    const { pattern, validate } = getValidationRules({
+      type: 'email',
+      multiple: true,
+      pattern: '.+@x\\.cz',
+    });
+
+    expect(pattern).toBeUndefined();
+    expect(validate?.('a@x.cz,b@x.cz')).toBe(true);
+    expect(validate?.('a@y.cz,b@x.cz')).toBe(
+      'Please match the requested format'
+    );
+    expect(validate?.('a@x.cz,b')).toBe('Please enter an email address');
+  });
+
+  it('wraps a reversed time range around midnight, as HTML does', () => {
+    const { min, max, validate } = getValidationRules({
+      type: 'time',
+      min: '22:00',
+      max: '06:00',
+    });
+
+    expect(min ?? max).toBeUndefined();
+    expect(validate?.('23:00')).toBe(true);
+    expect(validate?.('05:30')).toBe(true);
+    expect(validate?.('12:00')).toBe(
+      'Time must be 22:00 or later, or 06:00 or earlier'
+    );
+  });
+
+  it('names the type in the bound messages of time fields', () => {
+    expect(getValidationRules({ type: 'time', min: '09:00' }).min).toEqual({
+      value: '09:00',
+      message: 'Minimum time is 09:00',
+    });
+    expect(
+      getValidationRules({ type: 'datetime-local', max: '2026-12-31T18:00' })
+        .max
+    ).toEqual({
+      value: '2026-12-31T18:00',
+      message: 'Maximum date and time is 2026-12-31T18:00',
+    });
+  });
+
   it('returns only the required rule for other types', () => {
     expect(getValidationRules({ type: 'checkbox', min: 5 })).toEqual(
       noRequired

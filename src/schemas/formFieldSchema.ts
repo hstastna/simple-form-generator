@@ -10,7 +10,15 @@ export const formFieldTypes = [
   'checkbox',
   'date',
   'radio',
-  // add more types here for more input types
+  'email',
+  'password',
+  'search',
+  'tel',
+  'url',
+  'time',
+  'datetime-local',
+  'month',
+  'week',
 ] as const;
 
 const inputAndTextAreaAttributes = {
